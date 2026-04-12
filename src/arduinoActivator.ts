@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import { ArduinoApp } from "./arduino/arduino";
 import { ArduinoSettings } from "./arduino/arduinoSettings";
 import { BoardManager } from "./arduino/boardManager";
+import { promptDownloadCli } from "./arduino/cliDownloader";
 import { ExampleManager } from "./arduino/exampleManager";
 import { ExampleProvider } from "./arduino/exampleProvider";
 import { LibraryManager } from "./arduino/libraryManager";
@@ -16,6 +17,12 @@ import { DeviceContext } from "./deviceContext";
 
 class ArduinoActivator {
     private _initializePromise: Promise<void>;
+    private _extensionPath: string = "";
+
+    public setExtensionPath(extensionPath: string) {
+        this._extensionPath = extensionPath;
+    }
+
     public async activate() {
         if (this._initializePromise) {
             await this._initializePromise;
@@ -24,7 +31,16 @@ class ArduinoActivator {
 
         this._initializePromise = (async () => {
             const arduinoSettings = new ArduinoSettings();
-            await arduinoSettings.initialize();
+            await arduinoSettings.initialize(this._extensionPath);
+
+            // If no Arduino path found and using CLI, offer to download
+            if ((!arduinoSettings.arduinoPath || !arduinoSettings.arduinoPath.trim()) && arduinoSettings.useArduinoCli && this._extensionPath) {
+                const downloadedDir = await promptDownloadCli(this._extensionPath);
+                if (downloadedDir) {
+                    await arduinoSettings.initialize(this._extensionPath);
+                }
+            }
+
             const arduinoApp = new ArduinoApp(arduinoSettings);
 
             // Initializing the app before the device context will cause a

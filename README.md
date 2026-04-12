@@ -28,6 +28,7 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 - **Telemetry removed**: All Application Insights telemetry and NSAT survey tracking have been completely removed.
 - **Security fix (CVE-2024-43488)**: The local webserver used for Board/Library Manager webviews is now protected by a cryptographic authentication token.
 - **Arduino CLI as default**: `arduino.useArduinoCli` now defaults to `true`. The extension is optimized for modern Arduino CLI workflows.
+- **Automatic Arduino CLI download**: If Arduino CLI is not found, the extension offers to download it automatically from the official GitHub releases.
 - **IntelliSense improvements**:
   - `--param` normalization for STM32 and other GCC-based toolchains (clang compatibility)
   - `ARDUINO` define automatically added for library compatibility
@@ -45,9 +46,13 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 ## Prerequisites
 
 ### Arduino CLI (recommended)
-The Arduino CLI is the recommended backend. Download it from the [official releases page](https://github.com/arduino/arduino-cli/releases).
+The Arduino CLI is the recommended backend. **The extension can download it automatically** when it is not found on your system.
+
+Alternatively, you can install it manually from the [official releases page](https://github.com/arduino/arduino-cli/releases):
 - Make sure `arduino-cli` is on your system PATH, or set `arduino.path` to point to its directory.
 - You can use a local `arduino-cli.yaml` configuration file via the `arduino.arduinoCliConfigFile` setting.
+
+> **Note**: Arduino CLI is licensed under the [GPL-3.0 license](https://github.com/arduino/arduino-cli/blob/master/LICENSE.txt) by Arduino SA. See [NOTICE-ARDUINO-CLI.md](NOTICE-ARDUINO-CLI.md) for details.
 
 ### Arduino IDE (legacy)
 The Arduino IDE can be installed from the [Arduino download page](https://www.arduino.cc/en/main/software#download).

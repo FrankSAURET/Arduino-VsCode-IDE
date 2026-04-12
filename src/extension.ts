@@ -25,6 +25,7 @@ import { DeviceContext } from "./deviceContext";
 const completionProviderModule = impor("./langService/completionProvider") as typeof import ("./langService/completionProvider");
 import * as Logger from "./logger/logger";
 import { BuildMode } from "./arduino/arduino";
+import { checkForCliUpdate } from "./arduino/cliDownloader";
 import { SerialMonitor } from "./serialmonitor/serialMonitor";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
 
@@ -45,6 +46,9 @@ export async function activate(context: vscode.ExtensionContext) {
     const deviceContext = DeviceContext.getInstance();
     deviceContext.extensionPath = context.extensionPath;
     context.subscriptions.push(deviceContext);
+
+    // Pass extension path to the activator for CLI auto-download
+    arduinoActivatorModule.default.setExtensionPath(context.extensionPath);
 
     const commandExecution = async (command: string, commandBody: (...args: any[]) => any, args: any, getUserData?: () => any) => {
         try {
@@ -392,6 +396,11 @@ export async function activate(context: vscode.ExtensionContext) {
         usbDetectorModule.UsbDetector.getInstance().initialize(context.extensionPath);
         usbDetectorModule.UsbDetector.getInstance().startListening();
     }, 200);
+
+    // Silently check for Arduino CLI updates (downloaded CLIs only)
+    setTimeout(() => {
+        checkForCliUpdate(context.extensionPath).catch(() => { /* ignore */ });
+    }, 5000);
 }
 
 export async function deactivate() {

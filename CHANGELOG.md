@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Automatic Arduino CLI download: if the CLI is not found, the extension offers to download it from GitHub Releases with progress notification and automatic update checking
 - Multi-root workspace support: commands now operate in the context of the active editor's workspace folder ([#71](https://github.com/vscode-arduino/vscode-arduino/issues/71))
 - Custom library path setting `arduino.customLibraryPath` ([#50](https://github.com/vscode-arduino/vscode-arduino/issues/50))
 - Custom Arduino CLI config file setting `arduino.arduinoCliConfigFile`

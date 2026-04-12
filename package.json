@@ -8,7 +8,7 @@
   "engines": {
     "vscode": "^1.56.0"
   },
-  "icon": "images/arduino.png",
+  "icon": "images/ArduinoCommunityLogo-up.png",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
     "type": "git",

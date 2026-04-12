@@ -7,6 +7,7 @@ import * as WinReg from "winreg";
 import * as util from "../common/util";
 
 import { resolveArduinoPath } from "../common/platform";
+import { getDownloadedCliPath } from "./cliDownloader";
 
 import { VscodeSettings } from "./vscodeSettings";
 
@@ -44,10 +45,13 @@ export class ArduinoSettings implements IArduinoSettings {
 
     private _defaultTimestampFormat: string;
 
+    private _extensionPath: string;
+
     public constructor() {
     }
 
-    public async initialize() {
+    public async initialize(extensionPath?: string) {
+        this._extensionPath = extensionPath || "";
         const platform = os.platform();
         this._commandPath = VscodeSettings.getInstance().commandPath;
         this._useArduinoCli = VscodeSettings.getInstance().useArduinoCli;
@@ -233,6 +237,13 @@ export class ArduinoSettings implements IArduinoSettings {
         if (!configValue || !configValue.trim()) {
             // 2 & 3. Resolve arduino path from system environment variables and usual software installation directory.
             this._arduinoPath = await Promise.resolve(resolveArduinoPath());
+            // 4. Check for a previously downloaded CLI in the extension directory.
+            if ((!this._arduinoPath || !this._arduinoPath.trim()) && this._useArduinoCli && this._extensionPath) {
+                const downloadedPath = getDownloadedCliPath(this._extensionPath);
+                if (downloadedPath) {
+                    this._arduinoPath = downloadedPath;
+                }
+            }
         } else {
             this._arduinoPath = configValue;
         }
