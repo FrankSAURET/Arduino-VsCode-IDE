@@ -63,19 +63,15 @@ gulp.task("node_modules-webpack", (done) => {
     });
 });
 
-gulp.task("ts-compile", () => {
-    const tsProject = ts.createProject("./tsconfig.json");
-    return tsProject.src()
-        .pipe(sourcemaps.init())
-        .pipe(tsProject())
-        .pipe(sourcemaps.write(".", {
-            mapSources: (sourcePath, file) => {
-                // Correct source map path.
-                const relativeSourcePath = path.relative(path.dirname(file.path), path.join(file.base, sourcePath));
-                return relativeSourcePath;
-            },
-        }))
-        .pipe(gulp.dest("out"));
+gulp.task("ts-compile", (done) => {
+    childProcess.exec("npx tsc", (error, stdout, stderr) => {
+        if (stdout) { log(stdout); }
+        if (stderr) { log.error(stderr); }
+        if (error) {
+            throw new PluginError("ts-compile", "TypeScript compilation failed");
+        }
+        done();
+    });
 });
 
 gulp.task("clean", (done) => {
