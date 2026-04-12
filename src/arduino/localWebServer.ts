@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as bodyParser from "body-parser";
+import * as crypto from "crypto";
 import * as express from "express";
 import * as http from "http";
 import * as path from "path";
@@ -10,11 +11,29 @@ import { Uri } from "vscode";
 export default class LocalWebServer {
     private app = express();
     private server;
+    private _authToken: string;
 
     constructor(private _extensionPath: string) {
+        // Generate a cryptographically random token for request authentication (CVE-2024-43488 fix)
+        this._authToken = crypto.randomBytes(32).toString("hex");
+
         this.app.use("/", express.static(path.join(this._extensionPath, "./out/views")));
         this.app.use(bodyParser.json());
+
+        // Authenticate all /api/ requests with the token
+        this.app.use("/api", (req, res, next) => {
+            const token = req.headers["x-auth-token"] || req.query.token;
+            if (token !== this._authToken) {
+                return res.status(403).send("Forbidden: invalid authentication token");
+            }
+            next();
+        });
+
         this.server = http.createServer(this.app);
+    }
+
+    public get authToken(): string {
+        return this._authToken;
     }
 
     public getServerUrl(): string {

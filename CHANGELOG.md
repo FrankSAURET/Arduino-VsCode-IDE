@@ -1,6 +1,35 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 0.5.0
+
+- Release date: July 2025
+- **This is the first release of the community-maintained fork by [electropol-fr](https://github.com/FrankSAURET/vscode-arduino).**
+
+### Security
+
+- Fix CVE-2024-43488: added authentication token on the local webserver to prevent unauthorized access
+- Removed all telemetry (Application Insights, NSAT survey, UUID tracking)
+
+### Added
+
+- Multi-root workspace support: commands now operate in the context of the active editor's workspace folder ([#71](https://github.com/vscode-arduino/vscode-arduino/issues/71))
+- Custom library path setting `arduino.customLibraryPath` ([#50](https://github.com/vscode-arduino/vscode-arduino/issues/50))
+- Custom Arduino CLI config file setting `arduino.arduinoCliConfigFile`
+- Wait-for-port logic after upload for USB CDC boards (Leonardo, Micro, etc.) ([#85](https://github.com/vscode-arduino/vscode-arduino/issues/85))
+- `ARDUINO=10813` predefined macro for IntelliSense ([#70](https://github.com/vscode-arduino/vscode-arduino/issues/70))
+- Support for `boards.local.txt` overrides in board configuration ([#77](https://github.com/vscode-arduino/vscode-arduino/issues/77))
+
+### Changed
+
+- Arduino CLI is now the default backend (`arduino.useArduinoCli` defaults to `true`)
+- Build output path now uses `path.normalize()` and creates full directory structure ([#72](https://github.com/vscode-arduino/vscode-arduino/issues/72))
+- IntelliSense: normalize `--param VALUE` to `--param=VALUE` format ([PR #84](https://github.com/vscode-arduino/vscode-arduino/pull/84))
+- IntelliSense: rate-limited analysis to reduce CPU load ([#76](https://github.com/vscode-arduino/vscode-arduino/issues/76))
+- Serial monitor: input field now clears after sending ([#81](https://github.com/vscode-arduino/vscode-arduino/issues/81))
+- Serial monitor: added 5-second close timeout with force fallback ([#74](https://github.com/vscode-arduino/vscode-arduino/issues/74), [#75](https://github.com/vscode-arduino/vscode-arduino/issues/75))
+- Serial monitor: ESP32 DTR/RTS sequence fix to prevent boot loop ([#86](https://github.com/vscode-arduino/vscode-arduino/issues/86))
+
 ## Version 0.4.12
 
 - Release date: May 3, 2022

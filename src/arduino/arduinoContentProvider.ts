@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import * as path from "path";
-import * as Uuid from "uuid/v4";
 import * as vscode from "vscode";
 import ArduinoActivator from "../arduinoActivator";
 import ArduinoContext from "../arduinoContext";
@@ -80,7 +79,8 @@ export class ArduinoContentProvider implements vscode.TextDocumentContentProvide
                     var url = "${(await vscode.env.asExternalUri(this._webserver.getEndpointUri(type))).toString()}?" +
                             "theme=" + encodeURIComponent(theme.trim()) +
                             "&backgroundcolor=" + encodeURIComponent(backgroundcolor.trim()) +
-                            "&color=" + encodeURIComponent(color.trim());
+                            "&color=" + encodeURIComponent(color.trim()) +
+                            "&token=${this._webserver.authToken}";
                     document.getElementById('frame').src = url;
                 };
             </script>
@@ -301,25 +301,11 @@ export class ArduinoContentProvider implements vscode.TextDocumentContentProvide
 
     private addHandlerWithLogger(handlerName: string, url: string, handler: (req, res) => void, post: boolean = false): void {
         const wrappedHandler = async (req, res) => {
-            const guid = Uuid().replace(/-/g, "");
-            let properties = {};
-            if (post) {
-                properties = { ...req.body };
-
-                // Removal requirement for GDPR
-                if ("install-board" === handlerName) {
-                    const packageNameKey = "packageName";
-                    delete properties[packageNameKey];
-                }
-            }
-            Logger.traceUserData(`start-` + handlerName, { correlationId: guid, ...properties });
-            const timer1 = new Logger.Timer();
             try {
                 await Promise.resolve(handler(req, res));
             } catch (error) {
-                Logger.traceError("expressHandlerError", error, { correlationId: guid, handlerName, ...properties });
+                Logger.traceError("expressHandlerError", error, { handlerName });
             }
-            Logger.traceUserData(`end-` + handlerName, { correlationId: guid, duration: timer1.end() });
         };
         if (post) {
             this._webserver.addPostHandler(url, wrappedHandler);

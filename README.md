@@ -1,8 +1,13 @@
-# Visual Studio Code extension for Arduino
+# Arduino for Visual Studio Code
 
-[![Gitter](https://img.shields.io/badge/chat-on%20gitter-blue.svg)](https://gitter.im/Microsoft/vscode-arduino)
+> **This is a community fork** of the [original Microsoft vscode-arduino extension](https://github.com/Microsoft/vscode-arduino), which is no longer actively maintained. This fork is also based on work from the [vscode-arduino community fork](https://github.com/vscode-arduino/vscode-arduino).
+>
+> Original extension © Microsoft Corporation — licensed under the [MIT License](LICENSE.txt).
+> Modifications by [Frank SAURET](https://github.com/FrankSAURET).
 
-Welcome to the Visual Studio Code extension for **Arduino** <sup>preview</sup> ! The Arduino extension makes it easy to develop, build, deploy and debug your Arduino sketches in Visual Studio Code, with a rich set of functionalities. These include:
+---
+
+Welcome to the Visual Studio Code extension for **Arduino**! This extension makes it easy to develop, build, deploy and debug your Arduino sketches in Visual Studio Code, with a rich set of functionalities:
 
 * IntelliSense and syntax highlighting for Arduino sketches
 * Verify and upload your sketches in Visual Studio Code
@@ -11,35 +16,52 @@ Welcome to the Visual Studio Code extension for **Arduino** <sup>preview</sup> !
 * Built-in serial monitor
 * Snippets for sketches
 * Automatic Arduino project scaffolding
-* Command Palette (<kbd>F1</kbd>) integration of frequently used commands (e.g. Verify, Upload...)
-* Integrated Arduino Debugging <sup>New</sup>
+* Command Palette (<kbd>F1</kbd>) integration of frequently used commands
+* Integrated Arduino Debugging
+* Multi-root workspace support
+* Custom library and package paths
+
+## What's new in this fork
+
+Compared to the original Microsoft extension (v0.4.12), this fork includes:
+
+- **Telemetry removed**: All Application Insights telemetry and NSAT survey tracking have been completely removed.
+- **Security fix (CVE-2024-43488)**: The local webserver used for Board/Library Manager webviews is now protected by a cryptographic authentication token.
+- **Arduino CLI as default**: `arduino.useArduinoCli` now defaults to `true`. The extension is optimized for modern Arduino CLI workflows.
+- **IntelliSense improvements**:
+  - `--param` normalization for STM32 and other GCC-based toolchains (clang compatibility)
+  - `ARDUINO` define automatically added for library compatibility
+  - `boards.local.txt` support for custom board definitions
+- **Serial Monitor improvements**:
+  - Input field is cleared after sending a message
+  - Serial port close timeout prevents blocking during uploads
+  - Improved ESP32 DTR/RTS handling to avoid unwanted reboots
+  - Wait-for-port support for USB CDC boards (e.g. Arduino Uno R4 WiFi)
+- **Multi-root workspace support**: The workspace root is resolved based on the active editor file.
+- **Custom paths**: New `arduino.customLibraryPath` and `arduino.arduinoCliConfigFile` settings.
+- **Build path fix**: Output build path is properly normalized and validated.
+- **CPU load fix**: IntelliSense analysis is rate-limited to prevent high CPU usage from repeated triggers.
 
 ## Prerequisites
-Either the Arduino IDE or Arduino CLI are required.
 
-### Arduino IDE
-The Arduino IDE can be installed the Arduino [download page](https://www.arduino.cc/en/main/software#download).
-- The supported Arduino IDE versions are `1.6.x` and later.
-- The Windows Store's version of the Arduino IDE is not supported because of the sandbox environment that the application runs in.
-- *Note:* Arduino IDE `1.8.7` had some breaking changes, causing board package and library installation failures.  These failures were corrected in `1.8.8` and later.
+### Arduino CLI (recommended)
+The Arduino CLI is the recommended backend. Download it from the [official releases page](https://github.com/arduino/arduino-cli/releases).
+- Make sure `arduino-cli` is on your system PATH, or set `arduino.path` to point to its directory.
+- You can use a local `arduino-cli.yaml` configuration file via the `arduino.arduinoCliConfigFile` setting.
 
-### Arduino CLI
-The Arduino CLI can be downloaded from the repository's [release page](https://github.com/arduino/arduino-cli/releases/tag/0.13.0)
-- The extension has only been tested with v0.13.0.
-- If you use the CLI you will have to set `arduino.path` since the CLI does not have a default path.
+### Arduino IDE (legacy)
+The Arduino IDE can be installed from the [Arduino download page](https://www.arduino.cc/en/main/software#download).
+- Set `arduino.useArduinoCli` to `false` in your VS Code settings.
+- Supported versions: `1.6.x` and later.
+- The Windows Store version is not supported.
 
 ## Installation
 Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `vscode-arduino`.
 
-Or launch VS Code Quick Open (<kbd>Ctrl</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>P</kbd> ), paste the following command, and press enter.
+Or launch VS Code Quick Open (<kbd>Ctrl</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>P</kbd>), paste the following command, and press enter.
 ```bash
-ext install vscode-arduino
+ext install electropol-fr.vscode-arduino
 ```
-
-You can also install directly from the Marketplace within Visual Studio Code, searching for `Arduino`.
-
-## Get Started
-You can find code samples and tutorials each time that you connect a supported device. Alternatively you can visit our [IoT Developer Blog Space](https://devblogs.microsoft.com/iotdev/) or [Get Started Tutorials](https://docs.microsoft.com/azure/iot-hub/iot-hub-arduino-iot-devkit-az3166-get-started).
 
 ## Commands
 This extension provides several commands in the Command Palette (<kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>) for working with `*.ino` files:
@@ -84,6 +106,8 @@ This extension provides several commands in the Command Palette (<kbd>F1</kbd> o
 | `arduino.disableIntelliSenseAutoGen` | When `true` vscode-arduino will not auto-generate an IntelliSense configuration (i.e. `.vscode/c_cpp_properties.json`) by analyzing Arduino's compiler output. |
 | `arduino.analyzeOnOpen` | When true, automatically run analysis when the project is opened. Only works when `arduino.analyzeOnSettingChange` is true. |
 | `arduino.analyzeOnSettingChange` | When true, automatically run analysis when board, configuration, or sketch settings are changed. |
+| `arduino.customLibraryPath` | Custom path for Arduino libraries. Used as an additional library search path when compiling. |
+| `arduino.arduinoCliConfigFile` | Path to a local `arduino-cli.yaml` configuration file. When set, this file is used instead of the global configuration. |
 
 The following Visual Studio Code settings are available for the Arduino extension. These can be set in global user preferences <kbd>Ctrl</kbd> + <kbd>,</kbd> *or* <kbd>Cmd</kbd> + <kbd>,</kbd> or workspace settings (`.vscode/settings.json`). The latter overrides the former.
 
@@ -207,7 +231,7 @@ Steps to start debugging:
 > To learn more about how to debug Arduino code, visit our [team blog](https://blogs.msdn.microsoft.com/iotdev/2017/05/27/debug-your-arduino-code-with-visual-studio-code/).
 
 ## Change Log
-See the [Change log](https://github.com/Microsoft/vscode-arduino/blob/main/CHANGELOG.md) for details about the changes in each version.
+See the [Change log](https://github.com/FrankSAURET/vscode-arduino/blob/main/CHANGELOG.md) for details about the changes in each version.
 
 ## Supported Operating Systems
 Currently this extension supports the following operating systems:
@@ -217,8 +241,15 @@ Currently this extension supports the following operating systems:
 - Ubuntu 16.04
   - The extension might work on other Linux distributions, as reported by other users, but without guarantee.
 
-## Support
-You can find the full list of issues on the [Issue Tracker](https://github.com/Microsoft/vscode-arduino/issues). You can submit a [bug or feature suggestion](https://github.com/Microsoft/vscode-arduino/issues/new), and participate in community driven [discussions](https://gitter.im/Microsoft/vscode-arduino).
+## Contributing
+
+Contributions are welcome! This is a community-maintained fork and we appreciate any help.
+
+- **Report bugs**: Open an [issue](https://github.com/FrankSAURET/vscode-arduino/issues)
+- **Suggest features**: Open an [issue](https://github.com/FrankSAURET/vscode-arduino/issues) with the `enhancement` label
+- **Submit code**: Fork the repository, create a branch, and submit a [pull request](https://github.com/FrankSAURET/vscode-arduino/pulls)
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup details.
 
 ## Development
 
@@ -229,7 +260,7 @@ Installation prerequisites:
 - [Npm](https://www.npmjs.com/) (>= 6.x)
 
 To *run and develop*, do the following:
-- `git clone https://github.com/microsoft/vscode-arduino`
+- `git clone https://github.com/FrankSAURET/vscode-arduino`
 - `cd vscode-arduino`
 - Run `npm i`
 - Run `npm i -g gulp`
@@ -238,14 +269,11 @@ To *run and develop*, do the following:
 
 To *test*, press <kbd>F5</kbd> in VS Code with the "Launch Tests" debug configuration.
 
-## Code of Conduct
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct). For more information please see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/#howadopt) or contact opencode@microsoft.com with any additional questions or comments.
+## Credits & License
 
-## Privacy Statement
-The [Microsoft Enterprise and Developer Privacy Statement](https://www.microsoft.com/en-us/privacystatement/EnterpriseDev/default.aspx) describes the privacy statement of this software.
+This extension is a fork of [Microsoft/vscode-arduino](https://github.com/Microsoft/vscode-arduino) (© Microsoft Corporation), which was archived in 2023. It also incorporates ideas and fixes from the [vscode-arduino community fork](https://github.com/vscode-arduino/vscode-arduino).
 
-## License
-This extension is licensed under the [MIT License](https://github.com/Microsoft/vscode-arduino/blob/main/LICENSE.txt). Please see the [Third Party Notice](https://github.com/Microsoft/vscode-arduino/blob/main/ThirdPartyNotices.txt) file for additional copyright notices and terms.
+Licensed under the [MIT License](LICENSE.txt). See the [Third Party Notices](ThirdPartyNotices.txt) file for additional copyright notices and terms.
 
 ## Contact Us
-If you would like to help build the best Arduino experience with VS Code, you can reach us directly at [gitter chat room](https://gitter.im/Microsoft/vscode-arduino).
+If you'd like to help improve this extension, open an issue or a pull request on [GitHub](https://github.com/FrankSAURET/vscode-arduino).

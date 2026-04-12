@@ -22,6 +22,8 @@ const configKeys = {
     DEFAULT_TIMESTAMP_FORMAT: "arduino.defaultTimestampFormat",
     ANALYZE_ON_OPEN: "arduino.analyzeOnOpen",
     ANALYZE_ON_SETTING_CHANGE: "arduino.analyzeOnSettingChange",
+    CUSTOM_LIBRARY_PATH: "arduino.customLibraryPath",
+    ARDUINO_CLI_CONFIG_FILE: "arduino.arduinoCliConfigFile",
 };
 
 export interface IVscodeSettings {
@@ -41,6 +43,8 @@ export interface IVscodeSettings {
     defaultTimestampFormat: string;
     analyzeOnOpen: boolean;
     analyzeOnSettingChange: boolean;
+    customLibraryPath: string;
+    arduinoCliConfigFile: string;
     updateAdditionalUrls(urls: string[]): void;
 }
 
@@ -134,6 +138,14 @@ export class VscodeSettings implements IVscodeSettings {
 
     public get analyzeOnSettingChange(): boolean {
         return this.getConfigValue<boolean>(configKeys.ANALYZE_ON_SETTING_CHANGE);
+    }
+
+    public get customLibraryPath(): string {
+        return this.getConfigValue<string>(configKeys.CUSTOM_LIBRARY_PATH);
+    }
+
+    public get arduinoCliConfigFile(): string {
+        return this.getConfigValue<string>(configKeys.ARDUINO_CLI_CONFIG_FILE);
     }
 
     public async updateAdditionalUrls(value) {

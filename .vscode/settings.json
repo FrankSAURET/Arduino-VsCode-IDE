@@ -12,6 +12,8 @@
         "**/out/*": true,
         "**/node_modules/**": true
     },
+    "workbench.colorTheme": "Colored Theme (Green Peacock)",
+
     "terminal.integrated.automationProfile.linux":  { 
         "path": "${env:SHELL}",
         "env": {

@@ -3,7 +3,6 @@
 
 import * as vscode from "vscode";
 import * as winston from "winston";
-import TelemetryTransport from "./telemetry-transport";
 import UserNotificationTransport from "./user-notification-transport";
 
 export enum LogLevel {
@@ -28,7 +27,6 @@ export function configure(context: vscode.ExtensionContext) {
     winston.configure({
         transports: [
             new (winston.transports.File)({ level: LogLevel.Warn, filename: context.asAbsolutePath("arduino.log") }),
-            new TelemetryTransport({ level: LogLevel.Info, context }),
             new UserNotificationTransport({ level: LogLevel.Info }),
         ],
     });
@@ -59,8 +57,7 @@ export function silly(message: string, metadata?: any) {
 }
 
 export function traceUserData(message: string, metadata?: any) {
-    // use `info` as the log level and add a special flag in metadata
-    winston.log(LogLevel.Info, message, { ...metadata, telemetry: true });
+    winston.log(LogLevel.Info, message, metadata);
 }
 
 function traceErrorOrWarning(level: string, message: string, error: Error, metadata?: any) {
@@ -74,7 +71,7 @@ function traceErrorOrWarning(level: string, message: string, error: Error, metad
             firstLine = FilterErrorPath(firstLine ? firstLine.replace(/\\/g, "/") : "");
         }
     }
-    winston.log(level, message, { ...metadata, message: error.message, errorLine: firstLine, telemetry: true });
+    winston.log(level, message, { ...metadata, message: error.message, errorLine: firstLine });
 }
 
 export function traceError(message: string, error: Error, metadata?: any) {
@@ -91,11 +88,11 @@ export function notifyAndThrowUserError(errorCode: string, error: Error, message
 }
 
 export function notifyUserError(errorCode: string, error: Error, message?: string) {
-    traceError(errorCode, error, { notification: message || error.message, showUser: true, telemetry: true });
+    traceError(errorCode, error, { notification: message || error.message, showUser: true });
 }
 
 export function notifyUserWarning(errorCode: string, error: Error, message?: string) {
-    traceWarning(errorCode, error, { notification: message || error.message, showUser: true, telemetry: true });
+    traceWarning(errorCode, error, { notification: message || error.message, showUser: true });
 }
 
 export class Timer {

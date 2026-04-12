@@ -2,9 +2,8 @@
   "name": "vscode-arduino",
   "displayName": "Arduino",
   "description": "Arduino for Visual Studio Code",
-  "version": "0.4.12",
-  "publisher": "vsciot-vscode",
-  "aiKey": "83dd2c27-6594-41d3-85a9-bdb22070eb42",
+  "version": "0.5.0",
+  "publisher": "electropol-fr",
   "preview": true,
   "engines": {
     "vscode": "^1.56.0"
@@ -13,12 +12,12 @@
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/vscode-arduino.git"
+    "url": "https://github.com/FrankSAURET/vscode-arduino.git"
   },
   "bugs": {
-    "url": "https://github.com/Microsoft/vscode-arduino/issues"
+    "url": "https://github.com/FrankSAURET/vscode-arduino/issues"
   },
-  "homepage": "https://github.com/Microsoft/vscode-arduino",
+  "homepage": "https://github.com/FrankSAURET/vscode-arduino",
   "categories": [
     "Programming Languages",
     "Debuggers",
@@ -473,8 +472,8 @@
       "properties": {
         "arduino.useArduinoCli": {
           "type": "boolean",
-          "default": false,
-          "markdownDescription": "Use Arduino CLI installed instead of Arduino IDE. `#arduino.path#` must be set, as there is no default path for 'arduino-cli'. (Requires a restart after change)"
+          "default": true,
+          "markdownDescription": "Use Arduino CLI instead of Arduino IDE. `#arduino.path#` must be set if the CLI is not on your system PATH. Set to false for legacy Arduino IDE support. (Requires a restart after change)"
         },
         "arduino.path": {
           "type": "string",
@@ -551,6 +550,16 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "When true, automatically run analysis when board, configuration, or sketch settings are changed."
+        },
+        "arduino.customLibraryPath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path for Arduino libraries. Used as an additional library search path when compiling."
+        },
+        "arduino.arduinoCliConfigFile": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a local arduino-cli.yaml configuration file. When set, this file is used instead of the global configuration."
         }
       }
     },
@@ -658,7 +667,6 @@
     "strftime": "^0.9.2",
     "usb-detection": "^4.13.0",
     "uuid": "^3.0.1",
-    "vscode-extension-telemetry": "0.1.6",
     "winreg": "^1.2.3",
     "winston": "^2.4.5"
   },

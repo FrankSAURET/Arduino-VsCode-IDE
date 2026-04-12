@@ -24,6 +24,7 @@ import { VscodeSettings } from "./vscodeSettings";
 import { arduinoChannel } from "../common/outputChannel";
 import { ArduinoWorkspace } from "../common/workspace";
 import { SerialMonitor } from "../serialmonitor/serialMonitor";
+import { SerialPortCtrl } from "../serialmonitor/serialportctrl";
 import { UsbDetector } from "../serialmonitor/usbDetector";
 import { ProgrammerManager } from "./programmerManager";
 
@@ -73,7 +74,8 @@ export class ArduinoApp {
      * @param {IArduinoSettings} _settings ArduinoSetting object.
      */
     constructor(private _settings: IArduinoSettings) {
-        const analysisDelayMs = 1000 * 3;
+        // Issue #76: Increase analysis delay to reduce CPU load from repeated analysis triggers
+        const analysisDelayMs = 1000 * 5;
         this._analysisManager = new AnalysisManager(
             () => this._building,
             async () => { await this.build(BuildMode.Analyze); },
@@ -534,6 +536,23 @@ export class ArduinoApp {
 
         if (this.useArduinoCli()) {
             args.push("-b", boardDescriptor);
+
+            // Issue #50/PR #59: Support local arduino-cli.yaml config file
+            const cliConfigFile = VscodeSettings.getInstance().arduinoCliConfigFile;
+            if (cliConfigFile) {
+                const configPath = path.resolve(ArduinoWorkspace.rootPath, cliConfigFile);
+                if (util.fileExistsSync(configPath)) {
+                    args.push("--config-file", configPath);
+                } else {
+                    arduinoChannel.warning(`Arduino CLI config file not found: ${configPath}`);
+                }
+            }
+
+            // Issue #50: Support custom library path
+            const customLibraryPath = VscodeSettings.getInstance().customLibraryPath;
+            if (customLibraryPath) {
+                args.push("--library", customLibraryPath);
+            }
         } else {
             args.push("--board", boardDescriptor);
         }
@@ -673,19 +692,19 @@ export class ArduinoApp {
         arduinoChannel.start(`${buildMode} sketch '${dc.sketch}'`);
 
         if (buildDir || dc.output) {
-            // 2020-02-29, EW: This whole code appears a bit wonky to me.
-            //   What if the user specifies an output directory "../builds/my project"
-
-            // the first choice of the path should be from the users explicit settings.
+            // Issue #72: Properly resolve and validate output build path
             if (dc.output) {
                 buildDir = path.resolve(ArduinoWorkspace.rootPath, dc.output);
             } else {
                 buildDir = path.resolve(ArduinoWorkspace.rootPath, buildDir);
             }
 
-            const dirPath = path.dirname(buildDir);
-            if (!util.directoryExistsSync(dirPath)) {
-                util.mkdirRecursivelySync(dirPath);
+            // Normalize the path to resolve any ".." or "." segments
+            buildDir = path.normalize(buildDir);
+
+            // Ensure the build directory is created (including parent dirs)
+            if (!util.directoryExistsSync(buildDir)) {
+                util.mkdirRecursivelySync(buildDir);
             }
 
             if (this.useArduinoCli()) {
@@ -747,6 +766,9 @@ export class ArduinoApp {
             if (buildMode === BuildMode.Upload || buildMode === BuildMode.UploadProgrammer) {
                 UsbDetector.getInstance().resumeListening();
                 if (restoreSerialMonitor) {
+                    // Issue #85: Wait for USB CDC boards (like Uno R4 WiFi) to re-enumerate
+                    // The port may disappear during upload and reappear after a few seconds
+                    await this.waitForPort(dc.port, 10000);
                     await SerialMonitor.getInstance().openSerialMonitor();
                 }
             }
@@ -834,5 +856,27 @@ export class ArduinoApp {
             arduinoChannel.error(`${buildMode} sketch '${dc.sketch}': ${msg}${os.EOL}`);
             return false;
         });
+    }
+
+    /**
+     * Issue #85: Wait for a serial port to reappear after upload.
+     * USB CDC boards (e.g. Arduino Uno R4 WiFi) may disappear during
+     * programming and need time to re-enumerate.
+     */
+    private async waitForPort(portName: string, timeoutMs: number): Promise<boolean> {
+        if (!portName) {
+            return false;
+        }
+        const startTime = Date.now();
+        const pollInterval = 500;
+        while (Date.now() - startTime < timeoutMs) {
+            const ports = await SerialPortCtrl.list();
+            if (ports.some((p) => p.port === portName)) {
+                return true;
+            }
+            await new Promise((resolve) => setTimeout(resolve, pollInterval));
+        }
+        arduinoChannel.warning(`Port ${portName} did not reappear within ${timeoutMs / 1000}s timeout.`);
+        return false;
     }
 }

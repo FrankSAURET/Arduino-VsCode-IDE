@@ -5,7 +5,6 @@ const impor = require("impor")(__dirname);
 
 import * as fs from "fs";
 import * as path from "path";
-const uuidModule = impor("uuid/v4") as typeof import ("uuid/v4");
 import * as vscode from "vscode";
 import * as constants from "./common/constants";
 const arduinoContentProviderModule =
@@ -25,16 +24,12 @@ const arduinoDebugConfigurationProviderModule = impor("./debug/configurationProv
 import { DeviceContext } from "./deviceContext";
 const completionProviderModule = impor("./langService/completionProvider") as typeof import ("./langService/completionProvider");
 import * as Logger from "./logger/logger";
-const nsatModule =
-    impor("./nsat") as typeof import ("./nsat");
 import { BuildMode } from "./arduino/arduino";
 import { SerialMonitor } from "./serialmonitor/serialMonitor";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
 
 export async function activate(context: vscode.ExtensionContext) {
     Logger.configure(context);
-    const activeGuid = uuidModule().replace(/-/g, "");
-    Logger.traceUserData("start-activate-extension", { correlationId: activeGuid });
     // Show a warning message if the working file is not under the workspace folder.
     // People should know the extension might not work appropriately, they should look for the doc to get started.
     const openEditor = vscode.window.activeTextEditor;
@@ -52,31 +47,14 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(deviceContext);
 
     const commandExecution = async (command: string, commandBody: (...args: any[]) => any, args: any, getUserData?: () => any) => {
-        const guid = uuidModule().replace(/-/g, "");
-        Logger.traceUserData(`start-command-` + command, { correlationId: guid });
-        const timer1 = new Logger.Timer();
-        let telemetryResult;
         try {
             let result = commandBody(...args);
             if (result) {
                 result = await Promise.resolve(result);
             }
-            if (result && result.telemetry) {
-                telemetryResult = result;
-            } else if (getUserData) {
-                telemetryResult = getUserData();
-            }
         } catch (error) {
-            Logger.traceError("executeCommandError", error, { correlationId: guid, command });
+            Logger.traceError("executeCommandError", error, { command });
         }
-
-        Logger.traceUserData(`end-command-` + command, {
-            ...telemetryResult,
-            correlationId: guid,
-            duration: timer1.end(),
-        });
-
-        nsatModule.NSAT.takeSurvey(context);
     };
     const registerArduinoCommand = (command: string, commandBody: (...args: any[]) => any, getUserData?: () => any): number => {
         return context.subscriptions.push(vscode.commands.registerCommand(command, async (...args: any[]) => {
@@ -348,7 +326,7 @@ export async function activate(context: vscode.ExtensionContext) {
             }
         });
     }
-    Logger.traceUserData("end-activate-extension", { correlationId: activeGuid });
+    Logger.traceUserData("end-activate-extension");
 
     setTimeout(async () => {
         const arduinoManagerProvider = new arduinoContentProviderModule.ArduinoContentProvider(context.extensionPath);

@@ -485,6 +485,15 @@ export class BoardManager {
                 this._boards.set(bd.key, bd);
             });
         }
+        // Issue #77: Load boards.local.txt overrides (same format as boards.txt)
+        const boardsLocalPath = path.join(plat.rootBoardPath, "boards.local.txt");
+        if (util.fileExistsSync(boardsLocalPath)) {
+            const localContent = fs.readFileSync(boardsLocalPath, "utf8");
+            const localRes = parseBoardDescriptor(localContent, plat);
+            localRes.forEach((bd) => {
+                this._boards.set(bd.key, bd);
+            });
+        }
     }
 
     private loadInstalledProgrammers(): void {

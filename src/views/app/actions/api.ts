@@ -1,19 +1,31 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+// Read auth token from URL for secure API access (CVE-2024-43488 fix)
+function getAuthToken(): string {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("token") || "";
+}
+
 function postHTTP(url, postData) {
     const request = new Request(url, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
+            "x-auth-token": getAuthToken(),
         }),
         body: JSON.stringify(postData),
     });
     return window.fetch(request);
 }
 
+function fetchWithAuth(url) {
+    const separator = url.includes("?") ? "&" : "?";
+    return window.fetch(`${url}${separator}token=${encodeURIComponent(getAuthToken())}`);
+}
+
 export function getBoardPackages(update) {
-    return window.fetch(`/api/boardpackages?update=${update}`).then((response) => response.json());
+    return fetchWithAuth(`/api/boardpackages?update=${update}`).then((response) => response.json());
 }
 
 export function installBoard(packageName, arch, version) {
@@ -44,7 +56,7 @@ export function openSettings(query) {
 }
 
 export function getLibraries(update) {
-    return window.fetch(`/api/libraries?update=${update}`).then((response) => response.json());
+    return fetchWithAuth(`/api/libraries?update=${update}`).then((response) => response.json());
 }
 
 export function installLibrary(libraryName, version) {
@@ -68,7 +80,7 @@ export function addLibPath(libraryPath) {
 }
 
 export function getInstalledBoards() {
-    return window.fetch(`/api/installedboards`).then((response) => response.json());
+    return fetchWithAuth(`/api/installedboards`).then((response) => response.json());
 }
 
 export function updateSelectedBoard(boardId) {
@@ -78,7 +90,7 @@ export function updateSelectedBoard(boardId) {
 }
 
 export function getConfigItems() {
-    return window.fetch(`/api/configitems`).then((response) => response.json());
+    return fetchWithAuth(`/api/configitems`).then((response) => response.json());
 }
 
 export function updateConfigItem(configId, optionId) {
@@ -89,7 +101,7 @@ export function updateConfigItem(configId, optionId) {
 }
 
 export function getExamples() {
-    return window.fetch("/api/examples").then((response) => response.json());
+    return fetchWithAuth("/api/examples").then((response) => response.json());
 }
 
 export function openExample(examplePath) {

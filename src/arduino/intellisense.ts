@@ -75,6 +75,24 @@ export function makeCompilerParserContext(dc: DeviceContext): ICoCoPaContext {
         // Remove invalid paths
         await runner.result.cleanup();
 
+        // PR #84: Normalize "--param name value" into "--param=name=value" for IntelliSense/clang compatibility
+        // GCC accepts both forms but clang (used by IntelliSense) only accepts --param=name=value
+        if (runner.result.options) {
+            const normalizedOptions: string[] = [];
+            for (let i = 0; i < runner.result.options.length; i++) {
+                const opt = runner.result.options[i];
+                if (opt === "--param" && i + 1 < runner.result.options.length) {
+                    const nextOpt = runner.result.options[i + 1];
+                    // If next arg looks like "name=value" or just "name value" pattern
+                    normalizedOptions.push(`--param=${nextOpt}`);
+                    i++; // skip next argument
+                } else {
+                    normalizedOptions.push(opt);
+                }
+            }
+            runner.result.options = normalizedOptions;
+        }
+
         // Search for Arduino.h in the include paths - we need it for a
         // forced include - users expect Arduino symbols to be available
         // in main sketch without having to include the header explicitly
@@ -101,8 +119,14 @@ export function makeCompilerParserContext(dc: DeviceContext): ICoCoPaContext {
             runner.result.options.splice(mmdIndex);
         }
 
-        // Add USB Connected marco to defines
-        runner.result.defines.push("USBCON")
+        // Add USB Connected macro to defines
+        runner.result.defines.push("USBCON");
+
+        // Issue #70: Add ARDUINO define for compatibility - many libraries check for this
+        // The value 10800+ corresponds to Arduino IDE 1.8+
+        if (!runner.result.defines.find((d) => d.startsWith("ARDUINO="))) {
+            runner.result.defines.push("ARDUINO=10813");
+        }
 
         try {
 
@@ -219,6 +243,10 @@ export class AnalysisManager {
     private _waitPeriodMs: number;
     /** The internal timer used to implement the above timeouts and delays. */
     private _timer: NodeJS.Timer;
+    /** Issue #76: Track consecutive analysis to prevent infinite loop */
+    private _consecutiveAnalysisCount: number = 0;
+    private _maxConsecutiveAnalysis: number = 3;
+    private _lastAnalysisTime: number = 0;
 
     /**
      * Constructor.
@@ -241,8 +269,18 @@ export class AnalysisManager {
      * File an analysis request.
      * The analysis will be delayed until no further requests are filed
      * within a wait period or until any build in progress has terminated.
+     * Issue #76: Rate-limit consecutive analysis to prevent CPU overload.
      */
     public async requestAnalysis() {
+        const now = Date.now();
+        // Reset consecutive count if enough time has passed
+        if (now - this._lastAnalysisTime > this._waitPeriodMs * 10) {
+            this._consecutiveAnalysisCount = 0;
+        }
+        if (this._consecutiveAnalysisCount >= this._maxConsecutiveAnalysis) {
+            arduinoChannel.warning("Analysis request throttled to prevent high CPU usage. Try rebuilding IntelliSense manually.");
+            return;
+        }
         await this.update(AnalysisEvent.AnalysisRequest);
     }
 
@@ -323,6 +361,8 @@ export class AnalysisManager {
      * When done, the callback will update the state machine.
      */
     private async startAnalysis() {
+        this._consecutiveAnalysisCount++;
+        this._lastAnalysisTime = Date.now();
         await this._doBuild()
         .then(() => {
             this.update(AnalysisEvent.AnalysisBuildDone);

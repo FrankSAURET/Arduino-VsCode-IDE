@@ -72,16 +72,20 @@ export class SerialPortCtrl {
         if (err) {
           reject(err);
         } else {
-          // These pins are tied to boot and reset on some devices like the
-          // ESP32. We need to pull them high to avoid unexpected behavior when
-          // opening the serial monitor.
-          this._port.set({ dtr: true, cts: true, rts: true }, (err2) => {
-            if (err2) {
-              reject(err2);
-            } else {
-              resolve();
+          // Issue #86: Use a small delay before setting pins to avoid
+          // triggering ESP32 bootloader mode on open.
+          // Only set DTR high; keep RTS low initially to prevent reset.
+          setTimeout(() => {
+            if (this._port && this._port.isOpen) {
+              this._port.set({ dtr: true, rts: false }, (err2) => {
+                if (err2) {
+                  // Non-fatal: some serial adapters don't support pin control
+                  this._bufferedOutputChannel.appendLine(`[Warning] Could not set serial pins: ${err2.message}`);
+                }
+              });
             }
-          });
+          }, 100);
+          resolve();
         }
       });
     });
@@ -130,7 +134,19 @@ export class SerialPortCtrl {
   public async stop(): Promise<boolean> {
     if (!this.isActive) { return false; }
 
-    await this.close();
+    // Issue #74/#75: Add timeout to prevent serial close from blocking uploads
+    try {
+      await Promise.race([
+        this.close(),
+        new Promise<void>((_, reject) => setTimeout(() => reject(new Error("Serial port close timed out")), 5000)),
+      ]);
+    } catch (err) {
+      // Force destroy the port on timeout
+      if (this._port) {
+        this._port.destroy();
+        this._port = undefined;
+      }
+    }
     if (this._bufferedOutputChannel) {
       this._bufferedOutputChannel.appendLine(`[Done] Closed the serial port ${os.EOL}`);
     }
