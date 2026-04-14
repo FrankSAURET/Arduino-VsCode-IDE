@@ -33,8 +33,8 @@ class ArduinoActivator {
             const arduinoSettings = new ArduinoSettings();
             await arduinoSettings.initialize(this._extensionPath);
 
-            // If no Arduino path found and using CLI, offer to download
-            if ((!arduinoSettings.arduinoPath || !arduinoSettings.arduinoPath.trim()) && arduinoSettings.useArduinoCli && this._extensionPath) {
+            // If no Arduino CLI path is found, offer to download it.
+            if ((!arduinoSettings.arduinoPath || !arduinoSettings.arduinoPath.trim()) && this._extensionPath) {
                 const downloadedDir = await promptDownloadCli(this._extensionPath);
                 if (downloadedDir) {
                     await arduinoSettings.initialize(this._extensionPath);

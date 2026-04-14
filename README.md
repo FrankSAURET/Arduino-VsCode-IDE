@@ -27,7 +27,7 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 
 - **Telemetry removed**: All Application Insights telemetry and NSAT survey tracking have been completely removed.
 - **Security fix (CVE-2024-43488)**: The local webserver used for Board/Library Manager webviews is now protected by a cryptographic authentication token.
-- **Arduino CLI as default**: `arduino.useArduinoCli` now defaults to `true`. The extension is optimized for modern Arduino CLI workflows.
+- **Arduino CLI only**: legacy Arduino IDE support has been removed. The extension now targets modern Arduino CLI workflows exclusively.
 - **Automatic Arduino CLI download**: If Arduino CLI is not found, the extension offers to download it automatically from the official GitHub releases.
 - **IntelliSense improvements**:
   - `--param` normalization for STM32 and other GCC-based toolchains (clang compatibility)
@@ -53,12 +53,6 @@ Alternatively, you can install it manually from the [official releases page](htt
 - You can use a local `arduino-cli.yaml` configuration file via the `arduino.arduinoCliConfigFile` setting.
 
 > **Note**: Arduino CLI is licensed under the [GPL-3.0 license](https://github.com/arduino/arduino-cli/blob/master/LICENSE.txt) by Arduino SA. See [NOTICE-ARDUINO-CLI.md](NOTICE-ARDUINO-CLI.md) for details.
-
-### Arduino IDE (legacy)
-The Arduino IDE can be installed from the [Arduino download page](https://www.arduino.cc/en/main/software#download).
-- Set `arduino.useArduinoCli` to `false` in your VS Code settings.
-- Supported versions: `1.6.x` and later.
-- The Windows Store version is not supported.
 
 ## Installation
 Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `vscode-arduino`.
@@ -97,8 +91,8 @@ This extension provides several commands in the Command Palette (<kbd>F1</kbd> o
 ## Options
 | Option | Description |
 | --- | --- |
-| `arduino.path`  | Path to Arduino, you can use a custom version of Arduino by modifying this setting to include the full path. Example: `C:\\Program Files\\Arduino` for Windows, `/Applications` for Mac, `/home/<username>/Downloads/arduino-1.8.1` for Linux. (Requires a restart after change). The default value is automatically detected from your Arduino IDE installation path. |
-| `arduino.commandPath` | Path to an executable (or script) relative to `arduino.path`. The default value is `arduino_debug.exe` for Windows, `Contents/MacOS/Arduino` for Mac and `arduino` for Linux, You also can use a custom launch script to run Arduino by modifying this setting. (Requires a restart after change) Example: `run-arduino.bat` for Windows, `Contents/MacOS/run-arduino.sh` for Mac and `bin/run-arduino.sh` for Linux. |
+| `arduino.path`  | Path to the directory containing Arduino CLI. Leave it empty if `arduino-cli` is already on your system PATH. Example: `C:\\tools\\arduino-cli` for Windows, `/usr/local/bin` for macOS, `/home/<username>/bin` for Linux. |
+| `arduino.commandPath` | Executable name or wrapper script relative to `arduino.path`. Leave it empty to use the default Arduino CLI executable name for the current platform. Example: `arduino-cli.exe` for Windows or `arduino-cli` for macOS/Linux. |
 | `arduino.additionalUrls` | Additional Boards Manager URLs for 3rd party packages as a string array. The default value is empty. |
 | `arduino.logLevel` | CLI output log level. Could be info or verbose. The default value is `"info"`. |
 | `arduino.clearOutputOnBuild` | Clear the output logs before uploading or verifying. Default value is `false`. |
@@ -118,8 +112,8 @@ The following Visual Studio Code settings are available for the Arduino extensio
 
 ```json
 {
-    "arduino.path": "C:/Program Files (x86)/Arduino",
-    "arduino.commandPath": "arduino_debug.exe",
+  "arduino.path": "C:/tools/arduino-cli",
+  "arduino.commandPath": "arduino-cli.exe",
     "arduino.logLevel": "info",
     "arduino.allowPDEFiletype": false,
     "arduino.enableUSBDetection": true,
@@ -132,7 +126,7 @@ The following Visual Studio Code settings are available for the Arduino extensio
     "arduino.defaultBaudRate": 115200
 }
 ```
-*Note:* You only need to set `arduino.path` in Visual Studio Code settings, other options are not required.
+*Note:* You only need to set `arduino.path` if `arduino-cli` is not already available on your PATH.
 
 The following settings are as per sketch settings of the Arduino extension. You can find them in
 `.vscode/arduino.json` under the workspace.

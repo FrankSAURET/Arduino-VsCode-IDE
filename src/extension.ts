@@ -13,6 +13,8 @@ import { IBoard } from "./arduino/package";
 import { VscodeSettings } from "./arduino/vscodeSettings";
 const arduinoActivatorModule = impor("./arduinoActivator") as typeof import ("./arduinoActivator");
 const arduinoContextModule = impor("./arduinoContext") as typeof import ("./arduinoContext");
+const projectLauncherProviderModule = impor("./arduino/projectLauncherProvider") as typeof import ("./arduino/projectLauncherProvider");
+const projectWelcomeViewProviderModule = impor("./arduino/projectWelcomeViewProvider") as typeof import ("./arduino/projectWelcomeViewProvider");
 import {
     ARDUINO_CONFIG_FILE, ARDUINO_MANAGER_PROTOCOL, ARDUINO_MODE, BOARD_CONFIG_URI, BOARD_MANAGER_URI, EXAMPLES_URI,
     LIBRARY_MANAGER_URI,
@@ -31,6 +33,7 @@ const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import 
 
 export async function activate(context: vscode.ExtensionContext) {
     Logger.configure(context);
+    const pendingBoardSelectionKey = "arduino.pendingBoardSelectionPath";
     // Show a warning message if the working file is not under the workspace folder.
     // People should know the extension might not work appropriately, they should look for the doc to get started.
     const openEditor = vscode.window.activeTextEditor;
@@ -49,6 +52,39 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Pass extension path to the activator for CLI auto-download
     arduinoActivatorModule.default.setExtensionPath(context.extensionPath);
+
+    context.subscriptions.push(vscode.window.registerWebviewViewProvider(
+        "arduinoProjectWelcome",
+        new projectWelcomeViewProviderModule.ProjectWelcomeViewProvider(context.extensionUri),
+        {
+            webviewOptions: {
+                retainContextWhenHidden: true,
+            },
+        },
+    ));
+
+    const projectLauncherView = vscode.window.createTreeView("arduinoProjectLauncher", {
+        treeDataProvider: new projectLauncherProviderModule.ProjectLauncherProvider(),
+        showCollapseAll: false,
+    });
+    context.subscriptions.push(projectLauncherView);
+
+    const runPendingBoardSelection = async () => {
+        const pendingBoardSelectionPath = context.globalState.get<string>(pendingBoardSelectionKey);
+        if (!pendingBoardSelectionPath || !ArduinoWorkspace.rootPath) {
+            return;
+        }
+        if (path.resolve(pendingBoardSelectionPath) !== path.resolve(ArduinoWorkspace.rootPath)) {
+            return;
+        }
+        if (!arduinoContextModule.default.initialized) {
+            await arduinoActivatorModule.default.activate();
+        }
+        if (!deviceContext.board) {
+            await arduinoContextModule.default.boardManager.changeBoardType();
+        }
+        await context.globalState.update(pendingBoardSelectionKey, undefined);
+    };
 
     const commandExecution = async (command: string, commandBody: (...args: any[]) => any, args: any, getUserData?: () => any) => {
         try {
@@ -72,9 +108,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
             const arduinoPath = arduinoContextModule.default.arduinoApp.settings.arduinoPath;
             const commandPath = arduinoContextModule.default.arduinoApp.settings.commandPath;
-            const useArduinoCli = arduinoContextModule.default.arduinoApp.settings.useArduinoCli;
             // Pop up vscode User Settings page when cannot resolve arduino path.
-            if (!arduinoPath || !validateArduinoPath(arduinoPath, useArduinoCli)) {
+            if (!arduinoPath || !validateArduinoPath(arduinoPath)) {
                 Logger.notifyUserError("InvalidArduinoPath", new Error(constants.messages.INVALID_ARDUINO_PATH));
                 vscode.commands.executeCommand("workbench.action.openGlobalSettings");
             } else if (!commandPath || !util.fileExistsSync(commandPath)) {
@@ -94,7 +129,15 @@ export async function activate(context: vscode.ExtensionContext) {
         }));
     };
 
-    registerArduinoCommand("arduino.initialize", async () => await deviceContext.initialize());
+    registerArduinoCommand("arduino.initialize", async () => {
+        const projectFolder = await deviceContext.initialize();
+        if (!projectFolder) {
+            return;
+        }
+        await context.globalState.update(pendingBoardSelectionKey, projectFolder);
+        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(projectFolder), true);
+    });
+    registerNonArduinoCommand("arduino.openProjectFolder", async () => await deviceContext.openProjectFolder());
 
     registerArduinoCommand("arduino.verify", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
@@ -287,6 +330,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 SerialMonitor.getInstance().initialize();
             }
             vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
+            await runPendingBoardSelection();
         })();
     }
     vscode.window.onDidChangeActiveTextEditor(async () => {

@@ -8,7 +8,7 @@ import { fileExistsSync } from "../util";
 export function resolveArduinoPath(): string {
     let pathString;
     try {
-        pathString = childProcess.execSync("readlink -f $(which arduino)", { encoding: "utf8" });
+        pathString = childProcess.execSync("readlink -f $(which arduino-cli)", { encoding: "utf8" });
         pathString = path.resolve(pathString).trim();
         if (fileExistsSync(pathString)) {
             pathString = path.dirname(path.resolve(pathString));
@@ -20,8 +20,8 @@ export function resolveArduinoPath(): string {
     return pathString || "";
 }
 
-export function validateArduinoPath(arduinoPath: string, useArduinoCli = false): boolean {
-    return fileExistsSync(path.join(arduinoPath, useArduinoCli ? "arduino-cli" : "arduino"));
+export function validateArduinoPath(arduinoPath: string): boolean {
+    return fileExistsSync(path.join(arduinoPath, "arduino-cli"));
 }
 
 export function findFile(fileName: string, cwd: string): string {

@@ -3,23 +3,24 @@
 
 import * as childProcess from "child_process";
 import * as path from "path";
-import { directoryExistsSync, fileExistsSync, resolveMacArduinoAppPath } from "../util";
+import { fileExistsSync } from "../util";
 
 export function resolveArduinoPath(): string {
-    let result;
-
-    const defaultCommonPaths = [path.join(process.env.HOME, "Applications"), "/Applications"];
-    for (const scanPath of defaultCommonPaths) {
-        if (directoryExistsSync(path.join(scanPath, "Arduino.app"))) {
-            result = scanPath;
-            break;
+    let pathString;
+    try {
+        pathString = childProcess.execSync("which arduino-cli", { encoding: "utf8" });
+        pathString = path.resolve(pathString).trim();
+        if (fileExistsSync(pathString)) {
+            pathString = path.dirname(path.resolve(pathString));
         }
+    } catch (ex) {
+        // Ignore the errors.
     }
-    return result || "";
+    return pathString || "";
 }
 
-export function validateArduinoPath(arduinoPath: string, useArduinoCli = false): boolean {
-    return fileExistsSync(path.join(resolveMacArduinoAppPath(arduinoPath, useArduinoCli), useArduinoCli ? "arduino-cli" : "/Contents/MacOS/Arduino"));
+export function validateArduinoPath(arduinoPath: string): boolean {
+    return fileExistsSync(path.join(arduinoPath, "arduino-cli"));
 }
 
 export function findFile(fileName: string, cwd: string): string {

@@ -43,7 +43,7 @@ export enum BuildMode {
 }
 
 /**
- * Represent an Arduino application based on the official Arduino IDE.
+ * Represent an Arduino application powered by Arduino CLI.
  */
 export class ArduinoApp {
 
@@ -83,7 +83,7 @@ export class ArduinoApp {
     }
 
     /**
-     * Need refresh Arduino IDE's setting when starting up.
+        * Refresh package index state when starting up.
      * @param {boolean} force - Whether force initialize the arduino
      */
     public async initialize(force: boolean = false) {
@@ -97,7 +97,7 @@ export class ArduinoApp {
         }
         if (force || !util.fileExistsSync(path.join(this._settings.packagePath, "package_index.json"))) {
             try {
-                // Use the dummy package to initialize the Arduino IDE
+                // Use the dummy package to initialize package indexes.
                 await this.installBoard("dummy", "", "", true);
             } catch (ex) {
             }
@@ -124,7 +124,7 @@ export class ArduinoApp {
     public async initializeLibrary(force: boolean = false) {
         if (force || !util.fileExistsSync(path.join(this._settings.packagePath, "library_index.json"))) {
             try {
-                // Use the dummy library to initialize the Arduino IDE
+                // Use the dummy library to initialize library indexes.
                 await this.installLibrary("dummy", "", true);
             } catch (ex) {
             }
@@ -138,13 +138,8 @@ export class ArduinoApp {
      */
     public async setPref(key, value) {
         try {
-            if (this.useArduinoCli()) {
-                await util.spawn(this._settings.commandPath,
-                    ["--build-property", `${key}=${value}`]);
-            } else {
-                await util.spawn(this._settings.commandPath,
-                                 ["--pref", `${key}=${value}`, "--save-prefs"]);
-            }
+            await util.spawn(this._settings.commandPath,
+                ["--build-property", `${key}=${value}`]);
         } catch (ex) {
         }
     }
@@ -260,17 +255,10 @@ export class ArduinoApp {
         }
         arduinoChannel.info(`${packageName}${arch && ":" + arch}${version && ":" + version}`);
         try {
-            if (this.useArduinoCli()) {
-                await util.spawn(this._settings.commandPath,
-                    ["core", "install", `${packageName}${arch && ":" + arch}${version && "@" + version}`],
-                    undefined,
-                    { channel: showOutput ? arduinoChannel.channel : null });
-            } else {
-                await util.spawn(this._settings.commandPath,
-                    ["--install-boards", `${packageName}${arch && ":" + arch}${version && ":" + version}`],
-                    undefined,
-                    { channel: showOutput ? arduinoChannel.channel : null });
-            }
+            await util.spawn(this._settings.commandPath,
+                ["core", "install", `${packageName}${arch && ":" + arch}${version && "@" + version}`],
+                undefined,
+                { channel: showOutput ? arduinoChannel.channel : null });
             if (updatingIndex) {
                 arduinoChannel.end("Updated package index files.");
             } else {
@@ -312,17 +300,10 @@ export class ArduinoApp {
             arduinoChannel.start(`Install library - ${libName}`);
         }
         try {
-            if (this.useArduinoCli()) {
-                await  util.spawn(this._settings.commandPath,
-                    ["lib", "install", `${libName}${version && "@" + version}`],
-                    undefined,
-                    { channel: showOutput ? arduinoChannel.channel : undefined });
-            } else {
-                await util.spawn(this._settings.commandPath,
-                    ["--install-library", `${libName}${version && ":" + version}`],
-                    undefined,
-                    { channel: showOutput ? arduinoChannel.channel : undefined });
-            }
+            await util.spawn(this._settings.commandPath,
+                ["lib", "install", `${libName}${version && "@" + version}`],
+                undefined,
+                { channel: showOutput ? arduinoChannel.channel : undefined });
             if (updatingIndex) {
                 arduinoChannel.end("Updated library index files.");
             } else {
@@ -496,15 +477,6 @@ export class ArduinoApp {
     }
 
     /**
-     * Checks if the arduino cli is being used
-     * @returns {bool} - true if arduino cli is being use
-     */
-    private useArduinoCli() {
-        return this._settings.useArduinoCli;
-        // return VscodeSettings.getInstance().useArduinoCli;
-    }
-
-    /**
      * Checks if the line contains memory usage information
      * @param line output line to check
      * @returns {bool} true if line contains memory usage information
@@ -534,27 +506,23 @@ export class ArduinoApp {
         }
         const boardDescriptor = this.boardManager.currentBoard.getBuildConfig();
 
-        if (this.useArduinoCli()) {
-            args.push("-b", boardDescriptor);
+        args.push("-b", boardDescriptor);
 
-            // Issue #50/PR #59: Support local arduino-cli.yaml config file
-            const cliConfigFile = VscodeSettings.getInstance().arduinoCliConfigFile;
-            if (cliConfigFile) {
-                const configPath = path.resolve(ArduinoWorkspace.rootPath, cliConfigFile);
-                if (util.fileExistsSync(configPath)) {
-                    args.push("--config-file", configPath);
-                } else {
-                    arduinoChannel.warning(`Arduino CLI config file not found: ${configPath}`);
-                }
+        // Issue #50/PR #59: Support local arduino-cli.yaml config file
+        const cliConfigFile = VscodeSettings.getInstance().arduinoCliConfigFile;
+        if (cliConfigFile) {
+            const configPath = path.resolve(ArduinoWorkspace.rootPath, cliConfigFile);
+            if (util.fileExistsSync(configPath)) {
+                args.push("--config-file", configPath);
+            } else {
+                arduinoChannel.warning(`Arduino CLI config file not found: ${configPath}`);
             }
+        }
 
-            // Issue #50: Support custom library path
-            const customLibraryPath = VscodeSettings.getInstance().customLibraryPath;
-            if (customLibraryPath) {
-                args.push("--library", customLibraryPath);
-            }
-        } else {
-            args.push("--board", boardDescriptor);
+        // Issue #50: Support custom library path
+        const customLibraryPath = VscodeSettings.getInstance().customLibraryPath;
+        if (customLibraryPath) {
+            args.push("--library", customLibraryPath);
         }
 
         if (!ArduinoWorkspace.rootPath) {
@@ -588,11 +556,7 @@ export class ArduinoApp {
                 return false;
             }
 
-            if (this.useArduinoCli()) {
-                args.push("compile", "--upload");
-            } else {
-                args.push("--upload");
-            }
+            args.push("compile", "--upload");
 
             if (dc.port) {
                 args.push("--port", dc.port);
@@ -600,11 +564,6 @@ export class ArduinoApp {
         } else if (buildMode === BuildMode.CliUpload) {
             if ((!dc.configuration || !/upload_method=[^=,]*st[^,]*link/i.test(dc.configuration)) && !dc.port) {
                 await selectSerial();
-                return false;
-            }
-
-            if (!this.useArduinoCli()) {
-                arduinoChannel.error("This command is only available when using the Arduino CLI");
                 return false;
             }
 
@@ -624,15 +583,9 @@ export class ArduinoApp {
                 return false;
             }
 
-            if (this.useArduinoCli()) {
-                args.push("compile",
-                    "--upload",
-                    "--programmer", programmer);
-            } else {
-                args.push("--upload",
-                    "--useprogrammer",
-                    "--pref", `programmer=${programmer}`);
-            }
+            args.push("compile",
+                "--upload",
+                "--programmer", programmer);
 
             args.push("--port", dc.port);
         } else if (buildMode === BuildMode.CliUploadProgrammer) {
@@ -645,41 +598,25 @@ export class ArduinoApp {
                 await selectSerial();
                 return false;
             }
-            if (!this.useArduinoCli()) {
-                arduinoChannel.error("This command is only available when using the Arduino CLI");
-                return false;
-            }
 
             args.push("upload",
                 "--programmer", programmer,
                 "--port", dc.port);
         } else {
-            if (this.useArduinoCli()) {
-                args.unshift("compile");
-            } else {
-                args.push("--verify");
-            }
+            args.unshift("compile");
         }
 
         if (dc.buildPreferences) {
             for (const pref of dc.buildPreferences) {
                 // Note: BuildPrefSetting makes sure that each preference
                 // value consists of exactly two items (key and value).
-                if (this.useArduinoCli()) {
-                    args.push("--build-property", `${pref[0]}=${pref[1]}`);
-                } else {
-                    args.push("--pref", `${pref[0]}=${pref[1]}`);
-                }
+                args.push("--build-property", `${pref[0]}=${pref[1]}`);
             }
         }
 
         // We always build verbosely but filter the output based on the settings
 
-        this._settings.useArduinoCli ? args.push("--verbose") : args.push("--verbose-build");
-
-        if (verbose && !this._settings.useArduinoCli) {
-            args.push("--verbose-upload");
-        }
+        args.push("--verbose");
 
         await vscode.workspace.saveAll(false);
 
@@ -707,12 +644,7 @@ export class ArduinoApp {
                 util.mkdirRecursivelySync(buildDir);
             }
 
-            if (this.useArduinoCli()) {
-                args.push("--build-path", buildDir);
-
-            } else {
-                args.push("--pref", `build.path=${buildDir}`);
-            }
+            args.push("--build-path", buildDir);
 
             arduinoChannel.info(`Please see the build logs in output path: ${buildDir}`);
         } else {
@@ -763,7 +695,10 @@ export class ArduinoApp {
                 ret = await this.runPrePostBuildCommand(dc, env, "post");
             }
             await cocopa.conclude();
-            if (buildMode === BuildMode.Upload || buildMode === BuildMode.UploadProgrammer) {
+            if (buildMode === BuildMode.Upload ||
+                buildMode === BuildMode.UploadProgrammer ||
+                buildMode === BuildMode.CliUpload ||
+                buildMode === BuildMode.CliUploadProgrammer) {
                 UsbDetector.getInstance().resumeListening();
                 if (restoreSerialMonitor) {
                     // Issue #85: Wait for USB CDC boards (like Uno R4 WiFi) to re-enumerate

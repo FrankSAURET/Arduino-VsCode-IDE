@@ -3,34 +3,25 @@
 
 import * as childProcess from "child_process";
 import * as path from "path";
-import * as WinReg from "winreg";
-import { directoryExistsSync, fileExistsSync, getRegistryValues } from "../util";
+import { fileExistsSync } from "../util";
 
 export async function resolveArduinoPath() {
-    // eslint-disable-next-line no-prototype-builtins
-    const isWin64 = process.arch === "x64" || process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432");
-    let pathString = await getRegistryValues(WinReg.HKLM,
-        isWin64 ? "\\SOFTWARE\\WOW6432Node\\Arduino" : "\\SOFTWARE\\Arduino",
-        "Install_Dir");
-    if (directoryExistsSync(pathString)) {
-        return pathString;
-    }
+    let pathString = "";
     try {
-        pathString = childProcess.execSync("where arduino", { encoding: "utf8" });
+        pathString = childProcess.execSync("where arduino-cli", { encoding: "utf8" });
         pathString = path.resolve(pathString).trim();
         if (fileExistsSync(pathString)) {
             pathString = path.dirname(path.resolve(pathString));
         }
     } catch (error) {
-        // when "where arduino"" execution fails, the childProcess.execSync will throw error, just ignore it
+        // Ignore the errors.
     }
 
-    return pathString;
+    return pathString || "";
 }
 
-export function validateArduinoPath(arduinoPath: string, useArduinoCli = false): boolean {
-    return fileExistsSync(path.join(arduinoPath, useArduinoCli ? "arduino-cli.exe" : "arduino_debug.exe"));
-
+export function validateArduinoPath(arduinoPath: string): boolean {
+    return fileExistsSync(path.join(arduinoPath, "arduino-cli.exe"));
 }
 
 export function findFile(fileName: string, cwd: string): string {

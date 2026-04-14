@@ -62,7 +62,8 @@ export interface IDeviceContext {
      */
     intelliSenseGen: string;
 
-    initialize(): void;
+    initialize(): Thenable<string | undefined>;
+    openProjectFolder(): Thenable<void>;
 }
 
 export class DeviceContext implements IDeviceContext, vscode.Disposable {
@@ -282,23 +283,56 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
         return this._settings.buildPreferences.value;
     }
 
-    public async initialize() {
-        if (ArduinoWorkspace.rootPath && util.fileExistsSync(path.join(ArduinoWorkspace.rootPath, ARDUINO_CONFIG_FILE))) {
-            vscode.window.showInformationMessage("Arduino.json already generated.");
-            return;
-        } else {
-            if (!ArduinoWorkspace.rootPath) {
-                vscode.window.showInformationMessage("Please open a folder first.");
-                return;
-            }
-            await this.resolveMainSketch();
-            if (this.sketch) {
-                await vscode.commands.executeCommand("arduino.changeBoardType");
-                vscode.window.showInformationMessage("The workspace is initialized with the Arduino extension support.");
-            } else {
-                vscode.window.showInformationMessage("No sketch (*.ino or *.cpp) was found or selected - initialization skipped.");
-            }
+    public async initialize(): Promise<string | undefined> {
+        const baseFolder = await vscode.window.showOpenDialog({
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+            openLabel: "Select parent folder",
+            title: "Select parent folder for the new Arduino project",
+        });
+        if (!baseFolder || baseFolder.length === 0) {
+            return undefined;
         }
+
+        const projectName = await vscode.window.showInputBox({
+            value: "MyArduinoProject",
+            prompt: "Enter the project name",
+            placeHolder: "Project name",
+            validateInput: (value) => {
+                const trimmed = (value || "").trim();
+                if (!trimmed) {
+                    return "Project name is required.";
+                }
+                if (!/^[\w-]+$/.test(trimmed)) {
+                    return "Use only letters, numbers, underscores, or hyphens.";
+                }
+                const projectFolder = path.join(baseFolder[0].fsPath, trimmed);
+                if (util.directoryExistsSync(projectFolder) || util.fileExistsSync(projectFolder)) {
+                    return "A file or folder with this name already exists.";
+                }
+                return null;
+            },
+        });
+        if (!projectName) {
+            return undefined;
+        }
+
+        return this.createProjectScaffold(baseFolder[0].fsPath, projectName.trim());
+    }
+
+    public async openProjectFolder(): Promise<void> {
+        const selectedFolder = await vscode.window.showOpenDialog({
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+            openLabel: "Open project",
+            title: "Select an Arduino project folder",
+        });
+        if (!selectedFolder || selectedFolder.length === 0) {
+            return;
+        }
+        await vscode.commands.executeCommand("vscode.openFolder", selectedFolder[0], true);
     }
 
     /**
@@ -359,5 +393,23 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
         }
         const deviceConfigFile = path.join(ArduinoWorkspace.rootPath, ARDUINO_CONFIG_FILE);
         this._settings.save(deviceConfigFile);
+    }
+
+    private async createProjectScaffold(parentFolder: string, projectName: string): Promise<string> {
+        const projectFolder = path.join(parentFolder, projectName);
+        const sketchFileName = `${projectName}.ino`;
+        const sketchFilePath = path.join(projectFolder, sketchFileName);
+        const arduinoConfigPath = path.join(projectFolder, ARDUINO_CONFIG_FILE);
+
+        util.mkdirRecursivelySync(projectFolder);
+        const snippets = fs.readFileSync(path.join(this.extensionPath, "snippets", "sample.ino"));
+        fs.writeFileSync(sketchFilePath, snippets);
+        util.mkdirRecursivelySync(path.dirname(arduinoConfigPath));
+        fs.writeFileSync(arduinoConfigPath, JSON.stringify({
+            sketch: sketchFileName,
+            output: "build",
+        }, undefined, 4));
+
+        return projectFolder;
     }
 }

@@ -8,15 +8,17 @@
 // A task runner that calls a custom npm script that compiles the extension.
 {
     "version": "2.0.0",
-    "command": "gulp",
-    "args": [
-        "--no-color"
-    ],
     "tasks": [
         {
             "label": "build",
-            "args": ["build"],
             "type": "shell",
+            "command": "npm",
+            "args": ["exec", "--", "gulp", "--no-color", "build"],
+            "options": {
+                "env": {
+                    "NODE_OPTIONS": "--openssl-legacy-provider"
+                }
+            },
             "group": "build",
             "isBackground": false,
             "problemMatcher": [
@@ -25,7 +27,14 @@
         },
         {
             "label": "build_without_view",
-            "args": ["build_without_view"],
+            "type": "shell",
+            "command": "npm",
+            "args": ["exec", "--", "gulp", "--no-color", "build_without_view"],
+            "options": {
+                "env": {
+                    "NODE_OPTIONS": "--openssl-legacy-provider"
+                }
+            },
             "group": "build",
             "isBackground": false,
             "problemMatcher": [

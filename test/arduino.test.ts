@@ -32,16 +32,10 @@ suite("Arduino: App Initialization", () => {
         "should resolve arduino installation directory automatically");
 
         assert.equal(util.fileExistsSync(arduinoSettings.commandPath), true,
-        "should resolve arduino executable correctly");
+        "should resolve arduino CLI executable correctly");
 
-        assert.equal(util.directoryExistsSync(arduinoSettings.defaultPackagePath), true,
-        "should resolve arduino IDE built-in package directory correctly");
-
-        assert.equal(util.directoryExistsSync(arduinoSettings.defaultLibPath), true,
-        "should resolve arduino IDE built-in library directory correctly");
-
-        assert.equal(util.directoryExistsSync(arduinoSettings.defaultExamplePath), true,
-        "should resolve arduino IDE built-in example directory correctly");
+        assert.equal(util.directoryExistsSync(arduinoSettings.packagePath), true,
+        "should resolve the Arduino data directory correctly");
 
         done();
     });
@@ -49,10 +43,8 @@ suite("Arduino: App Initialization", () => {
     // tslint:disable-next-line: only-arrow-functions
     test("should be able to download necessary package_index and preferences.txt", function(done) {
         const arduinoSettings = ArduinoContext.arduinoApp.settings;
-        assert.equal(util.fileExistsSync(arduinoSettings.preferencePath), true,
-        "should be able to init preferences.txt file if not found");
-
-        assert.equal(arduinoSettings.preferences.get("sketchbook.path"), arduinoSettings.sketchbookPath);
+        assert.equal(util.directoryExistsSync(arduinoSettings.sketchbookPath), true,
+        "should resolve the sketchbook directory");
 
         assert.equal(util.fileExistsSync(Path.join(arduinoSettings.packagePath, "package_index.json")), true,
         "should be able to download package_index.json file if not found");

@@ -33,6 +33,9 @@
   ],
   "activationEvents": [
     "workspaceContains:**/*.ino",
+    "onView:arduinoProjectWelcome",
+    "onView:arduinoProjectLauncher",
+    "onCommand:arduino.openProjectFolder",
     "onCommand:arduino.verify",
     "onCommand:arduino.upload",
     "onCommand:arduino.cliUpload",
@@ -79,6 +82,10 @@
       {
         "command": "arduino.initialize",
         "title": "Arduino: Initialize"
+      },
+      {
+        "command": "arduino.openProjectFolder",
+        "title": "Arduino: Open Project Folder"
       },
       {
         "command": "arduino.verify",
@@ -177,6 +184,32 @@
           "command": "arduino.upload",
           "group": "navigation"
         }
+      ],
+      "view/title": [
+        {
+          "when": "view == arduinoProjectLauncher",
+          "command": "arduino.verify",
+          "group": "navigation@1"
+        },
+        {
+          "when": "view == arduinoProjectLauncher",
+          "command": "arduino.upload",
+          "group": "navigation@2"
+        },
+        {
+          "when": "view == arduinoProjectLauncher",
+          "command": "arduino.showExamples",
+          "group": "navigation@3"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "arduinoLauncher",
+          "title": "Arduino",
+          "icon": "images/ArduinoCommunityLogo_Gris.svg"
+        }
       ]
     },
     "views": {
@@ -184,7 +217,20 @@
         {
           "id": "arduinoExampleExplorer",
           "name": "Arduino Examples",
-          "when": "vscode-arduino:showExampleExplorer"
+          "when": "vscode-arduino:showExampleExplorer",
+          "icon": "images/ArduinoCommunityLogo_Gris.svg"
+        }
+      ],
+      "arduinoLauncher": [
+        {
+          "id": "arduinoProjectWelcome",
+          "name": "Start",
+          "icon": "images/ArduinoCommunityLogo_Gris.svg"
+        },
+        {
+          "id": "arduinoProjectLauncher",
+          "name": "Project Launcher",
+          "icon": "images/ArduinoCommunityLogo_Gris.svg"
         }
       ]
     },
@@ -470,20 +516,15 @@
       "type": "object",
       "title": "Arduino configuration",
       "properties": {
-        "arduino.useArduinoCli": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Use Arduino CLI instead of Arduino IDE. `#arduino.path#` must be set if the CLI is not on your system PATH. Set to false for legacy Arduino IDE support. (Requires a restart after change)"
-        },
         "arduino.path": {
           "type": "string",
           "default": "",
-          "description": "Path to Arduino, you can use a custom version of Arduino by modifying this setting to include the full path. Example: 'C:\\Program Files\\Arduino' for Windows, '/Applications' for Mac, '/home/$user/Downloads/arduino-1.8.1' for Linux. (Requires a restart after change)"
+          "description": "Path to the directory containing Arduino CLI. Leave empty if `arduino-cli` is already on your system PATH. Example: 'C:\\tools\\arduino-cli' for Windows, '/usr/local/bin' for macOS, '/home/$user/bin' for Linux. (Requires a restart after change)"
         },
         "arduino.commandPath": {
           "type": "string",
           "default": "",
-          "description": "Path to a script relative to 'arduino.path', you can use a custom launch script to run Arduino by modifying this setting. Example: 'run-arduino.bat' for Windows, 'Contents/MacOS/run-arduino.sh' for Mac, 'bin/run-arduino.sh' for Linux. (Requires a restart after change)"
+          "description": "Executable name or wrapper script relative to `arduino.path`. Leave empty to use the default Arduino CLI executable name for the current platform. Example: 'arduino-cli.exe' for Windows or 'arduino-cli' for macOS/Linux. (Requires a restart after change)"
         },
         "arduino.additionalUrls": {
           "type": "array",

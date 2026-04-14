@@ -58,8 +58,7 @@ export class ProgrammerManager {
     }
 
     private setProgrammerValue(programmerName: string | null) {
-        const programmer = this._arduinoApp.boardManager.installedProgrammers.get(programmerName);
-        this._programmerValue = this._settings.useArduinoCli ? programmerName : programmer ? programmer.key : programmerName;
+        this._programmerValue = programmerName;
         this._programmerDisplayName = this._programmerValue
             ? this.getDisplayName(programmerName)
             : ProgrammerManager.notFoundDisplayValue;

@@ -6,7 +6,7 @@ import * as path from "path";
 import * as WinReg from "winreg";
 import * as util from "../common/util";
 
-import { resolveArduinoPath } from "../common/platform";
+import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
 import { getDownloadedCliPath } from "./cliDownloader";
 
 import { VscodeSettings } from "./vscodeSettings";
@@ -22,7 +22,6 @@ export interface IArduinoSettings {
     preferencePath: string;
     defaultBaudRate: number;
     preferences: Map<string, string>;
-    useArduinoCli: boolean;
     defaultTimestampFormat: string;
     analyzeOnSettingChange: boolean;
     reloadPreferences(): void;
@@ -41,8 +40,6 @@ export class ArduinoSettings implements IArduinoSettings {
 
     private _preferences: Map<string, string>;
 
-    private _useArduinoCli: boolean;
-
     private _defaultTimestampFormat: string;
 
     private _extensionPath: string;
@@ -53,16 +50,15 @@ export class ArduinoSettings implements IArduinoSettings {
     public async initialize(extensionPath?: string) {
         this._extensionPath = extensionPath || "";
         const platform = os.platform();
-        this._commandPath = VscodeSettings.getInstance().commandPath;
-        this._useArduinoCli = VscodeSettings.getInstance().useArduinoCli;
+        this._commandPath = VscodeSettings.getInstance().commandPath || "";
         await this.tryResolveArduinoPath();
         await this.tryGetDefaultBaudRate();
         await this.tryGetDefaultTimestampFormat();
+        if (this._commandPath === "") {
+            this._commandPath = getExecutableFileName("arduino-cli");
+        }
         if (platform === "win32") {
             await this.updateWindowsPath();
-            if (this._commandPath === "") {
-                this._useArduinoCli ? this._commandPath = "arduino-cli.exe" : this._commandPath = "arduino_debug.exe";
-            }
         } else if (platform === "linux") {
             if (util.directoryExistsSync(path.join(this._arduinoPath, "portable"))) {
                 this._packagePath = path.join(this._arduinoPath, "portable");
@@ -78,10 +74,6 @@ export class ArduinoSettings implements IArduinoSettings {
                 }
             } else {
                 this._sketchbookPath = path.join(process.env.HOME, "Arduino");
-            }
-
-            if (this._commandPath === "" && !this._useArduinoCli) {
-                this._commandPath = "arduino";
             }
         } else if (platform === "darwin") {
             if (util.directoryExistsSync(path.join(this._arduinoPath, "portable"))) {
@@ -99,10 +91,6 @@ export class ArduinoSettings implements IArduinoSettings {
             } else {
                 this._sketchbookPath = path.join(process.env.HOME, "Documents/Arduino");
             }
-
-            if (this._commandPath === "" && !this._useArduinoCli) {
-                this._commandPath = "/Contents/MacOS/Arduino";
-            }
         }
     }
 
@@ -111,11 +99,7 @@ export class ArduinoSettings implements IArduinoSettings {
     }
 
     public get defaultExamplePath(): string {
-        if (os.platform() === "darwin") {
-            return path.join(util.resolveMacArduinoAppPath(this._arduinoPath, this._useArduinoCli), "/Contents/Java/examples");
-        } else {
-            return path.join(this._arduinoPath, "examples");
-        }
+        return path.join(this._arduinoPath, "examples");
     }
 
     public get packagePath(): string {
@@ -123,28 +107,18 @@ export class ArduinoSettings implements IArduinoSettings {
     }
 
     public get defaultPackagePath(): string {
-        if (os.platform() === "darwin") {
-            return path.join(util.resolveMacArduinoAppPath(this._arduinoPath, this._useArduinoCli), "/Contents/Java/hardware");
-        } else { // linux and win32.
-            return path.join(this._arduinoPath, "hardware");
-        }
+        return path.join(this._arduinoPath, "hardware");
     }
 
     public get defaultLibPath(): string {
-        if (os.platform() === "darwin") {
-            return path.join(util.resolveMacArduinoAppPath(this._arduinoPath, this._useArduinoCli), "/Contents/Java/libraries");
-        } else { // linux and win32
-            return path.join(this._arduinoPath, "libraries");
-        }
+        return path.join(this._arduinoPath, "libraries");
     }
 
     public get commandPath(): string {
-        const platform = os.platform();
-        if (platform === "darwin") {
-            return path.join(util.resolveMacArduinoAppPath(this._arduinoPath, this._useArduinoCli), path.normalize(this._commandPath));
-        } else {
-            return path.join(this._arduinoPath, path.normalize(this._commandPath));
+        if (path.isAbsolute(this._commandPath)) {
+            return path.normalize(this._commandPath);
         }
+        return path.join(this._arduinoPath, path.normalize(this._commandPath));
     }
 
     public get sketchbookPath() {
@@ -160,10 +134,6 @@ export class ArduinoSettings implements IArduinoSettings {
             this._preferences = util.parseConfigFile(this.preferencePath);
         }
         return this._preferences;
-    }
-
-    public get useArduinoCli() {
-        return this._useArduinoCli;
     }
 
     public get defaultBaudRate() {
@@ -236,9 +206,9 @@ export class ArduinoSettings implements IArduinoSettings {
         const configValue = VscodeSettings.getInstance().arduinoPath;
         if (!configValue || !configValue.trim()) {
             // 2 & 3. Resolve arduino path from system environment variables and usual software installation directory.
-            this._arduinoPath = await Promise.resolve(resolveArduinoPath());
+            this._arduinoPath = await Promise.resolve(resolveArduinoPath()) || "";
             // 4. Check for a previously downloaded CLI in the extension directory.
-            if ((!this._arduinoPath || !this._arduinoPath.trim()) && this._useArduinoCli && this._extensionPath) {
+            if ((!this._arduinoPath || !this._arduinoPath.trim()) && this._extensionPath) {
                 const downloadedPath = getDownloadedCliPath(this._extensionPath);
                 if (downloadedPath) {
                     this._arduinoPath = downloadedPath;
