@@ -1,5 +1,4 @@
 # Arduino VsCode IDE
-![alt text](images/LogoVsCodeArduinoIDE.svg)
 
 > **This is a community fork** of the [original Microsoft vscode-arduino extension](https://github.com/Microsoft/vscode-arduino), which is no longer actively maintained. This fork is also based on work from the [vscode-arduino community fork](https://github.com/vscode-arduino/vscode-arduino).
 >
@@ -46,8 +45,8 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 
 ## Prerequisites
 
-### Arduino CLI
-The Arduino CLI is the backend. **The extension can download it automatically** when it is not found on your system.
+### Arduino CLI (recommended)
+The Arduino CLI is the recommended backend. **The extension can download it automatically** when it is not found on your system.
 
 Alternatively, you can install it manually from the [official releases page](https://github.com/arduino/arduino-cli/releases):
 - Make sure `arduino-cli` is on your system PATH, or set `arduino.path` to point to its directory.
@@ -56,9 +55,12 @@ Alternatively, you can install it manually from the [official releases page](htt
 > **Note**: Arduino CLI is licensed under the [GPL-3.0 license](https://github.com/arduino/arduino-cli/blob/master/LICENSE.txt) by Arduino SA. See [NOTICE-ARDUINO-CLI.md](NOTICE-ARDUINO-CLI.md) for details.
 
 ## Installation
-Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `arduino-vscode-ide`.
+Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `vscode-arduino`.
 
-Or launch VS Code Quick Open (<kbd>Ctrl</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>P</kbd>).
+Or launch VS Code Quick Open (<kbd>Ctrl</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>P</kbd>), paste the following command, and press enter.
+```bash
+ext install electropol-fr.vscode-arduino
+```
 
 ## Commands
 This extension provides several commands in the Command Palette (<kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>) for working with `*.ino` files:
@@ -265,35 +267,6 @@ To *run and develop*, do the following:
 - Press <kbd>F5</kbd> to debug.
 
 To *test*, press <kbd>F5</kbd> in VS Code with the "Launch Tests" debug configuration.
-
-## Translations
-
-This extension supports localization via VS Code's native `l10n` system. All user-visible strings default to **English** and can be translated into any language.
-
-### Existing translations
-
-| Language | File |
-|----------|------|
-| French (fr) | `l10n/bundle.l10n.fr.json` |
-
-### Adding a new translation
-
-1. Create a file `l10n/bundle.l10n.<locale>.json` (e.g. `bundle.l10n.de.json` for German, `bundle.l10n.es.json` for Spanish).
-2. Copy the keys from an existing translation file (e.g. `bundle.l10n.fr.json`).
-3. Replace the values with your translated strings. Keys must remain in English — they match the source code strings.
-
-Example (`bundle.l10n.de.json`):
-```json
-{
-  "Settings": "Einstellungen",
-  "Board Manager": "Board-Verwaltung",
-  "Verify": "Überprüfen"
-}
-```
-
-4. Static contribution strings (command titles, view names, etc.) use `package.nls.json` for English defaults. To translate those, create `package.nls.<locale>.json` at the repository root following the same key structure.
-
-Translations will be automatically picked up based on the user's VS Code display language.
 
 ## Credits & License
 

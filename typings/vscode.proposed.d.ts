@@ -7,6 +7,18 @@
 
 declare module 'vscode' {
 
+	/**
+	 * l10n API for translating strings (added in VS Code 1.73).
+	 */
+	export namespace l10n {
+		/**
+		 * Return a translated string.
+		 * @param message The message to translate.
+		 * @param args Optional arguments for string interpolation.
+		 */
+		export function t(message: string, ...args: any[]): string;
+	}
+
 	export namespace window {
 
 		export function sampleFunction(): Thenable<any>;

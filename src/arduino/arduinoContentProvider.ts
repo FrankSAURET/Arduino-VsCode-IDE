@@ -17,6 +17,14 @@ export class ArduinoContentProvider implements vscode.TextDocumentContentProvide
 
     constructor(private _extensionPath: string) { }
 
+    public get serverUrl(): string {
+        return this._webserver.getServerUrl();
+    }
+
+    public get authToken(): string {
+        return this._webserver.authToken;
+    }
+
     public async initialize() {
         this._webserver = new LocalWebServer(this._extensionPath);
         // Arduino Boards Manager
@@ -80,6 +88,7 @@ export class ArduinoContentProvider implements vscode.TextDocumentContentProvide
                             "theme=" + encodeURIComponent(theme.trim()) +
                             "&backgroundcolor=" + encodeURIComponent(backgroundcolor.trim()) +
                             "&color=" + encodeURIComponent(color.trim()) +
+                            "&locale=${vscode.env.language}" +
                             "&token=${this._webserver.authToken}";
                     document.getElementById('frame').src = url;
                 };

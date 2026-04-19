@@ -6,7 +6,7 @@ import { IArduinoSettings } from "./arduinoSettings";
 import { IBoard, IProgrammer } from "./package";
 
 export class ProgrammerManager {
-    public static notFoundDisplayValue: string = "<Select Programmer>";
+    public static notFoundDisplayValue: string = vscode.l10n.t("<Select Programmer>");
 
     private _programmerValue: string;
     private _programmerDisplayName: string;
@@ -19,7 +19,7 @@ export class ProgrammerManager {
             constants.statusBarPriority.PROGRAMMER,
         );
         this._programmerStatusBar.command = "arduino.selectProgrammer";
-        this._programmerStatusBar.tooltip = "Select Programmer";
+        this._programmerStatusBar.tooltip = vscode.l10n.t("Select Programmer");
         this.setProgrammerValue(DeviceContext.getInstance().programmer);
         this._programmerStatusBar.show();
         DeviceContext.getInstance().onChangeProgrammer(() => {
@@ -47,7 +47,7 @@ export class ProgrammerManager {
                 description: programmer.name,
                 programmer }));
         const chosen = await vscode.window.showQuickPick(selectionItems, {
-            placeHolder: "Select programmer",
+            placeHolder: vscode.l10n.t("Select programmer"),
         });
         if (!chosen) {
             return;

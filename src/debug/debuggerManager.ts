@@ -127,7 +127,7 @@ export class DebuggerManager {
                 };
             }).sort((a, b): number => {
                 return a.label === b.label ? 0 : (a.label > b.label ? 1 : -1);
-            }), { placeHolder: "Select a debugger" });
+            }), { placeHolder: vscode.l10n.t("Select a debugger") });
             if (chosen && chosen.label) {
                 resolvedDebugger = debuggers.find((_debugger) =>  _debugger.name === chosen.label);
                 if (resolvedDebugger) {

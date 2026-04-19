@@ -379,8 +379,14 @@ export class ArduinoApp {
                 fs.writeFileSync(arduinoConfigFilePath, JSON.stringify(arduinoJson, null, 4));
             }
 
-            // Step 3: Open the arduino project at a new vscode window.
-            vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(destExample), true);
+            // Step 3: Open the sketch file in a new tab on the right side.
+            const sketchFileToOpen = items.find((item) => util.isArduinoFile(path.join(destExample, item)));
+            if (sketchFileToOpen) {
+                vscode.commands.executeCommand("vscode.open", vscode.Uri.file(path.join(destExample, sketchFileToOpen)),
+                    { viewColumn: vscode.ViewColumn.Beside, preview: false });
+            } else {
+                vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(destExample), true);
+            }
         }
         return destExample;
     }
@@ -526,7 +532,7 @@ export class ArduinoApp {
         }
 
         if (!ArduinoWorkspace.rootPath) {
-            vscode.window.showWarningMessage("Workspace doesn't seem to have a folder added to it yet.");
+            vscode.window.showWarningMessage(vscode.l10n.t("Workspace doesn't seem to have a folder added to it yet."));
             return false;
         }
 
@@ -536,16 +542,16 @@ export class ArduinoApp {
                 return false;
             }
             if (!await dc.resolveMainSketch()) {
-                vscode.window.showErrorMessage("No sketch file was found. Please specify the sketch in the arduino.json file");
+                vscode.window.showErrorMessage(vscode.l10n.t("No sketch file was found. Please specify the sketch in the arduino.json file"));
                 return false;
             }
         }
 
         const selectSerial = async () => {
             const choice = await vscode.window.showInformationMessage(
-                "Serial port is not specified. Do you want to select a serial port for uploading?",
-                "Yes", "No");
-            if (choice === "Yes") {
+                vscode.l10n.t("Serial port is not specified. Do you want to select a serial port for uploading?"),
+                vscode.l10n.t("Yes"), vscode.l10n.t("No"));
+            if (choice === vscode.l10n.t("Yes")) {
                 vscode.commands.executeCommand("arduino.selectSerialPort");
             }
         }

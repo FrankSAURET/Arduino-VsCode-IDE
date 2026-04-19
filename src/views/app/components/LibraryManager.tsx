@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import SearchInput, { createFilter } from "react-search-input";
 import { versionCompare } from "../../../common/sharedUtilities/utils";
 import * as actions from "../actions";
+import { t } from "../utils/i18n";
 import LibraryItemView from "./LibraryItemView";
 
 interface ILibraryManagerProps extends React.Props<any> {
@@ -125,9 +126,9 @@ class LibraryManager extends React.Component<ILibraryManagerProps, ILibraryManag
         const totalCount = filteredLibraries.length;
         let totalCountTips = "";
         if (this.state.type === "All" && this.state.topic === "All" && !this.state.searchTerm) {
-            totalCountTips = `Total ${totalCount} Libraries`;
+            totalCountTips = t("Total {0} Libraries", totalCount);
         } else {
-            totalCountTips = `${totalCount} Libraries matched`;
+            totalCountTips = t("{0} Libraries matched", totalCount);
         }
 
         const libraryItemProps = {
@@ -147,33 +148,35 @@ class LibraryManager extends React.Component<ILibraryManagerProps, ILibraryManag
             return 200;
         };
 
-        return (<div className={"librarymanager " + (isOperating ? "disabled" : "")}>
+        return (
+        <div className={"librarymanager " + (isOperating ? "disabled" : "")}>
             {
                 this.props.requesting && (
-                    <div className="mask theme-bgcolor">Loading...</div>
+                    <div className="mask theme-bgcolor">{t("Loading...")}</div>
                 )
             }
             <div className="arduinomanager-toolbar theme-bgcolor">
+                <h1>{t("Library Manager")}</h1>
                 <div className="dropdown-filter">
-                    <span className="dropdown-label">Type</span>
-                    <DropdownButton id="typeselector" title={this.state.type} onSelect={this.typeUpdate}>
+                    <span className="dropdown-label">{t("Type")}</span>
+                    <DropdownButton id="typeselector" title={t(this.state.type)} onSelect={this.typeUpdate}>
                         { this.props.types.map((c, index) => {
-                            return (<MenuItem key={index} eventKey={c} active={c === this.state.type}>{c}</MenuItem>);
+                            return (<MenuItem key={index} eventKey={c} active={c === this.state.type}>{t(c)}</MenuItem>);
                         })}
                     </DropdownButton>
                 </div>
                 <div className="dropdown-filter">
-                    <span className="dropdown-label">Topic</span>
-                    <DropdownButton id="topicselector" title={this.state.topic} onSelect={this.topicUpdate}>
+                    <span className="dropdown-label">{t("Topic")}</span>
+                    <DropdownButton id="topicselector" title={t(this.state.topic)} onSelect={this.topicUpdate}>
                         { this.props.categories.map((c, index) => {
-                            return (<MenuItem key={index} eventKey={c} active={c === this.state.topic}>{c}</MenuItem>);
+                            return (<MenuItem key={index} eventKey={c} active={c === this.state.topic}>{t(c)}</MenuItem>);
                         })}
                     </DropdownButton>
                 </div>
-                <SearchInput className="search-input" placeholder="Filter your search..." onChange={this.searchUpdate} />
-                <Checkbox className="supported-checkbox" onChange={this.handleCheck}>Only show libraries supported by current board</Checkbox>
+                <SearchInput className="search-input" placeholder={t("Filter your search...")} onChange={this.searchUpdate} />
+                <Checkbox className="supported-checkbox" onChange={this.handleCheck}>{t("Only show libraries supported by current board")}</Checkbox>
                 <Button className="operation-btn" bsStyle="link" onClick={() => this.props.loadLibraries(true)}>
-                        Refresh Library Index
+                        {t("Refresh Library Index")}
                 </Button>
             </div>
             <div className="arduinomanager-container">

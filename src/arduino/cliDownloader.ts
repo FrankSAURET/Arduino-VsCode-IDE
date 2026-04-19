@@ -172,10 +172,10 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
 
     const version = await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: "Arduino CLI",
+        title: vscode.l10n.t("Arduino CLI"),
         cancellable: false,
     }, async (progress) => {
-        progress.report({ message: "Checking latest version..." });
+        progress.report({ message: vscode.l10n.t("Checking latest version...") });
         return await getLatestCliVersion();
     });
 
@@ -190,7 +190,7 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
 
     await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: `Downloading Arduino CLI v${version}`,
+        title: vscode.l10n.t("Downloading Arduino CLI v{0}", version),
         cancellable: false,
     }, async (progress) => {
         // Ensure target directory exists
@@ -205,7 +205,7 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
         await downloadFile(downloadUrl, archivePath, progress);
 
         // Extract
-        progress.report({ message: "Extracting..." });
+        progress.report({ message: vscode.l10n.t("Extracting...") });
         if (platformInfo.archiveName.endsWith(".zip")) {
             await extract(archivePath, { dir: cliDir });
         } else {
@@ -225,14 +225,14 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
             // Ignore cleanup errors
         }
 
-        progress.report({ message: "Done!" });
+        progress.report({ message: vscode.l10n.t("Done!") });
     });
 
     // Write version file for future reference
     fs.writeFileSync(path.join(cliDir, "VERSION"), version, "utf8");
 
     arduinoChannel.info(`Arduino CLI v${version} installed to ${cliDir}`);
-    vscode.window.showInformationMessage(`Arduino CLI v${version} installed successfully.`);
+    vscode.window.showInformationMessage(vscode.l10n.t("Arduino CLI v{0} installed successfully.", version));
 
     return cliDir;
 }
@@ -243,20 +243,20 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
  */
 export async function promptDownloadCli(extensionPath: string): Promise<string | null> {
     const choice = await vscode.window.showInformationMessage(
-        "Arduino CLI not found. Would you like to download it automatically?",
-        "Download",
-        "Configure manually",
+        vscode.l10n.t("Arduino CLI not found. Would you like to download it automatically?"),
+        vscode.l10n.t("Download"),
+        vscode.l10n.t("Configure manually"),
     );
 
-    if (choice === "Download") {
+    if (choice === vscode.l10n.t("Download")) {
         try {
             return await downloadArduinoCli(extensionPath);
         } catch (error) {
             arduinoChannel.error(`Failed to download Arduino CLI: ${error.message}`);
-            vscode.window.showErrorMessage(`Failed to download Arduino CLI: ${error.message}`);
+            vscode.window.showErrorMessage(vscode.l10n.t("Failed to download Arduino CLI: {0}", error.message));
             return null;
         }
-    } else if (choice === "Configure manually") {
+    } else if (choice === vscode.l10n.t("Configure manually")) {
         vscode.commands.executeCommand("workbench.action.openSettings", "arduino.path");
     }
     return null;
@@ -276,11 +276,11 @@ export async function checkForCliUpdate(extensionPath: string): Promise<void> {
         const latestVersion = await getLatestCliVersion();
         if (currentVersion !== latestVersion) {
             const choice = await vscode.window.showInformationMessage(
-                `Arduino CLI update available: v${currentVersion} → v${latestVersion}`,
-                "Update",
-                "Later",
+                vscode.l10n.t("Arduino CLI update available: v{0} → v{1}", currentVersion, latestVersion),
+                vscode.l10n.t("Update"),
+                vscode.l10n.t("Later"),
             );
-            if (choice === "Update") {
+            if (choice === vscode.l10n.t("Update")) {
                 // Remove old installation
                 const files = fs.readdirSync(cliDir);
                 for (const f of files) {

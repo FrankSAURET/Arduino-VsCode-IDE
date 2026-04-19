@@ -7,6 +7,7 @@ import { toStringArray } from "../common/util";
 const configKeys = {
     ARDUINO_PATH: "arduino.path",
     ARDUINO_COMMAND_PATH: "arduino.commandPath",
+    ARDUINO_THEME: "arduino.theme",
     ADDITIONAL_URLS: "arduino.additionalUrls",
     LOG_LEVEL: "arduino.logLevel",
     CLEAR_OUTPUT_ON_START: "arduino.clearOutputOnBuild",
@@ -28,6 +29,7 @@ const configKeys = {
 export interface IVscodeSettings {
     arduinoPath: string;
     commandPath: string;
+    arduinoTheme: string;
     additionalUrls: string[];
     logLevel: string;
     clearOutputOnBuild: boolean;
@@ -64,6 +66,10 @@ export class VscodeSettings implements IVscodeSettings {
 
     public get commandPath(): string {
         return this.getConfigValue<string>(configKeys.ARDUINO_COMMAND_PATH);
+    }
+
+    public get arduinoTheme(): string {
+        return this.getConfigValue<string>(configKeys.ARDUINO_THEME);
     }
 
     public get additionalUrls(): string[] {

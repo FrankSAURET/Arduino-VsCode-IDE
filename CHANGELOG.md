@@ -1,6 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.4.1
+
+- Release date: April 2026
+- **Rebranded as "Arduino VsCode IDE" (publisher: electropol-fr)**
+
+### Changed
+
+- Renamed extension: `vscode-arduino-ide` / "Arduino VsCode IDE" to clearly differentiate from the original Microsoft extension and the Community Edition fork
+- New extension icon: custom LogoVsCodeArduinoIDE
+- Version scheme changed to CalVer (YYYY.MM.patch)
+- Updated description and license to reflect fork status
+- New Home Panel with navigation rail and welcome screen
+- Quick Access sidebar TreeView for common Arduino commands
+- Editor title bar: Verify, Upload, Serial Monitor icons (run group)
+- 3-column layout at startup: Explorer | Home Panel | Code Editor
+- Create/Open project commands work without requiring CLI to be configured first
+- Removed legacy Arduino IDE support entirely (CLI-only)
+
 ## Version 0.5.0
 
 - Release date: July 2025

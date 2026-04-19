@@ -87,7 +87,7 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         if (!ArduinoContext.boardManager.currentBoard) {
-            vscode.window.showErrorMessage("Please select a board.");
+            vscode.window.showErrorMessage(vscode.l10n.t("Please select a board."));
             return undefined;
         }
 
@@ -132,19 +132,19 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             }
 
             if (!dc.sketch) {
-                vscode.window.showErrorMessage("No sketch file was found. Please specify the sketch in the arduino.json file");
+                vscode.window.showErrorMessage(vscode.l10n.t("No sketch file was found. Please specify the sketch in the arduino.json file"));
                 return false;
             }
 
             if (!util.fileExistsSync(path.join(ArduinoWorkspace.rootPath, dc.sketch))) {
-                vscode.window.showErrorMessage(`Cannot find ${dc.sketch}, Please specify the sketch in the arduino.json file`);
+                vscode.window.showErrorMessage(vscode.l10n.t("Cannot find {0}, Please specify the sketch in the arduino.json file", dc.sketch));
                 return false;
             }
             config.program = path.join(outputPath, `${path.basename(dc.sketch)}.elf`);
 
             // always compile elf to make sure debug the right elf
             if (!await ArduinoContext.arduinoApp.build(BuildMode.Verify, outputFolder)) {
-                vscode.window.showErrorMessage("Failed to verify the program, please check the output for details.");
+                vscode.window.showErrorMessage(vscode.l10n.t("Failed to verify the program, please check the output for details."));
                 return false;
             }
 
@@ -157,7 +157,7 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             });
         }
         if (!util.fileExistsSync(config.program)) {
-            vscode.window.showErrorMessage("Cannot find the elf file.");
+            vscode.window.showErrorMessage(vscode.l10n.t("Cannot find the elf file."));
             return false;
         }
         return true;
@@ -172,7 +172,7 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             config.miDebuggerPath = ArduinoContext.debuggerManager.miDebuggerPath;
         }
         if (!util.fileExistsSync(config.miDebuggerPath)) {
-            vscode.window.showErrorMessage("Cannot find the debugger path.");
+            vscode.window.showErrorMessage(vscode.l10n.t("Cannot find the debugger path."));
             return false;
         }
         return true;
@@ -188,8 +188,8 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             config.debugServerPath = ArduinoContext.debuggerManager.debugServerPath;
         }
         if (!util.fileExistsSync(config.debugServerPath)) {
-            vscode.window.showErrorMessage("Cannot find the OpenOCD from the launch.json debugServerPath property." +
-                "Please input the right path of OpenOCD");
+            vscode.window.showErrorMessage(vscode.l10n.t("Cannot find the OpenOCD from the launch.json debugServerPath property.") +
+                vscode.l10n.t("Please input the right path of OpenOCD"));
             return false;
         }
 

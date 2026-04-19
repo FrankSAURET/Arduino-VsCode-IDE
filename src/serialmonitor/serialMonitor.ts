@@ -77,24 +77,24 @@ export class SerialMonitor implements vscode.Disposable {
         this._currentTimestampFormat = defaultTimestampFormat;
         this._portsStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, constants.statusBarPriority.PORT);
         this._portsStatusBar.command = "arduino.selectSerialPort";
-        this._portsStatusBar.tooltip = "Select Serial Port";
+        this._portsStatusBar.tooltip = vscode.l10n.t("Select Serial Port");
         this._portsStatusBar.show();
 
         this._openPortStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, constants.statusBarPriority.OPEN_PORT);
         this._openPortStatusBar.command = "arduino.openSerialMonitor";
         this._openPortStatusBar.text = `$(plug)`;
-        this._openPortStatusBar.tooltip = "Open Serial Monitor";
+        this._openPortStatusBar.tooltip = vscode.l10n.t("Open Serial Monitor");
         this._openPortStatusBar.show();
 
         this._baudRateStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, constants.statusBarPriority.BAUD_RATE);
         this._baudRateStatusBar.command = "arduino.changeBaudRate";
-        this._baudRateStatusBar.tooltip = "Baud Rate";
+        this._baudRateStatusBar.tooltip = vscode.l10n.t("Baud Rate");
         this._baudRateStatusBar.text = defaultBaudRate.toString();
 
         this._timestampFormatStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right,
                                                                            constants.statusBarPriority.TIMESTAMP_FORMAT);
         this._timestampFormatStatusBar.command = "arduino.changeTimestampFormat";
-        this._timestampFormatStatusBar.tooltip = `Timestamp Format: "${defaultTimestampFormat}"`;
+        this._timestampFormatStatusBar.tooltip = vscode.l10n.t("Timestamp Format: \"{0}\"", defaultTimestampFormat);
         this._timestampFormatStatusBar.text = `$(watch)`;
         this.updatePortListStatus();
 
@@ -118,7 +118,7 @@ export class SerialMonitor implements vscode.Disposable {
     public async selectSerialPort(vid: string, pid: string) {
         const lists = await SerialPortCtrl.list();
         if (!lists.length) {
-            vscode.window.showInformationMessage("No serial port is available.");
+            vscode.window.showInformationMessage(vscode.l10n.t("No serial port is available."));
             return;
         }
 
@@ -153,8 +153,8 @@ export class SerialMonitor implements vscode.Disposable {
 
     public async openSerialMonitor() {
         if (!this._currentPort) {
-            const ans = await vscode.window.showInformationMessage("No serial port was selected, please select a serial port first", "Yes", "No");
-            if (ans === "Yes") {
+            const ans = await vscode.window.showInformationMessage(vscode.l10n.t("No serial port was selected, please select a serial port first"), vscode.l10n.t("Yes"), vscode.l10n.t("No"));
+            if (ans === vscode.l10n.t("Yes")) {
                 await this.selectSerialPort(null, null);
             }
             if (!this._currentPort) {
@@ -166,7 +166,7 @@ export class SerialMonitor implements vscode.Disposable {
             if (this._currentPort !== this._serialPortCtrl.currentPort) {
                 await this._serialPortCtrl.changePort(this._currentPort);
             } else if (this._serialPortCtrl.isActive) {
-                vscode.window.showWarningMessage(`Serial monitor is already opened for ${this._currentPort}`);
+                vscode.window.showWarningMessage(vscode.l10n.t("Serial monitor is already opened for {0}", this._currentPort));
                 return;
             }
         } else {
@@ -188,14 +188,14 @@ export class SerialMonitor implements vscode.Disposable {
             this.updatePortStatus(true);
         } catch (error) {
             Logger.notifyUserWarning("openSerialMonitorError", error,
-                `Failed to open serial port ${this._currentPort} due to error: + ${error.toString()}`);
+                vscode.l10n.t("Failed to open serial port {0} due to error: {1}", this._currentPort, error.toString()));
         }
     }
 
     public async sendMessageToSerialPort() {
         if (this._serialPortCtrl && this._serialPortCtrl.isActive) {
             const text = await vscode.window.showInputBox({
-                placeHolder: "Message to send to serial port",
+                placeHolder: vscode.l10n.t("Message to send to serial port"),
                 value: "", // Issue #81: Always start with an empty input
             });
             if (text === undefined) {
@@ -248,7 +248,7 @@ export class SerialMonitor implements vscode.Disposable {
         }
         await this._serialPortCtrl.changeTimestampFormat(timestampFormat);
         this._currentTimestampFormat = timestampFormat;
-        this._timestampFormatStatusBar.tooltip = `Timestamp Format: "${timestampFormat}"`;
+        this._timestampFormatStatusBar.tooltip = vscode.l10n.t("Timestamp Format: \"{0}\"", timestampFormat);
     }
 
     public async closeSerialMonitor(port: string, showWarning: boolean = true): Promise<boolean> {
@@ -276,7 +276,7 @@ export class SerialMonitor implements vscode.Disposable {
         if (dc.port) {
             this._portsStatusBar.text = dc.port;
         } else {
-            this._portsStatusBar.text = "<Select Serial Port>";
+            this._portsStatusBar.text = vscode.l10n.t("<Select Serial Port>");
         }
     }
 
@@ -284,13 +284,13 @@ export class SerialMonitor implements vscode.Disposable {
         if (isOpened) {
             this._openPortStatusBar.command = "arduino.closeSerialMonitor";
             this._openPortStatusBar.text = `$(x)`;
-            this._openPortStatusBar.tooltip = "Close Serial Monitor";
+            this._openPortStatusBar.tooltip = vscode.l10n.t("Close Serial Monitor");
             this._baudRateStatusBar.show();
             this._timestampFormatStatusBar.show();
         } else {
             this._openPortStatusBar.command = "arduino.openSerialMonitor";
             this._openPortStatusBar.text = `$(plug)`;
-            this._openPortStatusBar.tooltip = "Open Serial Monitor";
+            this._openPortStatusBar.tooltip = vscode.l10n.t("Open Serial Monitor");
             this._baudRateStatusBar.hide();
             this._timestampFormatStatusBar.hide();
         }

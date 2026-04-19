@@ -5,6 +5,7 @@ import * as React from "react";
 import { Col } from "react-bootstrap";
 import Select from "react-select";
 import * as API from "../actions/api";
+import { t } from "../utils/i18n";
 
 interface IBoardSelectorProps extends React.Props<any> {
     installedBoards: any;
@@ -39,17 +40,20 @@ export default class BoardSelector extends React.Component<IBoardSelectorProps, 
             };
         });
 
-        return (<div className="listitem theme-listitem">
-            <Col className="left-side d-inline-block" xs={3} sm={2} md={2}>Selected Board:</Col>
+        return (
+        <div>
+            <h1>{t("Board Selector")}</h1>
+        <div className="listitem theme-listitem">
+            <Col className="left-side d-inline-block" xs={3} sm={2} md={2}>{t("Selected Board:")}</Col>
             <Col className="react-selector btn-group">
                 <Select
                     clearable={false}
-                    name="select-board"
                     options={options}
                     value={this.state.selectedBoard ? this.state.selectedBoard.key : null}
                     onChange={this.updateSelectedBoard}
-                    placeholder="Select your board" />
+                    placeholder={t("Select your board")} />
             </Col>
+        </div>
         </div>);
     }
 

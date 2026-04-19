@@ -4,6 +4,7 @@
 import * as React from "react";
 import { Col, DropdownButton, MenuItem } from "react-bootstrap";
 import * as API from "../actions/api";
+import { t } from "../utils/i18n";
 
 interface IBoardConfigItemProps extends React.Props<any> {
     configitem: any;
@@ -28,7 +29,7 @@ export default class BoardConfigItemView extends React.Component<IBoardConfigIte
                 {this.props.configitem.displayName}:
             </Col>
             <Col>
-                <DropdownButton id={this.props.configitem.id} title={this.getOptionDisplayName()} placeholder="Select option"
+                <DropdownButton id={this.props.configitem.id} title={this.getOptionDisplayName()} placeholder={t("Select option")}
                     onSelect={this.updateConfig}>
                     {
                         options.map((opt, index) => {

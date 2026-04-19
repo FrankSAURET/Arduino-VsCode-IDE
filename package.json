@@ -1,14 +1,14 @@
 {
-  "name": "vscode-arduino",
-  "displayName": "Arduino",
-  "description": "Arduino for Visual Studio Code",
-  "version": "0.5.0",
+  "name": "vscode-arduino-ide",
+  "displayName": "Arduino VsCode IDE",
+  "description": "Arduino IDE integration for VS Code — CLI-based, fork of Microsoft's extension",
+  "version": "2026.4.1",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {
-    "vscode": "^1.56.0"
+    "vscode": "^1.73.0"
   },
-  "icon": "images/ArduinoCommunityLogo-up.png",
+  "icon": "images/LogoVsCodeArduinoIDE.png",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
     "type": "git",
@@ -34,7 +34,6 @@
   "activationEvents": [
     "workspaceContains:**/*.ino",
     "onView:arduinoProjectWelcome",
-    "onView:arduinoProjectLauncher",
     "onCommand:arduino.openProjectFolder",
     "onCommand:arduino.verify",
     "onCommand:arduino.upload",
@@ -59,6 +58,7 @@
     "onDebug"
   ],
   "main": "./out/src/extension",
+  "l10n": "./l10n",
   "contributes": {
     "breakpoints": [
       {
@@ -81,95 +81,101 @@
     "commands": [
       {
         "command": "arduino.initialize",
-        "title": "Arduino: Initialize"
+        "title": "%arduino.command.initialize%",
+        "icon": "images/newProject.svg"
       },
       {
         "command": "arduino.openProjectFolder",
-        "title": "Arduino: Open Project Folder"
+        "title": "%arduino.command.openProjectFolder%"
       },
       {
         "command": "arduino.verify",
-        "title": "Arduino: Verify",
-        "icon": {
-          "dark": "images/ArduinoVerify_inverse_16.svg",
-          "light": "images/ArduinoVerify_16.svg"
-        }
+        "title": "%arduino.command.verify%",
+        "icon": "images/verify.svg"
       },
       {
         "command": "arduino.upload",
-        "title": "Arduino: Upload",
-        "icon": {
-          "dark": "images/ArduinoUpload_inverse_16.svg",
-          "light": "images/ArduinoUpload_16.svg"
-        }
+        "title": "%arduino.command.upload%",
+        "icon": "images/upload.svg"
       },
       {
         "command": "arduino.cliUpload",
-        "title": "Arduino CLI: Upload"
+        "title": "%arduino.command.cliUpload%"
       },
       {
         "command": "arduino.uploadUsingProgrammer",
-        "title": "Arduino: Upload Using Programmer"
+        "title": "%arduino.command.uploadUsingProgrammer%"
       },
       {
         "command": "arduino.cliUploadUsingProgrammer",
-        "title": "Arduino CLI: Upload Using Programmer"
+        "title": "%arduino.command.cliUploadUsingProgrammer%"
       },
       {
         "command": "arduino.rebuildIntelliSenseConfig",
-        "title": "Arduino: Rebuild IntelliSense Configuration"
+        "title": "%arduino.command.rebuildIntelliSenseConfig%"
       },
       {
         "command": "arduino.selectProgrammer",
-        "title": "Arduino: Select Programmer"
+        "title": "%arduino.command.selectProgrammer%"
       },
       {
         "command": "arduino.selectSketch",
-        "title": "Arduino: Select Sketch"
+        "title": "%arduino.command.selectSketch%"
       },
       {
         "command": "arduino.selectSerialPort",
-        "title": "Arduino: Select Serial Port"
+        "title": "%arduino.command.selectSerialPort%",
+        "icon": "images/selectSerialPort.svg"
       },
       {
         "command": "arduino.changeBaudRate",
-        "title": "Arduino: Change Baud Rate"
+        "title": "%arduino.command.changeBaudRate%"
       },
       {
         "command": "arduino.changeTimestampFormat",
-        "title": "Arduino: Change Timestamp Format"
+        "title": "%arduino.command.changeTimestampFormat%"
       },
       {
         "command": "arduino.openSerialMonitor",
-        "title": "Arduino: Open Serial Monitor"
+        "title": "%arduino.command.openSerialMonitor%",
+        "icon": "images/serialMonitor.svg"
       },
       {
         "command": "arduino.closeSerialMonitor",
-        "title": "Arduino: Close Serial Monitor"
+        "title": "%arduino.command.closeSerialMonitor%"
       },
       {
         "command": "arduino.sendMessageToSerialPort",
-        "title": "Arduino: Send Text to Serial Port"
+        "title": "%arduino.command.sendMessageToSerialPort%"
       },
       {
         "command": "arduino.changeBoardType",
-        "title": "Arduino: Change Board Type"
+        "title": "%arduino.command.changeBoardType%",
+        "icon": "images/selectBoard.svg"
       },
       {
         "command": "arduino.showBoardConfig",
-        "title": "Arduino: Board Config"
+        "title": "%arduino.command.showBoardConfig%"
       },
       {
         "command": "arduino.showBoardManager",
-        "title": "Arduino: Board Manager"
+        "title": "%arduino.command.showBoardManager%",
+        "icon": "images/boardManager.svg"
       },
       {
         "command": "arduino.showLibraryManager",
-        "title": "Arduino: Library Manager"
+        "title": "%arduino.command.showLibraryManager%",
+        "icon": "images/libManager.svg"
       },
       {
         "command": "arduino.showExamples",
-        "title": "Arduino: Examples"
+        "title": "%arduino.command.showExamples%",
+        "icon": "images/examples.svg"
+      },
+      {
+        "command": "arduino.showHome",
+        "title": "%arduino.command.showHome%",
+        "icon": "images/ArduinoCommunityLogo_Gris.svg"
       }
     ],
     "menus": {
@@ -183,23 +189,33 @@
           "when": "resourceExtname == .ino",
           "command": "arduino.upload",
           "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == .ino",
+          "command": "arduino.openSerialMonitor",
+          "group": "navigation"
         }
       ],
       "view/title": [
         {
-          "when": "view == arduinoProjectLauncher",
-          "command": "arduino.verify",
+          "when": "view == arduinoProjectWelcome",
+          "command": "arduino.initialize",
           "group": "navigation@1"
         },
         {
-          "when": "view == arduinoProjectLauncher",
-          "command": "arduino.upload",
+          "when": "view == arduinoProjectWelcome",
+          "command": "arduino.showExamples",
           "group": "navigation@2"
         },
         {
-          "when": "view == arduinoProjectLauncher",
-          "command": "arduino.showExamples",
+          "when": "view == arduinoProjectWelcome",
+          "command": "arduino.showBoardManager",
           "group": "navigation@3"
+        },
+        {
+          "when": "view == arduinoProjectWelcome",
+          "command": "arduino.showLibraryManager",
+          "group": "navigation@4"
         }
       ]
     },
@@ -207,7 +223,7 @@
       "activitybar": [
         {
           "id": "arduinoLauncher",
-          "title": "Arduino",
+          "title": "%arduino.view.container.title%",
           "icon": "images/ArduinoCommunityLogo_Gris.svg"
         }
       ]
@@ -216,7 +232,7 @@
       "explorer": [
         {
           "id": "arduinoExampleExplorer",
-          "name": "Arduino Examples",
+          "name": "%arduino.view.exampleExplorer%",
           "when": "vscode-arduino:showExampleExplorer",
           "icon": "images/ArduinoCommunityLogo_Gris.svg"
         }
@@ -224,12 +240,7 @@
       "arduinoLauncher": [
         {
           "id": "arduinoProjectWelcome",
-          "name": "Start",
-          "icon": "images/ArduinoCommunityLogo_Gris.svg"
-        },
-        {
-          "id": "arduinoProjectLauncher",
-          "name": "Project Launcher",
+          "name": "%arduino.view.welcome%",
           "icon": "images/ArduinoCommunityLogo_Gris.svg"
         }
       ]
@@ -514,24 +525,34 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Arduino configuration",
+      "title": "%arduino.configuration.title%",
       "properties": {
         "arduino.path": {
           "type": "string",
           "default": "",
-          "description": "Path to the directory containing Arduino CLI. Leave empty if `arduino-cli` is already on your system PATH. Example: 'C:\\tools\\arduino-cli' for Windows, '/usr/local/bin' for macOS, '/home/$user/bin' for Linux. (Requires a restart after change)"
+          "description": "%arduino.configuration.path.description%"
         },
         "arduino.commandPath": {
           "type": "string",
           "default": "",
-          "description": "Executable name or wrapper script relative to `arduino.path`. Leave empty to use the default Arduino CLI executable name for the current platform. Example: 'arduino-cli.exe' for Windows or 'arduino-cli' for macOS/Linux. (Requires a restart after change)"
+          "description": "%arduino.configuration.commandPath.description%"
+        },
+        "arduino.theme": {
+          "type": "string",
+          "default": "Arduino Light",
+          "enum": [
+            "Arduino",
+            "Arduino Light",
+            "Arduino Dark"
+          ],
+          "markdownDescription": "%arduino.configuration.theme.description%"
         },
         "arduino.additionalUrls": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Additional URLs for 3rd party packages."
+          "description": "%arduino.configuration.additionalUrls.description%"
         },
         "arduino.logLevel": {
           "type": "string",
@@ -544,17 +565,17 @@
         "arduino.clearOutputOnBuild": {
           "type": "boolean",
           "default": false,
-          "description": "Clear the output logs before uploading or verifying."
+          "description": "%arduino.configuration.clearOutputOnBuild.description%"
         },
         "arduino.openPDEFiletype": {
           "type": "boolean",
           "default": false,
-          "description": "Allow VSCode Arduino to open PDE sketches, from pre-1.0.0 versions of Arduino"
+          "description": "%arduino.configuration.openPDEFiletype.description%"
         },
         "arduino.enableUSBDetection": {
           "type": "boolean",
           "default": false,
-          "description": "USB Detection is currently not working"
+          "description": "%arduino.configuration.enableUSBDetection.description%"
         },
         "arduino.disableTestingOpen": {
           "type": "boolean",
@@ -575,32 +596,32 @@
         "arduino.disableIntelliSenseAutoGen": {
           "type": "boolean",
           "default": false,
-          "description": "When disabled vscode-arduino will not auto-generate an IntelliSense configuration (i.e. c_cpp_properties.json) by analyzing the compiler output."
+          "description": "%arduino.configuration.disableIntelliSenseAutoGen.description%"
         },
         "arduino.defaultTimestampFormat": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Format of timestamp printed before each line of Serial Monitor output. You can find list of all available placeholders [here](https://github.com/samsonjs/strftime#supported-specifiers)."
+          "markdownDescription": "%arduino.configuration.defaultTimestampFormat.description%"
         },
         "arduino.analyzeOnOpen": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "When true, automatically run analysis when the project is opened. Only works when `arduino.analyzeOnSettingChange` is true."
+          "markdownDescription": "%arduino.configuration.analyzeOnOpen.description%"
         },
         "arduino.analyzeOnSettingChange": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "When true, automatically run analysis when board, configuration, or sketch settings are changed."
+          "markdownDescription": "%arduino.configuration.analyzeOnSettingChange.description%"
         },
         "arduino.customLibraryPath": {
           "type": "string",
           "default": "",
-          "description": "Custom path for Arduino libraries. Used as an additional library search path when compiling."
+          "description": "%arduino.configuration.customLibraryPath.description%"
         },
         "arduino.arduinoCliConfigFile": {
           "type": "string",
           "default": "",
-          "description": "Path to a local arduino-cli.yaml configuration file. When set, this file is used instead of the global configuration."
+          "description": "%arduino.configuration.arduinoCliConfigFile.description%"
         }
       }
     },
@@ -661,7 +682,7 @@
     "@types/node": "^16.9.6",
     "@types/strftime": "^0.9.2",
     "@types/uuid": "^8.3.1",
-    "@types/vscode": "^1.43.0",
+    "@types/vscode": "1.56.0",
     "@types/winreg": "^1.2.30",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
@@ -687,6 +708,7 @@
     "mocha": "^6.2.3",
     "node-gyp": "^6.1.0",
     "plugin-error": "^1.0.1",
+    "sharp": "^0.34.5",
     "tslint": "^5.20.1",
     "typemoq": "^1.6.0",
     "typescript": "^3.7.5",

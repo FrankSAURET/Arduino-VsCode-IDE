@@ -39,7 +39,7 @@ export class BoardManager {
     constructor(private _settings: IArduinoSettings, private _arduinoApp: ArduinoApp) {
         this._boardConfigStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, constants.statusBarPriority.BOARD);
         this._boardConfigStatusBar.command = "arduino.showBoardConfig";
-        this._boardConfigStatusBar.tooltip = "Show Board Config";
+        this._boardConfigStatusBar.tooltip = vscode.l10n.t("Show Board Config");
     }
 
     public async loadPackages(update: boolean = false) {
@@ -90,7 +90,7 @@ export class BoardManager {
     public async changeBoardType() {
         const supportedBoardTypes = this.listBoards();
         if (supportedBoardTypes.length === 0) {
-            vscode.window.showInformationMessage("No supported board is available.");
+            vscode.window.showInformationMessage(vscode.l10n.t("No supported board is available."));
             return;
         }
         // TODO:? Add separator item between different platforms.
@@ -106,7 +106,7 @@ export class BoardManager {
             } else {
                 return a.description > b.description ? 1 : -1;
             }
-        }), { placeHolder: "Select board type" });
+        }), { placeHolder: vscode.l10n.t("Select board type") });
         if (chosen && chosen.label) {
             this.doChangeBoardType((<any>chosen).entry);
         }
@@ -280,7 +280,7 @@ export class BoardManager {
             if (this._currentBoard) {
                 this._boardConfigStatusBar.text = this._currentBoard.name;
             } else {
-                this._boardConfigStatusBar.text = "<Select Board Type>";
+                this._boardConfigStatusBar.text = vscode.l10n.t("<Select Board Type>");
             }
         } else {
             this._boardConfigStatusBar.hide();
@@ -346,16 +346,16 @@ export class BoardManager {
         let what = "";
         switch (result) {
             case BoardConfigResult.InvalidFormat:
-                what = ": Invalid format must be of the form \"key1=value2,key1=value2,...\"";
+                what = vscode.l10n.t(": Invalid format must be of the form \"key1=value2,key1=value2,...\"");
                 break;
             case BoardConfigResult.InvalidConfigID:
-                what = ": Invalid configuration key";
+                what = vscode.l10n.t(": Invalid configuration key");
                 break;
             case BoardConfigResult.InvalidOptionID:
-                what = ": Invalid configuration value";
+                what = vscode.l10n.t(": Invalid configuration value");
                 break;
         }
-        vscode.window.showWarningMessage(`Invalid board configuration detected in configuration file${what}. Falling back to defaults.`);
+        vscode.window.showWarningMessage(vscode.l10n.t("Invalid board configuration detected in configuration file{0}. Falling back to defaults.", what));
     }
 
     private loadInstalledPlatforms() {

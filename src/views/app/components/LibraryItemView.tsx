@@ -5,6 +5,7 @@ import * as React from "react";
 import { Button, DropdownButton, MenuItem } from "react-bootstrap";
 import { versionCompare } from "../../../common/sharedUtilities/utils";
 import * as API from "../actions/api";
+import { t } from "../utils/i18n";
 import * as util from "../utils/util";
 
 interface ILibraryProps extends React.Props<any> {
@@ -93,15 +94,15 @@ export default class LibraryItemView extends React.Component<ILibraryProps, ILib
     private buildLibrarySectionHeader(lib) {
         return (<div><span className="listitem-header">{lib.name}</span>
             {
-                lib.builtIn && (<span> Built-In </span>)
+                lib.builtIn && (<span> {t("Built-In")} </span>)
             }
             {
-                lib.author && (<span className="listitem-author"> by <span className="listitem-header">{lib.author}</span></span>)
+                lib.author && (<span className="listitem-author"> {t("by")} <span className="listitem-header">{lib.author}</span></span>)
             }
             {
                 lib.installed && (
-                    <span className="listitem-author"> Version {lib.version || "Unknown"} <span className="listitem-installed-header">
-                        INSTALLED</span>
+                    <span className="listitem-author"> {t("Version")} {lib.version || t("Unknown")} <span className="listitem-installed-header">
+                        {t("INSTALLED")}</span>
                     </span>
                 )
             }
@@ -112,7 +113,7 @@ export default class LibraryItemView extends React.Component<ILibraryProps, ILib
         return (<div>
             <span className="listitem-header">{lib.sentence}</span> {lib.paragraph}
             {
-                lib.website && (<div><a className="help-link" onClick={() => this.openLink(lib.website)}>More info</a></div>)
+                lib.website && (<div><a className="help-link" onClick={() => this.openLink(lib.website)}>{t("More info")}</a></div>)
             }
         </div>);
     }
@@ -120,27 +121,27 @@ export default class LibraryItemView extends React.Component<ILibraryProps, ILib
     private buildLibrarySectionButtons(lib) {
         return (<div className="listitem-footer">
             {
-                this.state.isInstalling && (<div className="toolbar-mask theme-bgcolor">Installing...</div>)
+                this.state.isInstalling && (<div className="toolbar-mask theme-bgcolor">{t("Installing...")}</div>)
             }
             {
-                this.state.isUninstalling && (<div className="toolbar-mask theme-bgcolor">Removing</div>)
+                this.state.isUninstalling && (<div className="toolbar-mask theme-bgcolor">{t("Removing")}</div>)
             }
             {
                 lib.installed && (
                     <div className="right-side">
                         {
                             lib.supported && (
-                                <Button className="operation-btn" onClick={() => this.addLibPath(lib.srcPath)}>Include Library</Button>
+                                <Button className="operation-btn" onClick={() => this.addLibPath(lib.srcPath)}>{t("Include Library")}</Button>
                             )
                         }
                         {
                             lib.versions && lib.versions.length && versionCompare(lib.versions[0], lib.version) > 0 && (
-                                <Button className="operation-btn" onClick={() => this.installLibrary(lib.name, lib.versions[0])}>Update</Button>
+                                <Button className="operation-btn" onClick={() => this.installLibrary(lib.name, lib.versions[0])}>{t("Update")}</Button>
                             )
                         }
                         {
                             !lib.builtIn && (
-                                <Button className="operation-btn"onClick={() => this.uninstallLibrary(lib.name, lib.installedPath)}>Remove</Button>
+                                <Button className="operation-btn"onClick={() => this.uninstallLibrary(lib.name, lib.installedPath)}>{t("Remove")}</Button>
                             )
                         }
                     </div>
@@ -149,8 +150,8 @@ export default class LibraryItemView extends React.Component<ILibraryProps, ILib
             {
                 lib.versions && lib.versions.length > 1 && (
                     <div className="left-side">
-                        <DropdownButton id="versionselector" title={this.state.version || "Select version"}
-                            placeholder="Select version" onSelect={this.versionUpdate}>
+                        <DropdownButton id="versionselector" title={this.state.version || t("Select version")}
+                            placeholder={t("Select version")} onSelect={this.versionUpdate}>
                             { lib.versions.map((v, index) => {
                                 if (v === lib.version) {
                                     return "";
@@ -159,14 +160,14 @@ export default class LibraryItemView extends React.Component<ILibraryProps, ILib
                             })}
                         </DropdownButton>
                         <Button className="operation-btn" disabled={!this.state.version}
-                            onClick={() => this.installLibrary(lib.name, this.state.version)}>Install</Button>
+                            onClick={() => this.installLibrary(lib.name, this.state.version)}>{t("Install")}</Button>
                     </div>
                 )
             }
             {
                 lib.versions && lib.versions.length === 1 && !lib.installed && (
                     <div className="left-side">
-                        <Button className="operation-btn" onClick={() => this.installLibrary(lib.name, lib.versions[0])}>Install</Button>
+                        <Button className="operation-btn" onClick={() => this.installLibrary(lib.name, lib.versions[0])}>{t("Install")}</Button>
                     </div>
                 )
             }

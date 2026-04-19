@@ -91,7 +91,7 @@ class ExampleItem extends vscode.TreeItem {
         super(_example.name, _example.isLeaf ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed);
         if (_example.isLeaf) {
             this.command = {
-                title: "Open Example",
+                title: vscode.l10n.t("Open Example"),
                 command: "arduino.openExample",
                 arguments: [_example.path],
             };

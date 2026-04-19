@@ -6,6 +6,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import * as API from "../actions/api";
+import { t } from "../utils/i18n";
 
 interface IExampleViewProps extends React.Props<any> {
     examples: any[];
@@ -44,10 +45,13 @@ class ExampleTreeView extends React.Component<IExampleViewProps, IExampleViewSta
     }
 
     public render() {
-        return (<Tree className="exampleview" onSelect={this.openExample} onExpand={this.onExpand}
+        return (<div>
+            <h1>{t("Examples")}</h1>
+            <Tree className="exampleview" onSelect={this.openExample} onExpand={this.onExpand}
                       expandedKeys={this.state.expandedKeys} autoExpandParent={false}>
             { this.getTreeNodes(this.props.examples) }
-        </Tree>);
+        </Tree>
+        </div>);
     }
 
     private getTreeNodes(examples) {

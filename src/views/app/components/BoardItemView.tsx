@@ -5,6 +5,7 @@ import * as React from "react";
 import { Button, DropdownButton, MenuItem } from "react-bootstrap";
 import { versionCompare } from "../../../common/sharedUtilities/utils";
 import * as API from "../actions/api";
+import { t } from "../utils/i18n";
 
 interface IBoardProps extends React.Props<any> {
     platform: any;
@@ -51,12 +52,12 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
         return (<div>
             <span className="listitem-header">{p.name}</span>
             {
-                p.defaultPlatform && (<span> Built-In </span>)
+                p.defaultPlatform && (<span> {t("Built-In")} </span>)
             }
-            <span className="listitem-author"> by <span className="listitem-header">{p.package.maintainer}</span></span>
+            <span className="listitem-author"> {t("by")} <span className="listitem-header">{p.package.maintainer}</span></span>
             {
                 p.installedVersion && (
-                    <span className="listitem-author"> Version {p.installedVersion} <span className="listitem-installed-header">INSTALLED</span>
+                    <span className="listitem-author"> {t("Version")} {p.installedVersion} <span className="listitem-installed-header">{t("INSTALLED")}</span>
                     </span>)
             }
         </div>);
@@ -86,11 +87,11 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
         });
         return (<div className="listitem-container">
             <div>
-                Boards included in this package:<br/> {p.boards.map((board: any) => board.name).join(", ")}
+                {t("Boards included in this package:")}<br/> {p.boards.map((board: any) => board.name).join(", ")}
             </div>
             {
                 helpLinks.map((helpLink, index) => {
-                    return (<div key={index}><a className="help-link" onClick={() => this.openLink(helpLink.url)}>{helpLink.label}</a></div>);
+                    return (<div key={index}><a className="help-link" onClick={() => this.openLink(helpLink.url)}>{t(helpLink.label)}</a></div>);
                 })
             }
         </div>);
@@ -99,10 +100,10 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
     private buildBoardSecionButtons(p) {
         return (<div className="listitem-footer">
             {
-                this.props.installingBoardName === p.name && (<div className="toolbar-mask theme-bgcolor">Installing...</div>)
+                this.props.installingBoardName === p.name && (<div className="toolbar-mask theme-bgcolor">{t("Installing...")}</div>)
             }
             {
-                this.props.uninstallingBoardName === p.name && (<div className="toolbar-mask theme-bgcolor">Removing...</div>)
+                this.props.uninstallingBoardName === p.name && (<div className="toolbar-mask theme-bgcolor">{t("Removing...")}</div>)
             }
             {
                 p.installedVersion && (
@@ -111,13 +112,13 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
                             p.versions && p.versions.length && versionCompare(p.versions[0], p.installedVersion) > 0 && (
                                 <Button className="operation-btn"
                                 onClick={() => this.props.installBoard(p.name, p.package.name, p.architecture, p.versions[0])}>
-                                Update
+                                {t("Update")}
                                 </Button>
                             )
                         }
                         {
                             !p.defaultPlatform && (
-                                <Button className="operation-btn" onClick={() => this.props.uninstallBoard(p.name, p.rootBoardPath)}>Remove</Button>
+                                <Button className="operation-btn" onClick={() => this.props.uninstallBoard(p.name, p.rootBoardPath)}>{t("Remove")}</Button>
                             )
                         }
                     </div>
@@ -126,8 +127,8 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
             {
                 p.versions && p.versions.length > 1 && (
                     <div className="left-side">
-                        <DropdownButton id="versionselector" title={this.state.version || "Select version"}
-                        placeholder="Select version" onSelect={this.versionUpdate}>
+                        <DropdownButton id="versionselector" title={this.state.version || t("Select version")}
+                        placeholder={t("Select version")} onSelect={this.versionUpdate}>
                             { p.versions.map((v, index) => {
                                 if (v === p.installedVersion) {
                                     return "";
@@ -137,7 +138,7 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
                         </DropdownButton>
                         <Button className="operation-btn" disabled={!this.state.version}
                         onClick={() => this.props.installBoard(p.name, p.package.name, p.architecture, this.state.version)}>
-                        Install
+                        {t("Install")}
                         </Button>
                     </div>
                 )
@@ -147,7 +148,7 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
                     <div className="left-side">
                         <Button className="operation-btn"
                         onClick={() => this.props.installBoard(p.name, p.package.name, p.architecture, p.versions[0])}>
-                        Install
+                        {t("Install")}
                         </Button>
                     </div>
                 )

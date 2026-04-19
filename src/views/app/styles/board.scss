@@ -1,4 +1,10 @@
 @import "theme";
+
+h1 {
+    color: #00878f !important;
+    margin : 5px;
+}
+
 .disabled {
     pointer-events: none;
     opacity: 0.6;
@@ -19,8 +25,8 @@
 
 .arduinomanager-toolbar {
     min-height: 60px;
-    padding: 10px 10px 0px 10px;
-    position: fixed;
+    padding: 10px 10px 5px 10px;
+    flex-shrink: 0;
     width: 100%;
     z-index: 100;
     .btn-link {
@@ -29,16 +35,16 @@
 }
 
 .arduinomanager-container {
-    padding-top: 90px;
-    padding-bottom: 40px;
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 5px;
 }
 
 .arduinomanager-footer {
     height: 40px;
     line-height: 40px;
     width: 100%;
-    position: fixed;
-    bottom: 0;
+    flex-shrink: 0;
     padding: 0px 10px;
 }
 
@@ -72,6 +78,7 @@
 a {
     color: lightseagreen;
 }
+
 
 .help-link {
     @extend a;
@@ -119,20 +126,23 @@ a {
     }
     .dropdown {
         margin-right: 5px;
+        display: inline-block;
         button {
-            width: 120px;
-            padding: 2px 10px;
+            width: auto;
+            min-width: 80px;
+            padding: 2px 20px 2px 10px;
             text-align: left;
             overflow: hidden;
         }
         .caret {
-            left: 90%;
+            right: 6px;
             top: 45%;
             position: absolute;
         }
         .dropdown-menu {
             min-width: inherit;
-            width: 120px;
+            width: auto;
+            min-width: 80px;
             max-height: 200px;
             overflow: auto;
         }
@@ -149,6 +159,9 @@ a {
 }
 
 .boardmanager {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     .dropdown-filter {
         float: left;
     }
@@ -157,14 +170,14 @@ a {
         margin-left: 195px;
         color: #333;
     }
-    .arduinomanager-container {		
-        padding-top: 90px;		
-    }
 }
 
 .librarymanager {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     .listitem:last-child {
-        margin-bottom: 40px;
+        margin-bottom: 10px;
     }
     .arduinomanager-toolbar {
         min-height: 80px;
@@ -189,24 +202,15 @@ a {
         .search-input {
             margin-left: 400px;
         }
-       .arduinomanager-container {		
-            padding-top: 115px;		
-        }
     }
     @media only screen and (max-width: 559px) {
         .dropdown-filter {
             display: inline-block;
         }
-        .arduinomanager-container {		
-            padding-top: 160px;		
-        }
     }
     @media only screen and (max-width: 405px) {
         .dropdown-filter {
             display: block;
-        }
-        .arduinomanager-container {		
-            padding-top: 205px;		
         }
     }
 }

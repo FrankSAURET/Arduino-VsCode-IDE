@@ -63,7 +63,7 @@ export interface IDeviceContext {
     intelliSenseGen: string;
 
     initialize(): Thenable<string | undefined>;
-    openProjectFolder(): Thenable<void>;
+    openProjectFolder(): Thenable<string | undefined>;
 }
 
 export class DeviceContext implements IDeviceContext, vscode.Disposable {
@@ -114,7 +114,7 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
             this._vscodeWatcher.onDidDelete(() => this.loadContext());
             this._sketchStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, constants.statusBarPriority.SKETCH);
             this._sketchStatusBar.command = "arduino.selectSketch";
-            this._sketchStatusBar.tooltip = "Sketch File";
+            this._sketchStatusBar.tooltip = vscode.l10n.t("Sketch File");
         }
     }
 
@@ -288,8 +288,8 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
             canSelectFiles: false,
             canSelectFolders: true,
             canSelectMany: false,
-            openLabel: "Select parent folder",
-            title: "Select parent folder for the new Arduino project",
+            openLabel: vscode.l10n.t("Select parent folder"),
+            title: vscode.l10n.t("Select parent folder for the new Arduino project"),
         });
         if (!baseFolder || baseFolder.length === 0) {
             return undefined;
@@ -297,19 +297,19 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
 
         const projectName = await vscode.window.showInputBox({
             value: "MyArduinoProject",
-            prompt: "Enter the project name",
-            placeHolder: "Project name",
+            prompt: vscode.l10n.t("Enter the project name"),
+            placeHolder: vscode.l10n.t("Project name"),
             validateInput: (value) => {
                 const trimmed = (value || "").trim();
                 if (!trimmed) {
-                    return "Project name is required.";
+                    return vscode.l10n.t("Project name is required.");
                 }
                 if (!/^[\w-]+$/.test(trimmed)) {
-                    return "Use only letters, numbers, underscores, or hyphens.";
+                    return vscode.l10n.t("Use only letters, numbers, underscores, or hyphens.");
                 }
                 const projectFolder = path.join(baseFolder[0].fsPath, trimmed);
                 if (util.directoryExistsSync(projectFolder) || util.fileExistsSync(projectFolder)) {
-                    return "A file or folder with this name already exists.";
+                    return vscode.l10n.t("A file or folder with this name already exists.");
                 }
                 return null;
             },
@@ -321,18 +321,18 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
         return this.createProjectScaffold(baseFolder[0].fsPath, projectName.trim());
     }
 
-    public async openProjectFolder(): Promise<void> {
+    public async openProjectFolder(): Promise<string | undefined> {
         const selectedFolder = await vscode.window.showOpenDialog({
             canSelectFiles: false,
             canSelectFolders: true,
             canSelectMany: false,
-            openLabel: "Open project",
-            title: "Select an Arduino project folder",
+            openLabel: vscode.l10n.t("Open project"),
+            title: vscode.l10n.t("Select an Arduino project folder"),
         });
         if (!selectedFolder || selectedFolder.length === 0) {
-            return;
+            return undefined;
         }
-        await vscode.commands.executeCommand("vscode.openFolder", selectedFolder[0], true);
+        return selectedFolder[0].fsPath;
     }
 
     /**
@@ -347,13 +347,13 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
                 if (fileUris.length === 0) {
                     let newSketchFileName = await vscode.window.showInputBox({
                         value: "sketch.ino",
-                        prompt: "No sketch (*.ino) found in workspace, please provide a name",
-                        placeHolder: "Sketch file name (*.ino or *.cpp)",
+                        prompt: vscode.l10n.t("No sketch (*.ino) found in workspace, please provide a name"),
+                        placeHolder: vscode.l10n.t("Sketch file name (*.ino or *.cpp)"),
                         validateInput: (value) => {
                             if (value && /^[\w-]+\.(?:ino|cpp)$/.test(value.trim())) {
                                 return null;
                             } else {
-                                return "Invalid sketch file name. Should be *.ino/*.cpp";
+                                return vscode.l10n.t("Invalid sketch file name. Should be *.ino/*.cpp");
                             }
                         },
                     });
@@ -378,7 +378,7 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
                             label: path.relative(ArduinoWorkspace.rootPath, fileUri.fsPath),
                             description: fileUri.fsPath,
                         };
-                    }), { placeHolder: "Select the main sketch file" });
+                    }), { placeHolder: vscode.l10n.t("Select the main sketch file") });
                     if (chosen && chosen.label) {
                         this.sketch = chosen.label;
                     }

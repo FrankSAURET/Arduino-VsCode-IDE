@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import SearchInput, { createFilter } from "react-search-input";
 import { versionCompare } from "../../../common/sharedUtilities/utils";
 import * as actions from "../actions";
+import { t } from "../utils/i18n";
 import * as API from "../actions/api";
 import BoardItemView from "./BoardItemView";
 
@@ -96,9 +97,9 @@ class BoardManager extends React.Component<IBoardManagerProps, IBoardManagerStat
 
         let totalCountTips = "";
         if (this.state.category === "All" && !this.state.searchTerm) {
-            totalCountTips = `Total ${filteredPlatforms.length} Boards`;
+            totalCountTips = t("Total {0} Boards", filteredPlatforms.length);
         } else {
-            totalCountTips = `${filteredPlatforms.length} Boards matched`;
+            totalCountTips = t("{0} Boards matched", filteredPlatforms.length);
         }
         const boardProps = {
             installingBoardName: this.props.installingBoardName,
@@ -114,21 +115,23 @@ class BoardManager extends React.Component<IBoardManagerProps, IBoardManagerStat
             <div className={"boardmanager " + (isOperating ? "disabled" : "")}>
                 {
                     this.props.requesting && (
-                        <div className="mask theme-bgcolor">Loading...</div>
+                        <div className="mask theme-bgcolor">{t("Loading...")}</div>
                     )
                 }
                 <div className="arduinomanager-toolbar theme-bgcolor">
+                    <h1>{t("Board Manager")}</h1>
+                    
                     <div className="dropdown-filter">
-                        <span className="dropdown-label">Type</span>
-                        <DropdownButton id="typeselector" title={this.state.category} onSelect={this.typeUpdate}>
+                        <span className="dropdown-label">{t("Type")}</span>
+                        <DropdownButton id="typeselector" title={t(this.state.category)} onSelect={this.typeUpdate}>
                             {this.props.categories.map((c, index) => {
-                                return (<MenuItem key={index} eventKey={c} active={c === this.state.category}>{c}</MenuItem>);
+                                return (<MenuItem key={index} eventKey={c} active={c === this.state.category}>{t(c)}</MenuItem>);
                             })}
                         </DropdownButton>
                     </div>
-                    <SearchInput className="search-input" placeholder="Filter your search..." onChange={this.searchUpdate} />
+                    <SearchInput className="search-input" placeholder={t("Filter your search...")} onChange={this.searchUpdate} />
                     <Button className="operation-btn" bsStyle="link" onClick={() => this.props.loadBoardPackages(true)}>
-                        Refresh Package Indexes
+                        {t("Refresh Package Indexes")}
                     </Button>
                 </div>
                 <div className="arduinomanager-container">
@@ -140,8 +143,8 @@ class BoardManager extends React.Component<IBoardManagerProps, IBoardManagerStat
                 </div>
                 <div className="arduinomanager-footer theme-bgcolor">
                     <span>{totalCountTips}</span>
-                    <a className="help-link right-side" title="Configure Additional Boards Manager URLs"
-                        onClick={() => API.openSettings("arduino.additionalUrls")}>Additional URLs</a>
+                    <a className="help-link right-side" title={t("Configure Additional Boards Manager URLs")}
+                        onClick={() => API.openSettings("arduino.additionalUrls")}>{t("Additional URLs")}</a>
                 </div>
 
             </div>);

@@ -4,6 +4,7 @@
 import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
+import * as vscode from "vscode";
 import * as util from "../common/util";
 
 import { ArduinoApp } from "./arduino";
@@ -25,7 +26,7 @@ export class ExampleManager {
         const examples = [];
         // load Built-in Examples from examples folder under arduino installation directory.
         examples.push({
-            name: "Built-in Examples",
+            name: vscode.l10n.t("Built-in Examples"),
             path: this._settings.defaultExamplePath,
             children: this.parseExamples(this._settings.defaultExamplePath),
         });
@@ -34,7 +35,7 @@ export class ExampleManager {
         const examplesFromDefaultLibraries = await this.parseExamplesFromLibrary(this._settings.defaultLibPath, true);
         if (examplesFromDefaultLibraries.length) {
             examples.push({
-                name: "Examples for any board",
+                name: vscode.l10n.t("Examples for any board"),
                 path: this._settings.defaultLibPath,
                 children: examplesFromDefaultLibraries,
             });
@@ -47,7 +48,7 @@ export class ExampleManager {
             const examplesFromCurrentBoard = await this.parseExamplesFromLibrary(currentBoardLibrariesPath, false);
             if (examplesFromCurrentBoard.length) {
                 examples.push({
-                    name: `Examples for ${currentBoard.name}`,
+                    name: vscode.l10n.t("Examples for {0}", currentBoard.name),
                     path: currentBoardLibrariesPath,
                     children: examplesFromCurrentBoard,
                 });
@@ -59,7 +60,7 @@ export class ExampleManager {
         const examplesFromCustomLibraries = await this.parseExamplesFromLibrary(customLibrariesPath, true, true);
         if (examplesFromCustomLibraries.length) {
             examples.push({
-                name: "Examples from Custom Libraries",
+                name: vscode.l10n.t("Examples from Custom Libraries"),
                 path: customLibrariesPath,
                 children: examplesFromCustomLibraries,
             });
@@ -70,7 +71,7 @@ export class ExampleManager {
         const examplesFromSketches = await this.parseExamples(sketchesPath);
         if (examplesFromSketches.length) {
             examples.push({
-                name: "Workspace",
+                name: vscode.l10n.t("Workspace"),
                 path: sketchesPath,
                 children: examplesFromSketches,
             });

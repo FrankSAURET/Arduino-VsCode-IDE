@@ -27,15 +27,15 @@ export const BOARD_CONFIG_URI = vscode.Uri.parse("arduino-manager://arduino/ardu
 export const EXAMPLES_URI = vscode.Uri.parse("arduino-manager://arduino/arduino-examples");
 
 export const messages = {
-    ARDUINO_FILE_ERROR: "The arduino.json file format is not correct.",
-    NO_BOARD_SELECTED: "Please select the board type first.",
-    INVALID_ARDUINO_PATH: "Cannot find Arduino CLI. Please specify the directory containing \"arduino-cli\" via \"arduino.path\" in User Settings. Requires a restart after change.",
-    INVALID_COMMAND_PATH: "Please check the \"arduino.commandPath\" in the User Settings." +
-"Requires a restart after change.Cannot find the command file:",
-    FAILED_SEND_SERIALPORT: "Failed to send message to serial port.",
-    SERIAL_PORT_NOT_STARTED: "Serial Monitor has not been started.",
-    SEND_BEFORE_OPEN_SERIALPORT: "Please open a serial port first.",
-    NO_PROGRAMMMER_SELECTED: "Please select the programmer first.",
+    ARDUINO_FILE_ERROR: vscode.l10n.t("The arduino.json file format is not correct."),
+    NO_BOARD_SELECTED: vscode.l10n.t("Please select the board type first."),
+    INVALID_ARDUINO_PATH: vscode.l10n.t("Cannot find Arduino CLI. Please specify the directory containing \"arduino-cli\" via \"arduino.path\" in User Settings. Requires a restart after change."),
+    INVALID_COMMAND_PATH: vscode.l10n.t("Please check the \"arduino.commandPath\" in the User Settings.") +
+vscode.l10n.t("Requires a restart after change.Cannot find the command file:"),
+    FAILED_SEND_SERIALPORT: vscode.l10n.t("Failed to send message to serial port."),
+    SERIAL_PORT_NOT_STARTED: vscode.l10n.t("Serial Monitor has not been started."),
+    SEND_BEFORE_OPEN_SERIALPORT: vscode.l10n.t("Please open a serial port first."),
+    NO_PROGRAMMMER_SELECTED: vscode.l10n.t("Please select the programmer first."),
 };
 
 export const statusBarPriority = {
