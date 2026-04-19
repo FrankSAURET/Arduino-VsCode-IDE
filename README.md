@@ -1,5 +1,5 @@
 # Arduino VsCode IDE
-![alt text](images/LogoVsCodeArduinoIDE.svg)
+![alt text](images/LogoVsCodeArduinoIDE.png)
 
 > **This is a community fork** of the [original Microsoft vscode-arduino extension](https://github.com/Microsoft/vscode-arduino), which is no longer actively maintained. This fork is also based on work from the [vscode-arduino community fork](https://github.com/vscode-arduino/vscode-arduino).
 >
