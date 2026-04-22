@@ -42,7 +42,9 @@ jobs:
           NODE_OPTIONS: --openssl-legacy-provider
 
       - name: Pack extension
-        run: npx vsce package --no-dependencies --no-prepublish --out arduino-vscode-ide.vsix
+        run: |
+          npm pkg delete scripts.vscode:prepublish
+          npx @vscode/vsce package --no-dependencies --out arduino-vscode-ide.vsix
 
       - name: Publish extension VSIX as artifact
         uses: actions/upload-artifact@v4
