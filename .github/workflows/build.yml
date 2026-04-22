@@ -31,7 +31,7 @@ jobs:
           node-version: 20.x
 
       - name: Install project dependencies
-        run: npm install
+        run: npm install --ignore-scripts
 
       - name: Check for linting errors
         run: npm run lint
