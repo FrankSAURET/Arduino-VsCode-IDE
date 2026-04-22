@@ -34,10 +34,10 @@ jobs:
         run: npm install
 
       - name: Check for linting errors
-        run: npm exec -- gulp --no-color tslint
+        run: npm run lint
 
       - name: Build extension
-        run: npm exec -- gulp --no-color build_without_view
+        run: npm run build:ext
         env:
           NODE_OPTIONS: --openssl-legacy-provider
 

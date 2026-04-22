@@ -681,7 +681,9 @@
   "scripts": {
     "vscode:prepublish": "gulp build --mode=production",
     "postinstall": "cd ./src/views && npm install",
-    "test": "gulp test"
+    "test": "gulp test",
+    "lint": "gulp --no-color tslint",
+    "build:ext": "gulp --no-color build_without_view"
   },
   "extensionDependencies": [
     "ms-vscode.cpptools"
