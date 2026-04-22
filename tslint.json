@@ -42,6 +42,7 @@
         "no-return-await": false,
         "no-shadowed-variable": false,
         "no-duplicate-imports": false,
-        "array-type": false
+        "array-type": false,
+        "member-ordering": false
     }
 }

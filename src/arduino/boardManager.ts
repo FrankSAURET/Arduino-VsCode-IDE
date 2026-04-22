@@ -211,7 +211,9 @@ export class BoardManager {
         try {
             rawModel = JSON.parse(packageContent);
         } catch (ex) {
-            arduinoChannel.error(vscode.l10n.t("Invalid json file \"{0}\". Suggest to remove it manually and allow boardmanager to re-download it.", path.join(this._settings.packagePath, indexFileName)));
+            const errMsg = vscode.l10n.t("Invalid json file \"{0}\". Suggest to remove it manually and allow boardmanager to re-download it.",
+                path.join(this._settings.packagePath, indexFileName));
+            arduinoChannel.error(errMsg);
             return;
         }
 
@@ -360,7 +362,8 @@ export class BoardManager {
                 what = vscode.l10n.t(": Invalid configuration value");
                 break;
         }
-        vscode.window.showWarningMessage(vscode.l10n.t("Invalid board configuration detected in configuration file{0}. Falling back to defaults.", what));
+        vscode.window.showWarningMessage(vscode.l10n.t(
+            "Invalid board configuration detected in configuration file{0}. Falling back to defaults.", what));
     }
 
     private loadInstalledPlatforms() {

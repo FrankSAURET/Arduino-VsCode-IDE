@@ -43,7 +43,7 @@ export class ArduinoWorkspace {
      * Returns the workspace folder path for a given file URI.
      * Useful for multi-root workspace operations.
      */
-    static getWorkspaceFolderForFile(fileUri: vscode.Uri): string | undefined {
+    public static getWorkspaceFolderForFile(fileUri: vscode.Uri): string | undefined {
         const folder = vscode.workspace.getWorkspaceFolder(fileUri);
         return folder ? folder.uri.fsPath : undefined;
     }

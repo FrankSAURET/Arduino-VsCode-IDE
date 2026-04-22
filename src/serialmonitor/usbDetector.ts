@@ -12,10 +12,10 @@ import ArduinoContext from "../arduinoContext";
 import { ARDUINO_CONFIG_FILE } from "../common/constants";
 import { ArduinoWorkspace } from "../common/workspace";
 
-import * as util from "../common/util";
-import * as Logger from "../logger/logger";
 import { listSerialPorts } from "../common/portList";
+import * as util from "../common/util";
 import { DeviceContext } from "../deviceContext";
+import * as Logger from "../logger/logger";
 
 const HTML_EXT = ".html";
 const MARKDOWN_EXT = ".md";
@@ -113,7 +113,8 @@ export class UsbDetector {
                         if (ignoreBoards.indexOf(deviceDescriptor.name) >= 0) {
                             return;
                         }
-                        vscode.window.showInformationMessage(vscode.l10n.t("Detected board {0}. Would you like to switch to this board type?", deviceDescriptor.name),
+                        vscode.window.showInformationMessage(
+                            vscode.l10n.t("Detected board {0}. Would you like to switch to this board type?", deviceDescriptor.name),
                             vscode.l10n.t("Yes"), vscode.l10n.t("No"), vscode.l10n.t("Don't ask again"))
                             .then((ans) => {
                                 if (ans === vscode.l10n.t("Yes")) {

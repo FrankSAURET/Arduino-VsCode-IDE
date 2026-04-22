@@ -1,8 +1,8 @@
 // Arduino Home Panel — unified webview with navigation rail and content iframe
 import * as child_process from "child_process";
 import * as vscode from "vscode";
-import { DeviceContext } from "../deviceContext";
 import ArduinoContext from "../arduinoContext";
+import { DeviceContext } from "../deviceContext";
 import { getDownloadedCliExecutable } from "./cliDownloader";
 import { canStoreArduinoThemeLocally } from "./themeManager";
 
@@ -195,7 +195,7 @@ export class ArduinoHomePanel {
     }
 
     private async _sendConnectedBoards() {
-        let boards: Array<{name: string; port: string; fqbn: string}> = [];
+        const boards: Array<{name: string; port: string; fqbn: string}> = [];
         let selectedPort = "";
         try {
             const dc = DeviceContext.getInstance();
@@ -261,6 +261,7 @@ export class ArduinoHomePanel {
                 }
             }
         } catch (e) {
+            // tslint:disable-next-line:no-console
             console.error("[ArduinoHomePanel] board list error:", e);
         }
 
@@ -807,7 +808,7 @@ export class ArduinoHomePanel {
         <img class="rail-logo" src="${logoUri}" alt="Arduino" />
 
         <div class="rail-sep"></div>
-        
+
         <button class="rail-btn" data-cmd="arduino.initialize" title="${t.newProject}">
             <img src="${newProjectIcon}" alt="" />
         </button>
@@ -820,9 +821,9 @@ export class ArduinoHomePanel {
         <button class="rail-btn" data-view="boardConfig" title="${t.boardConfig}">
             <img src="${selectBoardIcon}" alt="" />
         </button>
-        
+
         <div class="rail-sep"></div>
-        
+
         <button class="rail-btn" data-view="boardmanager" title="${t.boardManager}">
             <img src="${boardManagerIcon}" alt="" />
         </button>

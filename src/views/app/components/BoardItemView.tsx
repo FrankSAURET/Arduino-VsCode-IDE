@@ -57,7 +57,8 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
             <span className="listitem-author"> {t("by")} <span className="listitem-header">{p.package.maintainer}</span></span>
             {
                 p.installedVersion && (
-                    <span className="listitem-author"> {t("Version")} {p.installedVersion} <span className="listitem-installed-header">{t("INSTALLED")}</span>
+                    <span className="listitem-author"> {t("Version")} {p.installedVersion}{" "}
+                        <span className="listitem-installed-header">{t("INSTALLED")}</span>
                     </span>)
             }
         </div>);
@@ -118,7 +119,8 @@ export default class BoardView extends React.Component<IBoardProps, IBoardState>
                         }
                         {
                             !p.defaultPlatform && (
-                                <Button className="operation-btn" onClick={() => this.props.uninstallBoard(p.name, p.rootBoardPath)}>{t("Remove")}</Button>
+                                <Button className="operation-btn"
+                                    onClick={() => this.props.uninstallBoard(p.name, p.rootBoardPath)}>{t("Remove")}</Button>
                             )
                         }
                     </div>

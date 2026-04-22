@@ -93,7 +93,7 @@ export class ArduinoApp {
     }
 
     /**
-        * Refresh package index state when starting up.
+     * Refresh package index state when starting up.
      * @param {boolean} force - Whether force initialize the arduino
      */
     public async initialize(force: boolean = false) {
@@ -722,11 +722,12 @@ export class ArduinoApp {
             let buffer = "";
             return (data: string) => {
                 buffer += data;
-                let pos: number;
-                while ((pos = buffer.indexOf("\n")) >= 0) {
+                let pos = buffer.indexOf("\n");
+                while (pos >= 0) {
                     const line = buffer.substring(0, pos + 1);
                     buffer = buffer.substring(pos + 1);
                     callback(line);
+                    pos = buffer.indexOf("\n");
                 }
             };
         }

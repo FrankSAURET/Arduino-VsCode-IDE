@@ -7,8 +7,8 @@ import { connect } from "react-redux";
 import SearchInput, { createFilter } from "react-search-input";
 import { versionCompare } from "../../../common/sharedUtilities/utils";
 import * as actions from "../actions";
-import { t } from "../utils/i18n";
 import * as API from "../actions/api";
+import { t } from "../utils/i18n";
 import BoardItemView from "./BoardItemView";
 
 interface IBoardManagerProps extends React.Props<any> {
@@ -120,7 +120,7 @@ class BoardManager extends React.Component<IBoardManagerProps, IBoardManagerStat
                 }
                 <div className="arduinomanager-toolbar theme-bgcolor">
                     <h1>{t("Board Manager")}</h1>
-                    
+
                     <div className="dropdown-filter">
                         <span className="dropdown-label">{t("Type")}</span>
                         <DropdownButton id="typeselector" title={t(this.state.category)} onSelect={this.typeUpdate}>

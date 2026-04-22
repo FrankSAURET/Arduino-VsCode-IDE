@@ -25,11 +25,11 @@ import { ArduinoWorkspace } from "./common/workspace";
 const arduinoDebugConfigurationProviderModule = impor("./debug/configurationProvider") as typeof import ("./debug/configurationProvider");
 import { DeviceContext } from "./deviceContext";
 const completionProviderModule = impor("./langService/completionProvider") as typeof import ("./langService/completionProvider");
-import * as Logger from "./logger/logger";
 import { BuildMode } from "./arduino/arduino";
 import { checkForCliUpdate } from "./arduino/cliDownloader";
 import { applyArduinoTheme } from "./arduino/themeManager";
 import { listSerialPorts } from "./common/portList";
+import * as Logger from "./logger/logger";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
 
 const TELEPLOT_EXTENSION_ID = "alexnesnes.teleplot";
@@ -128,7 +128,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!workspaceFolder || workingFile.indexOf(path.normalize(workspaceFolder)) < 0) {
             vscode.window.showWarningMessage(vscode.l10n.t("The open file \"{0}\" is not inside the workspace folder, the arduino extension might not work properly.", workingFile));
         }
-            await applyConfiguredArduinoTheme();
+        await applyConfiguredArduinoTheme();
     }
     const deviceContext = DeviceContext.getInstance();
     deviceContext.extensionPath = context.extensionPath;
@@ -419,7 +419,6 @@ export async function activate(context: vscode.ExtensionContext) {
             if (!arduinoContextModule.default.initialized) {
                 await arduinoActivatorModule.default.activate();
             }
-
 
             vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
             await runPendingBoardSelection();

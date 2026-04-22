@@ -136,12 +136,14 @@ export default class LibraryItemView extends React.Component<ILibraryProps, ILib
                         }
                         {
                             lib.versions && lib.versions.length && versionCompare(lib.versions[0], lib.version) > 0 && (
-                                <Button className="operation-btn" onClick={() => this.installLibrary(lib.name, lib.versions[0])}>{t("Update")}</Button>
+                                <Button className="operation-btn"
+                                    onClick={() => this.installLibrary(lib.name, lib.versions[0])}>{t("Update")}</Button>
                             )
                         }
                         {
                             !lib.builtIn && (
-                                <Button className="operation-btn"onClick={() => this.uninstallLibrary(lib.name, lib.installedPath)}>{t("Remove")}</Button>
+                                <Button className="operation-btn"
+                                    onClick={() => this.uninstallLibrary(lib.name, lib.installedPath)}>{t("Remove")}</Button>
                             )
                         }
                     </div>
