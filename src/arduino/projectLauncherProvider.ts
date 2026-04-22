@@ -52,6 +52,12 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<QuickAccessI
             icon: "terminal",
         },
         {
+            label: vscode.l10n.t("Serial Tracer"),
+            tooltip: vscode.l10n.t("Arduino: Open Serial Tracer"),
+            command: "arduino.openSerialTracer",
+            icon: "graph-line",
+        },
+        {
             label: vscode.l10n.t("Board Manager"),
             tooltip: vscode.l10n.t("Arduino: Board Manager"),
             command: "arduino.showBoardManager",

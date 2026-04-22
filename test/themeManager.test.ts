@@ -1,6 +1,6 @@
 import * as assert from "assert";
 
-import { findThemeExtensionId, getRecommendedThemeExtensionId } from "../src/arduino/themeManager";
+import { canStoreArduinoThemeLocally, findThemeExtensionId, getRecommendedThemeExtensionId } from "../src/arduino/themeManager";
 
 suite("Arduino: Theme Manager", () => {
     test("should recommend the Arduino theme pack for supported themes", () => {
@@ -42,5 +42,11 @@ suite("Arduino: Theme Manager", () => {
         ]);
 
         assert.equal(extensionId, "publisher.theme-pack");
+    });
+
+    test("should only allow local theme storage when a workspace is open", () => {
+        assert.equal(canStoreArduinoThemeLocally(false, 0), false);
+        assert.equal(canStoreArduinoThemeLocally(true, 0), true);
+        assert.equal(canStoreArduinoThemeLocally(false, 1), true);
     });
 });

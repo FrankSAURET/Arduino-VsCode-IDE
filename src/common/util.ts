@@ -213,8 +213,7 @@ export function spawn(
                     const chcp = child_process.execSync("chcp.com");
                     codepage = chcp.toString().split(":").pop().trim();
                 } catch (error) {
-                    arduinoChannel.warning(`Defaulting to code page 850 because chcp.com failed.\
-                    \rEnsure your path includes %SystemRoot%\\system32\r${error.message}`);
+                    arduinoChannel.warning(vscode.l10n.t("Defaulting to code page 850 because chcp.com failed. Ensure your path includes %SystemRoot%\\system32: {0}", error.message));
                     codepage = "850";
                 }
             }

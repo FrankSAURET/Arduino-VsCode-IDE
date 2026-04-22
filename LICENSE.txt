@@ -1,6 +1,6 @@
 ------------------------------------------ START OF LICENSE -----------------------------------------
 
-vscode-arduino-ide (Arduino VsCode IDE)
+arduino-vscode-ide (Arduino VsCode IDE)
 
 Original work Copyright (c) Microsoft Corporation
 Modified work Copyright (c) 2024-2026 Frank SAURET (electropol-fr)

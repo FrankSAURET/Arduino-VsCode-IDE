@@ -79,7 +79,7 @@ steps:
   # Pack the extension now even though it's unsigned so that we ignore files
   # from .vscodeignore. This will reduce load on the signing server later and
   # ensure we only attempt to sign shipping files.
-  - script: vsce package --out vscode-arduino.vsix
+  - script: vsce package --out arduino-vscode-ide.vsix
     displayName: Build and pack extension
 
   - task: ComponentGovernanceComponentDetection@0
@@ -89,8 +89,8 @@ steps:
   - task: ExtractFiles@1
     displayName: Extract extension for signing
     inputs:
-      archiveFilePatterns: vscode-arduino.vsix
-      destinationFolder: $(Build.StagingDirectory)\vscode-arduino
+      archiveFilePatterns: arduino-vscode-ide.vsix
+      destinationFolder: $(Build.StagingDirectory)\arduino-vscode-ide
   - task: NuGetToolInstaller@1
     displayName: Install NuGet
   - task: NuGetAuthenticate@0
@@ -109,10 +109,10 @@ steps:
   - task: ArchiveFiles@2
     displayName: Pack signed files
     inputs:
-      rootFolderOrFile: $(Build.StagingDirectory)\vscode-arduino
+      rootFolderOrFile: $(Build.StagingDirectory)\arduino-vscode-ide
       includeRootFolder: false
       archiveType: zip
-      archiveFile: $(Build.StagingDirectory)\vscode-arduino.vsix
+      archiveFile: $(Build.StagingDirectory)\arduino-vscode-ide.vsix
   - task: MSBuild@1
     displayName: Sign VSIX
     inputs:
@@ -120,7 +120,7 @@ steps:
       msbuildArguments: /p:SignType=$(SignType)
     # MicroBuild signing will always fail on public PRs.
     condition: ne(variables['Build.Reason'], 'PullRequest')
-  - publish: $(Build.StagingDirectory)\vscode-arduino.vsix
+  - publish: $(Build.StagingDirectory)\arduino-vscode-ide.vsix
     artifact: VS Code extension VSIX
     displayName: Publish extension VSIX as artifact
 
@@ -155,7 +155,7 @@ steps:
     inputs:
       tsaVersion: TsaV2
       codebase: NewOrUpdate
-      codeBaseName: vscode-arduino
+      codeBaseName: arduino-vscode-ide
       notificationAlias: embeddeddev@microsoft.com
       instanceUrlForTsaV2: DEVDIV
       projectNameDEVDIV: DevDiv
@@ -177,11 +177,11 @@ steps:
     displayName: Publish to GitHub
     inputs:
       gitHubConnection: embeddedbot
-      repositoryName: microsoft/vscode-arduino
+      repositoryName: FrankSAURET/Arduino-VsCode-IDE
       action: create
       target: $(Build.SourceVersion)
       tagSource: auto
-      assets: $(Build.StagingDirectory)\vscode-arduino.vsix
+      assets: $(Build.StagingDirectory)\arduino-vscode-ide.vsix
       isPreRelease: $[contains(variables['Build.SourceBranch'], '-rc')]
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
 

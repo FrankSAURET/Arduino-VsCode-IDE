@@ -14,7 +14,8 @@ import { ArduinoWorkspace } from "../common/workspace";
 
 import * as util from "../common/util";
 import * as Logger from "../logger/logger";
-import { SerialMonitor } from "./serialMonitor";
+import { listSerialPorts } from "../common/portList";
+import { DeviceContext } from "../deviceContext";
 
 const HTML_EXT = ".html";
 const MARKDOWN_EXT = ".md";
@@ -73,11 +74,6 @@ export class UsbDetector {
                 if (!ArduinoContext.initialized) {
                     await ArduinoActivator.activate();
                 }
-                if (!SerialMonitor.getInstance().initialized) {
-                    SerialMonitor.getInstance().initialize();
-                }
-
-                // TODO EW: this is board manager code which should be moved into board manager
 
                 let bd = ArduinoContext.boardManager.installedBoards.get(boardKey);
                 const openEditor = vscode.window.activeTextEditor;
@@ -128,8 +124,7 @@ export class UsbDetector {
                                 }
                             });
                     } else {
-                        const monitor = SerialMonitor.getInstance();
-                        monitor.selectSerialPort(deviceDescriptor.vid, deviceDescriptor.pid);
+                        await this.selectPortByVidPid(deviceDescriptor.vid, deviceDescriptor.pid);
                         this.showReadMeAndExample(deviceDescriptor.readme);
                     }
                 } else {
@@ -161,12 +156,26 @@ export class UsbDetector {
         }
     }
 
-    private switchBoard(bd: IBoard, deviceDescriptor, showReadMe: boolean = true) {
+    private async switchBoard(bd: IBoard, deviceDescriptor, showReadMe: boolean = true) {
         ArduinoContext.boardManager.doChangeBoardType(bd);
-        const monitor = SerialMonitor.getInstance();
-        monitor.selectSerialPort(deviceDescriptor.vid, deviceDescriptor.pid);
+        await this.selectPortByVidPid(deviceDescriptor.vid, deviceDescriptor.pid);
         if (showReadMe) {
             this.showReadMeAndExample(deviceDescriptor.readme);
+        }
+    }
+
+    private async selectPortByVidPid(vid: string, pid: string): Promise<void> {
+        const valueOfVid = parseInt(vid, 16);
+        const valueOfPid = parseInt(pid, 16);
+        const ports = await listSerialPorts();
+        const found = ports.find((p) => {
+            if (p.productId && p.vendorId) {
+                return parseInt(p.productId, 16) === valueOfPid && parseInt(p.vendorId, 16) === valueOfVid;
+            }
+            return false;
+        });
+        if (found) {
+            DeviceContext.getInstance().port = found.port;
         }
     }
 

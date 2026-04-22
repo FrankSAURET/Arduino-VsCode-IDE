@@ -8,7 +8,21 @@
 
 ---
 
-Welcome to the Visual Studio Code extension for **Arduino**! This extension makes it easy to develop, build, deploy and debug your Arduino sketches in Visual Studio Code, with a rich set of functionalities:
+## Quick Start
+
+![alt text](<images/Doc-Page 1.png>)
+
+After installing this extension:
+1. Click on the new icon on the activity bar.
+2. Create a new project or open an existing one.
+3. Select the board and serial port,
+4. then use **Verify** or **Upload** as usual.
+
+
+
+
+
+## Features
 
 * IntelliSense and syntax highlighting for Arduino sketches
 * Verify and upload your sketches in Visual Studio Code
@@ -21,6 +35,8 @@ Welcome to the Visual Studio Code extension for **Arduino**! This extension make
 * Integrated Arduino Debugging
 * Multi-root workspace support
 * Custom library and package paths
+* Serial monitor (microsoft monitor) and serial tracer (teleplot)
+* User friendly interface
 
 ## What's new in this fork
 
@@ -28,12 +44,18 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 
 - **Telemetry removed**: All Application Insights telemetry and NSAT survey tracking have been completely removed.
 - **Security fix (CVE-2024-43488)**: The local webserver used for Board/Library Manager webviews is now protected by a cryptographic authentication token.
-- **Arduino CLI only**: legacy Arduino IDE support has been removed. The extension now targets modern Arduino CLI workflows exclusively.
-- **Automatic Arduino CLI download**: If Arduino CLI is not found, the extension offers to download it automatically from the official GitHub releases.
+- **Arduino CLI only**: Legacy Arduino IDE support has been removed. The extension targets modern Arduino CLI workflows exclusively.
+- **Automatic Arduino CLI download**: If Arduino CLI is not found, the extension offers to download it automatically from the official GitHub releases, with progress notification and automatic update checking.
+- **Home Panel**: New central webview with a navigation rail giving access to Board Manager, Library Manager, Examples, Board Config and Settings. Includes a welcome screen with Quick Access buttons.
+- **Quick Access sidebar**: Activity Bar view with direct access to common commands (Verify, Upload, Select Board, Serial Monitor, Board Manager…).
+- **Editor title bar actions**: Verify, Upload, Serial Monitor and Serial Tracer buttons appear directly in the `.ino` editor title bar.
+- **Teleplot integration**: Launch Teleplot from the Serial Tracer button. The `arduino.teleplotOpenMode` setting controls the placement (`newTab`, `newPanel`, `splitRight`). Teleplot is automatically installed if absent.
+- **Arduino theme selector**: Choose between Arduino, Arduino Light and Arduino Dark themes. The extension installs the Arduino Theme Pack automatically if needed.
 - **IntelliSense improvements**:
   - `--param` normalization for STM32 and other GCC-based toolchains (clang compatibility)
   - `ARDUINO` define automatically added for library compatibility
   - `boards.local.txt` support for custom board definitions
+  - Analysis is rate-limited to prevent high CPU usage from repeated triggers
 - **Serial Monitor improvements**:
   - Input field is cleared after sending a message
   - Serial port close timeout prevents blocking during uploads
@@ -41,8 +63,8 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
   - Wait-for-port support for USB CDC boards (e.g. Arduino Uno R4 WiFi)
 - **Multi-root workspace support**: The workspace root is resolved based on the active editor file.
 - **Custom paths**: New `arduino.customLibraryPath` and `arduino.arduinoCliConfigFile` settings.
-- **Build path fix**: Output build path is properly normalized and validated.
-- **CPU load fix**: IntelliSense analysis is rate-limited to prevent high CPU usage from repeated triggers.
+- **Build output verbosity**: New `arduino.outputVerbosity` setting (`compact`, `normal`, `verbose`).
+- **Build path fix**: Output build path is properly normalized and the full directory structure is created automatically.
 
 ## Prerequisites
 
@@ -58,7 +80,22 @@ Alternatively, you can install it manually from the [official releases page](htt
 ## Installation
 Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `arduino-vscode-ide`.
 
-Or launch VS Code Quick Open (<kbd>Ctrl</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>P</kbd>).
+
+## Teleplot
+
+The extension can launch **Teleplot** directly from Arduino sketches.
+
+- Open any `.ino` file and click the **serial tracer** icon in the editor title bar, next to **Verify**, **Upload**, and **Serial Monitor**.
+- You can also run **Arduino: Open Teleplot** from the Command Palette.
+- If the Teleplot extension is not installed, Arduino VsCode IDE will propose installing it automatically.
+
+The Teleplot opening behavior is controlled by the `arduino.teleplotOpenMode` setting:
+
+- `newTab`: opens Teleplot in a new editor tab in the current editor group. This is the default mode.
+- `newPanel`: opens Teleplot in a new editor group below the current one.
+- `splitRight`: opens Teleplot in a shared editor group to the right of the current editor.
+
+This makes it possible to keep the sketch, the Serial Monitor, and the plot view visible with the layout that fits your workflow.
 
 ## Commands
 This extension provides several commands in the Command Palette (<kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>) for working with `*.ino` files:
@@ -71,6 +108,7 @@ This extension provides several commands in the Command Palette (<kbd>F1</kbd> o
 - **Arduino: Examples**: Show list of examples.
 - **Arduino: Initialize**: Scaffold a VS Code project with an Arduino sketch.
 - **Arduino: Library Manager**: Explore and manage libraries.
+- **Arduino: Open Teleplot**: Open Teleplot from the serial tracer integration.
 - **Arduino: Open Serial Monitor**: Open the serial monitor in the integrated output window.
 - **Arduino: Select Serial Port**: Change the current serial port.
 - **Arduino: Send Text to Serial Port**: Send a line of text via the current serial port.
@@ -105,6 +143,8 @@ This extension provides several commands in the Command Palette (<kbd>F1</kbd> o
 | `arduino.analyzeOnSettingChange` | When true, automatically run analysis when board, configuration, or sketch settings are changed. |
 | `arduino.customLibraryPath` | Custom path for Arduino libraries. Used as an additional library search path when compiling. |
 | `arduino.arduinoCliConfigFile` | Path to a local `arduino-cli.yaml` configuration file. When set, this file is used instead of the global configuration. |
+| `arduino.teleplotOpenMode` | Controls how Teleplot opens from the serial tracer button. Available values: `newTab`, `newPanel`, `splitRight`. Default: `newTab`. |
+| `arduino.outputVerbosity` | Controls the verbosity of the build output. Available values: `compact`, `normal`, `verbose`. Default: `normal`. |
 
 The following Visual Studio Code settings are available for the Arduino extension. These can be set in global user preferences <kbd>Ctrl</kbd> + <kbd>,</kbd> *or* <kbd>Cmd</kbd> + <kbd>,</kbd> or workspace settings (`.vscode/settings.json`). The latter overrides the former.
 
@@ -228,7 +268,7 @@ Steps to start debugging:
 > To learn more about how to debug Arduino code, visit our [team blog](https://blogs.msdn.microsoft.com/iotdev/2017/05/27/debug-your-arduino-code-with-visual-studio-code/).
 
 ## Change Log
-See the [Change log](https://github.com/FrankSAURET/vscode-arduino/blob/main/CHANGELOG.md) for details about the changes in each version.
+See the [Change log](https://github.com/FrankSAURET/Arduino-VsCode-IDE/blob/main/CHANGELOG.md) for details about the changes in each version.
 
 ## Supported Operating Systems
 Currently this extension supports the following operating systems:
@@ -242,9 +282,9 @@ Currently this extension supports the following operating systems:
 
 Contributions are welcome! This is a community-maintained fork and we appreciate any help.
 
-- **Report bugs**: Open an [issue](https://github.com/FrankSAURET/vscode-arduino/issues)
-- **Suggest features**: Open an [issue](https://github.com/FrankSAURET/vscode-arduino/issues) with the `enhancement` label
-- **Submit code**: Fork the repository, create a branch, and submit a [pull request](https://github.com/FrankSAURET/vscode-arduino/pulls)
+- **Report bugs**: Open an [issue](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues)
+- **Suggest features**: Open an [issue](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues) with the `enhancement` label
+- **Submit code**: Fork the repository, create a branch, and submit a [pull request](https://github.com/FrankSAURET/Arduino-VsCode-IDE/pulls)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup details.
 
@@ -257,8 +297,8 @@ Installation prerequisites:
 - [Npm](https://www.npmjs.com/) (>= 6.x)
 
 To *run and develop*, do the following:
-- `git clone https://github.com/FrankSAURET/vscode-arduino`
-- `cd vscode-arduino`
+- `git clone https://github.com/FrankSAURET/Arduino-VsCode-IDE`
+- `cd Arduino-VsCode-IDE`
 - Run `npm i`
 - Run `npm i -g gulp`
 - Open in Visual Studio Code (`code .`)
@@ -302,4 +342,4 @@ This extension is a fork of [Microsoft/vscode-arduino](https://github.com/Micros
 Licensed under the [MIT License](LICENSE.txt). See the [Third Party Notices](ThirdPartyNotices.txt) file for additional copyright notices and terms.
 
 ## Contact Us
-If you'd like to help improve this extension, open an issue or a pull request on [GitHub](https://github.com/FrankSAURET/vscode-arduino).
+If you'd like to help improve this extension, open an issue or a pull request on [GitHub](https://github.com/FrankSAURET/Arduino-VsCode-IDE).

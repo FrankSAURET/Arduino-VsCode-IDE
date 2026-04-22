@@ -186,7 +186,7 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
 
     const downloadUrl = `https://github.com/arduino/arduino-cli/releases/download/v${version}/${platformInfo.archiveName}`;
 
-    arduinoChannel.info(`Downloading Arduino CLI v${version} from ${downloadUrl}...`);
+    arduinoChannel.info(vscode.l10n.t("Downloading Arduino CLI v{0} from {1}...", version, downloadUrl));
 
     await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
@@ -231,7 +231,7 @@ export async function downloadArduinoCli(extensionPath: string): Promise<string>
     // Write version file for future reference
     fs.writeFileSync(path.join(cliDir, "VERSION"), version, "utf8");
 
-    arduinoChannel.info(`Arduino CLI v${version} installed to ${cliDir}`);
+    arduinoChannel.info(vscode.l10n.t("Arduino CLI v{0} installed to {1}", version, cliDir));
     vscode.window.showInformationMessage(vscode.l10n.t("Arduino CLI v{0} installed successfully.", version));
 
     return cliDir;
@@ -252,7 +252,7 @@ export async function promptDownloadCli(extensionPath: string): Promise<string |
         try {
             return await downloadArduinoCli(extensionPath);
         } catch (error) {
-            arduinoChannel.error(`Failed to download Arduino CLI: ${error.message}`);
+            arduinoChannel.error(vscode.l10n.t("Failed to download Arduino CLI: {0}", error.message));
             vscode.window.showErrorMessage(vscode.l10n.t("Failed to download Arduino CLI: {0}", error.message));
             return null;
         }

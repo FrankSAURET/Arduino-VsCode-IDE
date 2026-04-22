@@ -8,8 +8,8 @@ This project is a fork of the [original Microsoft extension](https://github.com/
 
 1. Fork and clone the repository:
    ```
-   git clone https://github.com/FrankSAURET/vscode-arduino
-   cd vscode-arduino
+   git clone https://github.com/FrankSAURET/Arduino-VsCode-IDE
+   cd Arduino-VsCode-IDE
    ```
 2. Install dependencies:
    ```
@@ -20,14 +20,14 @@ This project is a fork of the [original Microsoft extension](https://github.com/
 
 ## Contributing Fixes and Features
 
-- Work against the [main](https://github.com/FrankSAURET/vscode-arduino/tree/main) branch.
+- Work against the [main](https://github.com/FrankSAURET/Arduino-VsCode-IDE/tree/main) branch.
 - Submit pull requests to `main`.
-- Look at the [open issues](https://github.com/FrankSAURET/vscode-arduino/issues) for ideas — especially those labelled `help wanted` or `good first issue`.
+- Look at the [open issues](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues) for ideas — especially those labelled `help wanted` or `good first issue`.
 - Keep changes focused: one pull request per fix or feature.
 
 ## Reporting Issues
 
-Before creating a new issue, search the [existing issues](https://github.com/FrankSAURET/vscode-arduino/issues) to avoid duplicates.
+Before creating a new issue, search the [existing issues](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues) to avoid duplicates.
 
 Please include:
 

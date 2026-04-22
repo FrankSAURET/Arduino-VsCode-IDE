@@ -61,6 +61,7 @@ const config = {
         filename: '[name].js',
         libraryTarget: "commonjs2",
         devtoolModuleFilenameTemplate: "../[resource-path]",
+        hashFunction: "sha256",
     },
     externals: {
         vscode: "commonjs vscode",

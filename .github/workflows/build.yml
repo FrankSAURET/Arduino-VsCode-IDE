@@ -72,12 +72,12 @@ jobs:
       - name: Check for linting errors
         run: gulp tslint
       - name: Build and pack extension
-        run: vsce package --out vscode-arduino.vsix
+        run: vsce package --out arduino-vscode-ide.vsix
       - name: Publish extension VSIX as artifact
         uses: actions/upload-artifact@v2
         with:
           name: VS Code extension VSIX (${{ matrix.os }})
-          path: vscode-arduino.vsix
+          path: arduino-vscode-ide.vsix
 
       - name: Run tests
         uses: GabrielBB/xvfb-action@v1

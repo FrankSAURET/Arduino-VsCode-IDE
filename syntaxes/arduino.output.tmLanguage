@@ -19,51 +19,13 @@
                     <key>2</key>
                     <dict>
                         <key>name</key>
-                        <string>string</string>
-                    </dict>
-                </dict>
-                <key>match</key>
-                <string>(\[Starting\]|\[Info\])(.*)</string>
-                <key>name</key>
-                <string>arduino-output.start</string>
-            </dict>
-            <dict>
-                <key>captures</key>
-                <dict>
-                    <key>1</key>
-                    <dict>
-                        <key>name</key>
-                        <string>token.info-token</string>
-                    </dict>
-                    <key>2</key>
-                    <dict>
-                        <key>name</key>
-                        <string>string</string>
-                    </dict>
-                </dict>
-                <key>match</key>
-                <string>(\[Done\])(.+)</string>
-                <key>name</key>
-                <string>arduino-output.done</string>
-            </dict>
-            <dict>
-                <key>captures</key>
-                <dict>
-                    <key>1</key>
-                    <dict>
-                        <key>name</key>
-                        <string>token.info-token</string>
-                    </dict>
-                    <key>2</key>
-                    <dict>
-                        <key>name</key>
                         <string>token.error-token</string>
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>(\[Error\])(.+)</string>
+                <string>(\[(?:Error|Erreur|Fehler|Error|エラー|错误)\])(.+)</string>
                 <key>name</key>
-                <string>arduino-output.errro</string>
+                <string>arduino-output.error</string>
             </dict>
             <dict>
                 <key>captures</key>
@@ -80,9 +42,28 @@
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>(\[Warning\])(.+)</string>
+                <string>(\[(?:Warning|Avertissement|Warnung|Advertencia|警告)\])(.+)</string>
                 <key>name</key>
                 <string>arduino-output.warning</string>
+            </dict>
+            <dict>
+                <key>captures</key>
+                <dict>
+                    <key>1</key>
+                    <dict>
+                        <key>name</key>
+                        <string>token.info-token</string>
+                    </dict>
+                    <key>2</key>
+                    <dict>
+                        <key>name</key>
+                        <string>string</string>
+                    </dict>
+                </dict>
+                <key>match</key>
+                <string>(\[[^\]]+\])(.*)</string>
+                <key>name</key>
+                <string>arduino-output.info</string>
             </dict>
         </array>
     </dict>

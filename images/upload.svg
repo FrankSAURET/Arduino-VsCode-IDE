@@ -3,7 +3,7 @@
    viewBox="0 0 64 64"
    version="1.1"
    id="svg4"
-   sodipodi:docname="upload - Copie.svg"
+   sodipodi:docname="upload.svg"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -75,9 +75,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="6.65625"
-     inkscape:cx="100.50704"
-     inkscape:cy="42.366197"
+     inkscape:zoom="9.413359"
+     inkscape:cx="42.492802"
+     inkscape:cy="43.236426"
      inkscape:window-width="1920"
      inkscape:window-height="1057"
      inkscape:window-x="-8"
@@ -93,20 +93,20 @@
      style="fill:#00ffcc;stroke-width:0.999998;stroke:none;stroke-opacity:1;fill-opacity:1"
      d="M 14.86528,0.43149987 H 49.134718 C 57.177405,0.43149987 63.652202,6.8891753 63.652202,14.910592 V 49.089408 C 63.652202,57.110825 57.177405,63.5685 49.134718,63.5685 H 14.86528 C 6.8225953,63.5685 0.34779777,57.110825 0.34779777,49.089408 V 14.910592 C 0.34779777,6.8891753 6.8225953,0.43149987 14.86528,0.43149987 Z" />
   <path
-     d="M 59.922808,57.429442 C 59.922808,57.429442 60.080885,57.366639 46.147149,47.982839 37.10602,41.894009 43.625971,27.265952 22.244011,26.661341 -5.7718281,25.869146 4.5710034,2.6064879 4.0027916,2.698135"
+     d="M 38.787204,49.828199 C 32.639705,8.3110636 18.610692,34.472075 7.9293832,7.701062"
      stroke="#00ffcc"
      stroke-width="3.99997"
      stroke-linecap="round"
      id="path3"
-     sodipodi:nodetypes="cssc"
-     style="fill:none;fill-opacity:1;stroke:#008184;stroke-opacity:1" />
+     sodipodi:nodetypes="cc"
+     style="fill:none;fill-opacity:1;stroke:#008184;stroke-width:15;stroke-dasharray:none;stroke-opacity:1" />
   <path
-     d="M 60.094859,42.111844 61.574286,59.23126 44.233144,60.931489"
+     d="M 53.887556,28.703678 40.364934,53.823428 14.839142,40.656568"
      fill="none"
      stroke="#00ffcc"
      stroke-width="3.99999"
      stroke-linecap="round"
      stroke-linejoin="round"
      id="path4"
-     style="fill:none;fill-opacity:1;stroke:#008184;stroke-opacity:1" />
+     style="fill:none;fill-opacity:1;stroke:#008184;stroke-width:15;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" />
 </svg>

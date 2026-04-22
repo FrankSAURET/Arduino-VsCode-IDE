@@ -1,5 +1,5 @@
 {
-  "name": "vscode-arduino-ide",
+  "name": "arduino-vscode-ide",
   "displayName": "Arduino VsCode IDE",
   "description": "Arduino IDE integration for VS Code — CLI-based, fork of Microsoft's extension",
   "version": "2026.4.1",
@@ -12,12 +12,12 @@
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
     "type": "git",
-    "url": "https://github.com/FrankSAURET/vscode-arduino.git"
+    "url": "https://github.com/FrankSAURET/Arduino-VsCode-IDE.git"
   },
   "bugs": {
-    "url": "https://github.com/FrankSAURET/vscode-arduino/issues"
+    "url": "https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues"
   },
-  "homepage": "https://github.com/FrankSAURET/vscode-arduino",
+  "homepage": "https://github.com/FrankSAURET/Arduino-VsCode-IDE",
   "categories": [
     "Programming Languages",
     "Debuggers",
@@ -44,11 +44,8 @@
     "onCommand:arduino.selectProgrammer",
     "onCommand:arduino.selectSerialPort",
     "onCommand:arduino.selectSketch",
-    "onCommand:arduino.changeBaudRate",
-    "onCommand:arduino.changeTimestampFormat",
+    "onCommand:arduino.openSerialTracer",
     "onCommand:arduino.openSerialMonitor",
-    "onCommand:arduino.sendMessageToSerialPort",
-    "onCommand:arduino.closeSerialMonitor",
     "onCommand:arduino.changeBoardType",
     "onCommand:arduino.showBoardConfig",
     "onCommand:arduino.showBoardManager",
@@ -128,25 +125,14 @@
         "icon": "images/selectSerialPort.svg"
       },
       {
-        "command": "arduino.changeBaudRate",
-        "title": "%arduino.command.changeBaudRate%"
-      },
-      {
-        "command": "arduino.changeTimestampFormat",
-        "title": "%arduino.command.changeTimestampFormat%"
+        "command": "arduino.openSerialTracer",
+        "title": "%arduino.command.openSerialTracer%",
+        "icon": "images/serialTracer.svg"
       },
       {
         "command": "arduino.openSerialMonitor",
         "title": "%arduino.command.openSerialMonitor%",
         "icon": "images/serialMonitor.svg"
-      },
-      {
-        "command": "arduino.closeSerialMonitor",
-        "title": "%arduino.command.closeSerialMonitor%"
-      },
-      {
-        "command": "arduino.sendMessageToSerialPort",
-        "title": "%arduino.command.sendMessageToSerialPort%"
       },
       {
         "command": "arduino.changeBoardType",
@@ -183,17 +169,22 @@
         {
           "when": "resourceExtname == .ino",
           "command": "arduino.verify",
-          "group": "navigation"
+          "group": "navigation@-4"
         },
         {
           "when": "resourceExtname == .ino",
           "command": "arduino.upload",
-          "group": "navigation"
+          "group": "navigation@-3"
+        },
+        {
+          "when": "resourceExtname == .ino",
+          "command": "arduino.openSerialTracer",
+          "group": "navigation@-1"
         },
         {
           "when": "resourceExtname == .ino",
           "command": "arduino.openSerialMonitor",
-          "group": "navigation"
+          "group": "navigation@-2"
         }
       ],
       "view/title": [
@@ -562,6 +553,16 @@
             "verbose"
           ]
         },
+        "arduino.outputVerbosity": {
+          "type": "string",
+          "default": "normal",
+          "enum": [
+            "compact",
+            "normal",
+            "verbose"
+          ],
+          "description": "%arduino.configuration.outputVerbosity.description%"
+        },
         "arduino.clearOutputOnBuild": {
           "type": "boolean",
           "default": false,
@@ -577,6 +578,11 @@
           "default": false,
           "description": "%arduino.configuration.enableUSBDetection.description%"
         },
+        "arduino.debugger.gdbPort": {
+          "type": "number",
+          "default": 3333,
+          "description": "%arduino.configuration.debugger.gdbPort.description%"
+        },
         "arduino.disableTestingOpen": {
           "type": "boolean",
           "default": false
@@ -589,19 +595,10 @@
           "type": "boolean",
           "default": false
         },
-        "arduino.defaultBaudRate": {
-          "type": "number",
-          "default": 115200
-        },
         "arduino.disableIntelliSenseAutoGen": {
           "type": "boolean",
           "default": false,
           "description": "%arduino.configuration.disableIntelliSenseAutoGen.description%"
-        },
-        "arduino.defaultTimestampFormat": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "%arduino.configuration.defaultTimestampFormat.description%"
         },
         "arduino.analyzeOnOpen": {
           "type": "boolean",
@@ -622,6 +619,21 @@
           "type": "string",
           "default": "",
           "description": "%arduino.configuration.arduinoCliConfigFile.description%"
+        },
+        "arduino.teleplotOpenMode": {
+          "type": "string",
+          "default": "newTab",
+          "enum": [
+            "newTab",
+            "newPanel",
+            "splitRight"
+          ],
+          "description": "%arduino.configuration.teleplotOpenMode.description%",
+          "enumDescriptions": [
+            "%arduino.configuration.teleplotOpenMode.newTab.description%",
+            "%arduino.configuration.teleplotOpenMode.newPanel.description%",
+            "%arduino.configuration.teleplotOpenMode.splitRight.description%"
+          ]
         }
       }
     },

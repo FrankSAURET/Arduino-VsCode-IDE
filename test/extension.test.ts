@@ -6,12 +6,11 @@ import * as assert from "assert";
 import * as os from "os";
 import * as vscode from "vscode";
 const impor = require("impor")(__dirname);
-const usbDetectorModule = impor("../src/serialmonitor/usbDetector") as typeof import ("../src/serialmonitor/usbDetector");
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Arduino: Extension Tests", () => {
     test("should be present", () => {
-        assert.ok(vscode.extensions.getExtension("vsciot-vscode.vscode-arduino"));
+        assert.ok(vscode.extensions.getExtension("electropol-fr.arduino-vscode-ide"));
     });
 
     // The extension is already activated by vscode before running mocha test framework.
@@ -19,7 +18,7 @@ suite("Arduino: Extension Tests", () => {
     // tslint:disable-next-line: only-arrow-functions
     test("should be able to activate the extension", function(done) {
         this.timeout(60 * 1000);
-        const extension = vscode.extensions.getExtension("vsciot-vscode.vscode-arduino");
+        const extension = vscode.extensions.getExtension("electropol-fr.arduino-vscode-ide");
         if (!extension.isActive) {
             extension.activate().then((api) => {
                 done();
@@ -46,11 +45,7 @@ suite("Arduino: Extension Tests", () => {
                     "arduino.changeBoardType",
                     "arduino.initialize",
                     "arduino.selectSerialPort",
-                    "arduino.openSerialMonitor",
-                    "arduino.changeBaudRate",
-                    "arduino.changeTimestampFormat",
-                    "arduino.sendMessageToSerialPort",
-                    "arduino.closeSerialMonitor",
+                    "arduino.openSerialTracer",
                     "arduino.reloadExample",
                     "arduino.showExampleExplorer",
                     "arduino.loadPackages",
@@ -70,10 +65,6 @@ suite("Arduino: Extension Tests", () => {
         });
 
     suiteTeardown(() => {
-        // When running test on osx or windows, the vscode instance is hanging there after tests finished and cause mocha timeout.
-        // As a workaround, closing usb-detection process manually would make test window exit normally.
-        if (os.platform() !== "linux") {
-            usbDetectorModule.UsbDetector.getInstance().stopListening();
-        }
+        // Test window cleanup - nothing to do here
     });
 });

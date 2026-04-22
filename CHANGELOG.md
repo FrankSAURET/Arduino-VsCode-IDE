@@ -6,23 +6,29 @@ All notable changes to this project will be documented in this file.
 - Release date: April 2026
 - **Rebranded as "Arduino VsCode IDE" (publisher: electropol-fr)**
 
+### Added
+
+- New Home Panel: central webview with navigation rail giving access to Board Manager, Library Manager, Examples, Board Config and Settings; includes a welcome screen with Quick Access buttons
+- Quick Access sidebar: Activity Bar TreeView with direct access to common commands (Verify, Upload, Select Board, Serial Monitor, Board Manager…)
+- Editor title bar actions: Verify, Upload, Serial Monitor and Serial Tracer buttons in the `.ino` editor title bar
+- 3-column layout at startup: Explorer | Home Panel | Code Editor
+- Teleplot integration: Serial Tracer button launches Teleplot; `arduino.teleplotOpenMode` setting controls placement (`newTab`, `newPanel`, `splitRight`); Teleplot is automatically installed if absent
+- Arduino theme selector in Home Panel Settings: choose between Arduino, Arduino Light and Arduino Dark themes; the Arduino Theme Pack is installed automatically if needed
+- `arduino.outputVerbosity` setting: controls build output verbosity (`compact`, `normal`, `verbose`)
+
 ### Changed
 
-- Renamed extension: `vscode-arduino-ide` / "Arduino VsCode IDE" to clearly differentiate from the original Microsoft extension and the Community Edition fork
+- Renamed extension: `arduino-vscode-ide` / "Arduino VsCode IDE" to clearly differentiate from the original Microsoft extension and the Community Edition fork
 - New extension icon: custom LogoVsCodeArduinoIDE
 - Version scheme changed to CalVer (YYYY.MM.patch)
 - Updated description and license to reflect fork status
-- New Home Panel with navigation rail and welcome screen
-- Quick Access sidebar TreeView for common Arduino commands
-- Editor title bar: Verify, Upload, Serial Monitor icons (run group)
-- 3-column layout at startup: Explorer | Home Panel | Code Editor
-- Create/Open project commands work without requiring CLI to be configured first
+- Create/Open project commands no longer require CLI to be configured first
 - Removed legacy Arduino IDE support entirely (CLI-only)
 
 ## Version 0.5.0
 
 - Release date: July 2025
-- **This is the first release of the community-maintained fork by [electropol-fr](https://github.com/FrankSAURET/vscode-arduino).**
+- **This is the first release of the community-maintained fork by [electropol-fr](https://github.com/FrankSAURET/Arduino-VsCode-IDE).**
 
 ### Security
 

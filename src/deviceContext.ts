@@ -75,16 +75,6 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
     private static _deviceContext: DeviceContext = new DeviceContext();
 
     private _settings = new DeviceSettings();
-    /**
-     * TODO EW, 2020-02-17:
-     * The absolute file path of the directory containing the vscode-arduino
-     * extension. Not sure why this is stored here (it's a bit misplaced) and
-     * not in a dedicated extension object containing the extension context
-     * passed during activation. Another way would be a function in util.ts
-     * using a mechanism like
-     *
-     *   path.normalize(path.join(path.dirname(__filename), ".."))
-     */
     private _extensionPath: string;
 
     private _watcher: vscode.FileSystemWatcher;
@@ -135,20 +125,6 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
         this._extensionPath = value;
     }
 
-    /**
-     * TODO: Current we use the Arduino default settings. For future release, this dependency might be removed
-     * and the setting only depends on device.json.
-     * @method
-     *
-     * TODO EW, 2020-02-18:
-     * A problem I discovered: here you try to find the config file location
-     * and when you're writing below, you use a hard-coded location. When
-     * resorting to "find", you have to store the file's location at least and
-     * reuse it when saving.
-     * But I think the intention is: load a config file from anywhere and save
-     * it under .vscode/arduino.json. But then the initial load has to use find
-     * and afterwards it must not use find anymore.
-     */
     public loadContext(): Thenable<object> {
         return vscode.workspace.findFiles(ARDUINO_CONFIG_FILE, null, 1)
             .then((files) => {
@@ -340,10 +316,15 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
      * to make sure that any changes are synched to the configuration file.
      */
     public async resolveMainSketch() {
-        // TODO (EW, 2020-02-18): Here you look for *.ino files but below you allow
-        //  *.cpp/*.c files to be set as sketch
         await vscode.workspace.findFiles("**/*.ino", null)
             .then(async (fileUris) => {
+                // Also look for .cpp sketches when no .ino is found
+                if (fileUris.length === 0) {
+                    const cppUris = await vscode.workspace.findFiles("**/*.cpp", null);
+                    if (cppUris.length > 0) {
+                        fileUris = cppUris;
+                    }
+                }
                 if (fileUris.length === 0) {
                     let newSketchFileName = await vscode.window.showInputBox({
                         value: "sketch.ino",

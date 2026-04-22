@@ -23,8 +23,6 @@ import { VscodeSettings } from "./vscodeSettings";
 
 import { arduinoChannel } from "../common/outputChannel";
 import { ArduinoWorkspace } from "../common/workspace";
-import { SerialMonitor } from "../serialmonitor/serialMonitor";
-import { SerialPortCtrl } from "../serialmonitor/serialportctrl";
 import { UsbDetector } from "../serialmonitor/usbDetector";
 import { ProgrammerManager } from "./programmerManager";
 
@@ -40,6 +38,18 @@ export enum BuildMode {
     CliUpload = "Uploading using Arduino CLI",
     UploadProgrammer = "Uploading (programmer)",
     CliUploadProgrammer = "Uploading (programmer) using Arduino CLI",
+}
+
+function translateBuildMode(buildMode: BuildMode): string {
+    switch (buildMode) {
+        case BuildMode.Verify: return vscode.l10n.t("Verifying");
+        case BuildMode.Analyze: return vscode.l10n.t("Analyzing");
+        case BuildMode.Upload: return vscode.l10n.t("Uploading");
+        case BuildMode.CliUpload: return vscode.l10n.t("Uploading using Arduino CLI");
+        case BuildMode.UploadProgrammer: return vscode.l10n.t("Uploading (programmer)");
+        case BuildMode.CliUploadProgrammer: return vscode.l10n.t("Uploading (programmer) using Arduino CLI");
+        default: return buildMode;
+    }
 }
 
 /**
@@ -237,19 +247,18 @@ export class ArduinoApp {
         arduinoChannel.show();
         const updatingIndex = packageName === "dummy" && !arch && !version;
         if (updatingIndex) {
-            arduinoChannel.start(`Update package index files...`);
+            arduinoChannel.start(vscode.l10n.t("Update package index files..."));
         } else {
             try {
                 const packagePath = path.join(this._settings.packagePath, "packages", packageName, arch);
                 if (util.directoryExistsSync(packagePath)) {
                     util.rmdirRecursivelySync(packagePath);
                 }
-                arduinoChannel.start(`Install package - ${packageName}...`);
+                arduinoChannel.start(vscode.l10n.t("Install package - {0}...", packageName));
             } catch (error) {
-                arduinoChannel.start(`Install package - ${packageName} failed under directory : ${error.path}${os.EOL}
-                                      Please make sure the folder is not occupied by other procedures .`);
-                arduinoChannel.error(`Error message - ${error.message}${os.EOL}`);
-                arduinoChannel.error(`Exit with code=${error.code}${os.EOL}`);
+                arduinoChannel.start(vscode.l10n.t("Install package - {0} failed under directory: {1}\nPlease make sure the folder is not occupied by other procedures.", packageName, error.path));
+                arduinoChannel.error(vscode.l10n.t("Error message - {0}", error.message));
+                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
                 return;
             }
         }
@@ -260,28 +269,28 @@ export class ArduinoApp {
                 undefined,
                 { channel: showOutput ? arduinoChannel.channel : null });
             if (updatingIndex) {
-                arduinoChannel.end("Updated package index files.");
+                arduinoChannel.end(vscode.l10n.t("Updated package index files."));
             } else {
-                arduinoChannel.end(`Installed board package - ${packageName}${os.EOL}`);
+                arduinoChannel.end(vscode.l10n.t("Installed board package - {0}", packageName));
             }
         } catch (error) {
             // If a platform with the same version is already installed, nothing is installed and program exits with exit code 1
             if (error.code === 1) {
                 if (updatingIndex) {
-                    arduinoChannel.end("Updated package index files.");
+                    arduinoChannel.end(vscode.l10n.t("Updated package index files."));
                 } else {
-                    arduinoChannel.end(`Installed board package - ${packageName}${os.EOL}`);
+                    arduinoChannel.end(vscode.l10n.t("Installed board package - {0}", packageName));
                 }
             } else {
-                arduinoChannel.error(`Exit with code=${error.code}${os.EOL}`);
+                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
             }
         }
     }
 
     public uninstallBoard(boardName: string, packagePath: string) {
-        arduinoChannel.start(`Uninstall board package - ${boardName}...`);
+        arduinoChannel.start(vscode.l10n.t("Uninstall board package - {0}...", boardName));
         util.rmdirRecursivelySync(packagePath);
-        arduinoChannel.end(`Uninstalled board package - ${boardName}${os.EOL}`);
+        arduinoChannel.end(vscode.l10n.t("Uninstalled board package - {0}", boardName));
     }
 
     /**
@@ -295,9 +304,9 @@ export class ArduinoApp {
         arduinoChannel.show();
         const updatingIndex = (libName === "dummy" && !version);
         if (updatingIndex) {
-            arduinoChannel.start("Update library index files...");
+            arduinoChannel.start(vscode.l10n.t("Update library index files..."));
         } else {
-            arduinoChannel.start(`Install library - ${libName}`);
+            arduinoChannel.start(vscode.l10n.t("Install library - {0}", libName));
         }
         try {
             await util.spawn(this._settings.commandPath,
@@ -305,28 +314,28 @@ export class ArduinoApp {
                 undefined,
                 { channel: showOutput ? arduinoChannel.channel : undefined });
             if (updatingIndex) {
-                arduinoChannel.end("Updated library index files.");
+                arduinoChannel.end(vscode.l10n.t("Updated library index files."));
             } else {
-                arduinoChannel.end(`Installed library - ${libName}${os.EOL}`);
+                arduinoChannel.end(vscode.l10n.t("Installed library - {0}", libName));
             }
         } catch (error) {
             // If a library with the same version is already installed, nothing is installed and program exits with exit code 1
             if (error.code === 1) {
                 if (updatingIndex) {
-                    arduinoChannel.end("Updated library index files.");
+                    arduinoChannel.end(vscode.l10n.t("Updated library index files."));
                 } else {
-                    arduinoChannel.end(`Installed library - ${libName}${os.EOL}`);
+                    arduinoChannel.end(vscode.l10n.t("Installed library - {0}", libName));
                 }
             } else {
-                arduinoChannel.error(`Exit with code=${error.code}${os.EOL}`);
+                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
             }
         }
     }
 
     public uninstallLibrary(libName: string, libPath: string) {
-        arduinoChannel.start(`Remove library - ${libName}`);
+        arduinoChannel.start(vscode.l10n.t("Remove library - {0}", libName));
         util.rmdirRecursivelySync(libPath);
-        arduinoChannel.end(`Removed library - ${libName}${os.EOL}`);
+        arduinoChannel.end(vscode.l10n.t("Removed library - {0}", libName));
     }
 
     public openExample(example) {
@@ -367,10 +376,12 @@ export class ArduinoApp {
             if (sketchFile) {
                 // Generate arduino.json
                 const dc = DeviceContext.getInstance();
+                const defaultPort = os.platform() === "win32" ? "COM1"
+                    : os.platform() === "darwin" ? "/dev/cu.usbmodem1"
+                    : "/dev/ttyUSB0";
                 const arduinoJson = {
                     sketch: sketchFile,
-                    // TODO EW, 2020-02-18: COM1 is Windows specific - what about OSX and Linux users?
-                    port: dc.port || "COM1",
+                    port: dc.port || defaultPort,
                     board: dc.board,
                     configuration: dc.configuration,
                 };
@@ -449,7 +460,7 @@ export class ArduinoApp {
             return true; // Successfully done nothing.
         }
 
-        arduinoChannel.info(`Running ${what}-build command: "${cmdline}"`);
+        arduinoChannel.info(vscode.l10n.t("Running {0}-build command: \"{1}\"", what, cmdline));
         let cmd: string;
         let args: string[];
         // pre-/post-build commands feature full bash support on UNIX systems.
@@ -476,7 +487,7 @@ export class ArduinoApp {
                 : ex.code
                     ? `Exit code = ${ex.code}`
                     : JSON.stringify(ex);
-            arduinoChannel.error(`Running ${what}-build command failed: ${os.EOL}${msg}`);
+            arduinoChannel.error(vscode.l10n.t("Running {0}-build command failed: {1}", what, msg));
             return false;
         }
         return true;
@@ -501,8 +512,7 @@ export class ArduinoApp {
     private async _build(buildMode: BuildMode, buildDir?: string): Promise<boolean> {
         const dc = DeviceContext.getInstance();
         const args: string[] = [];
-        let restoreSerialMonitor: boolean = false;
-        const verbose = VscodeSettings.getInstance().logLevel === constants.LogLevel.Verbose;
+        const verbose = VscodeSettings.getInstance().outputVerbosity === "verbose";
 
         if (!this.boardManager.currentBoard) {
             if (buildMode !== BuildMode.Analyze) {
@@ -516,12 +526,12 @@ export class ArduinoApp {
 
         // Issue #50/PR #59: Support local arduino-cli.yaml config file
         const cliConfigFile = VscodeSettings.getInstance().arduinoCliConfigFile;
-        if (cliConfigFile) {
+        if (cliConfigFile && ArduinoWorkspace.rootPath) {
             const configPath = path.resolve(ArduinoWorkspace.rootPath, cliConfigFile);
             if (util.fileExistsSync(configPath)) {
                 args.push("--config-file", configPath);
             } else {
-                arduinoChannel.warning(`Arduino CLI config file not found: ${configPath}`);
+                arduinoChannel.warning(vscode.l10n.t("Arduino CLI config file not found: {0}", configPath));
             }
         }
 
@@ -620,9 +630,10 @@ export class ArduinoApp {
             }
         }
 
-        // We always build verbosely but filter the output based on the settings
-
-        args.push("--verbose");
+        // Analyze always needs verbose to capture GCC commands for cocopa/IntelliSense
+        if (verbose || buildMode === BuildMode.Analyze) {
+            args.push("--verbose");
+        }
 
         await vscode.workspace.saveAll(false);
 
@@ -632,14 +643,14 @@ export class ArduinoApp {
         if (VscodeSettings.getInstance().clearOutputOnBuild) {
             arduinoChannel.clear();
         }
-        arduinoChannel.start(`${buildMode} sketch '${dc.sketch}'`);
+        arduinoChannel.start(vscode.l10n.t("{0} sketch '{1}'", translateBuildMode(buildMode), dc.sketch));
 
         if (buildDir || dc.output) {
             // Issue #72: Properly resolve and validate output build path
             if (dc.output) {
-                buildDir = path.resolve(ArduinoWorkspace.rootPath, dc.output);
+                buildDir = path.resolve(ArduinoWorkspace.rootPath ?? "", dc.output);
             } else {
-                buildDir = path.resolve(ArduinoWorkspace.rootPath, buildDir);
+                buildDir = path.resolve(ArduinoWorkspace.rootPath ?? "", buildDir);
             }
 
             // Normalize the path to resolve any ".." or "." segments
@@ -652,10 +663,9 @@ export class ArduinoApp {
 
             args.push("--build-path", buildDir);
 
-            arduinoChannel.info(`Please see the build logs in output path: ${buildDir}`);
+            arduinoChannel.info(vscode.l10n.t("Please see the build logs in output path: {0}", buildDir));
         } else {
-            const msg = "Output path is not specified. Unable to reuse previously compiled files. Build will be slower. See README.";
-            arduinoChannel.warning(msg);
+            arduinoChannel.warning(vscode.l10n.t("Output path is not specified. Unable to reuse previously compiled files. Build will be slower. See README."));
         }
 
         // Environment variables passed to pre- and post-build commands
@@ -673,31 +683,27 @@ export class ArduinoApp {
             env["VSCA_BUILD_DIR"] = buildDir;
         }
 
-        // TODO EW: What should we do with pre-/post build commands when running
-        //   analysis? Some could use it to generate/manipulate code which could
-        //   be a prerequisite for a successful build
-        if (!await this.runPrePostBuildCommand(dc, env, "pre")) {
+        // Analyze is an IntelliSense-only build — skip pre/post-build side effects
+        if (buildMode !== BuildMode.Analyze && !await this.runPrePostBuildCommand(dc, env, "pre")) {
             return false;
         }
 
-        // stop serial monitor when everything is prepared and good
-        // what makes restoring of its previous state easier
+        // Pause USB detection during upload
         if (buildMode === BuildMode.Upload ||
             buildMode === BuildMode.UploadProgrammer ||
             buildMode === BuildMode.CliUpload ||
             buildMode === BuildMode.CliUploadProgrammer) {
-            restoreSerialMonitor = await SerialMonitor.getInstance().closeSerialMonitor(dc.port);
             UsbDetector.getInstance().pauseListening();
         }
 
         // Push sketch as last argument
         args.push(path.join(ArduinoWorkspace.rootPath, dc.sketch));
 
-        const cocopa = makeCompilerParserContext(dc);
+        const cocopa = makeCompilerParserContext(dc, buildMode);
 
         const cleanup = async (result: "ok" | "error") => {
             let ret = true;
-            if (result === "ok") {
+            if (result === "ok" && buildMode !== BuildMode.Analyze) {
                 ret = await this.runPrePostBuildCommand(dc, env, "post");
             }
             await cocopa.conclude();
@@ -706,31 +712,20 @@ export class ArduinoApp {
                 buildMode === BuildMode.CliUpload ||
                 buildMode === BuildMode.CliUploadProgrammer) {
                 UsbDetector.getInstance().resumeListening();
-                if (restoreSerialMonitor) {
-                    // Issue #85: Wait for USB CDC boards (like Uno R4 WiFi) to re-enumerate
-                    // The port may disappear during upload and reappear after a few seconds
-                    await this.waitForPort(dc.port, 10000);
-                    await SerialMonitor.getInstance().openSerialMonitor();
-                }
             }
             return ret;
         }
 
         // Wrap line-oriented callbacks to accept arbitrary chunks of data.
+        // Uses \n as delimiter to handle both \n and \r\n regardless of platform.
         const wrapLineCallback = (callback: (line: string) => void) => {
             let buffer = "";
-            let startIndex = 0;
             return (data: string) => {
                 buffer += data;
-                while (true) {
-                    const pos = buffer.indexOf(os.EOL, startIndex);
-                    if (pos < 0) {
-                        startIndex = buffer.length;
-                        break;
-                    }
-                    const line = buffer.substring(0, pos + os.EOL.length);
-                    buffer = buffer.substring(pos + os.EOL.length);
-                    startIndex = 0;
+                let pos: number;
+                while ((pos = buffer.indexOf("\n")) >= 0) {
+                    const line = buffer.substring(0, pos + 1);
+                    buffer = buffer.substring(pos + 1);
                     callback(line);
                 }
             };
@@ -750,6 +745,11 @@ export class ArduinoApp {
             }
         });
         const stderrcb = wrapLineCallback((line: string) => {
+            // Also feed stderr to CoCoPa: some toolchains or wrappers
+            // may emit compiler commands on stderr instead of stdout
+            if (cocopa.callback) {
+                cocopa.callback(line);
+            }
             if (os.platform() === "win32") {
                 line = line.trim();
                 if (line.length <= 0) {
@@ -786,7 +786,7 @@ export class ArduinoApp {
         ).then(async () => {
             const ret = await cleanup("ok");
             if (ret) {
-                arduinoChannel.end(`${buildMode} sketch '${dc.sketch}'${os.EOL}`);
+                arduinoChannel.end(vscode.l10n.t("{0} sketch '{1}'", translateBuildMode(buildMode), dc.sketch));
             }
             return ret;
         }, async (reason) => {
@@ -794,7 +794,7 @@ export class ArduinoApp {
             const msg = reason.code
                 ? `Exit with code=${reason.code}`
                 : JSON.stringify(reason);
-            arduinoChannel.error(`${buildMode} sketch '${dc.sketch}': ${msg}${os.EOL}`);
+            arduinoChannel.error(vscode.l10n.t("{0} sketch '{1}': {2}", translateBuildMode(buildMode), dc.sketch, msg));
             return false;
         });
     }
@@ -804,20 +804,4 @@ export class ArduinoApp {
      * USB CDC boards (e.g. Arduino Uno R4 WiFi) may disappear during
      * programming and need time to re-enumerate.
      */
-    private async waitForPort(portName: string, timeoutMs: number): Promise<boolean> {
-        if (!portName) {
-            return false;
-        }
-        const startTime = Date.now();
-        const pollInterval = 500;
-        while (Date.now() - startTime < timeoutMs) {
-            const ports = await SerialPortCtrl.list();
-            if (ports.some((p) => p.port === portName)) {
-                return true;
-            }
-            await new Promise((resolve) => setTimeout(resolve, pollInterval));
-        }
-        arduinoChannel.warning(`Port ${portName} did not reappear within ${timeoutMs / 1000}s timeout.`);
-        return false;
-    }
 }

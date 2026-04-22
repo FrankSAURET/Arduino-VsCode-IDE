@@ -29,13 +29,92 @@ import * as Logger from "./logger/logger";
 import { BuildMode } from "./arduino/arduino";
 import { checkForCliUpdate } from "./arduino/cliDownloader";
 import { applyArduinoTheme } from "./arduino/themeManager";
-import { SerialMonitor } from "./serialmonitor/serialMonitor";
+import { listSerialPorts } from "./common/portList";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
+
+const TELEPLOT_EXTENSION_ID = "alexnesnes.teleplot";
+const TELEPLOT_START_COMMAND = "teleplot.start";
 
 export async function activate(context: vscode.ExtensionContext) {
     Logger.configure(context);
     const pendingBoardSelectionKey = "arduino.pendingBoardSelectionPath";
     const vscodeSettings = VscodeSettings.getInstance();
+
+    const getErrorMessage = (error: any): string => {
+        if (error instanceof Error && error.message) {
+            return error.message;
+        }
+
+        return `${error}`;
+    };
+    const isTeleplotReady = async (): Promise<boolean> => {
+        const teleplotExtension = vscode.extensions.getExtension(TELEPLOT_EXTENSION_ID);
+        if (!teleplotExtension) {
+            return false;
+        }
+        if (!teleplotExtension.isActive) {
+            try {
+                await teleplotExtension.activate();
+            } catch {
+            }
+        }
+        const commands = await vscode.commands.getCommands(true);
+        return commands.includes(TELEPLOT_START_COMMAND);
+    };
+    const ensureTeleplotReady = async (): Promise<boolean> => {
+        if (await isTeleplotReady()) {
+            return true;
+        }
+
+        const installButton = vscode.l10n.t("Install Teleplot");
+        const installChoice = await vscode.window.showInformationMessage(
+            vscode.l10n.t("Teleplot is required to use the serial tracer. Do you want to install it now?"),
+            { modal: true },
+            installButton,
+        );
+        if (installChoice !== installButton) {
+            return false;
+        }
+
+        try {
+            await vscode.commands.executeCommand("workbench.extensions.installExtension", TELEPLOT_EXTENSION_ID);
+        } catch (error) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Teleplot installation failed: {0}", getErrorMessage(error)));
+            return false;
+        }
+
+        if (await isTeleplotReady()) {
+            return true;
+        }
+
+        const reloadButton = vscode.l10n.t("Reload Window");
+        const reloadChoice = await vscode.window.showInformationMessage(
+            vscode.l10n.t("Teleplot was installed. Reload VS Code to finish activating it."),
+            reloadButton,
+        );
+        if (reloadChoice === reloadButton) {
+            await vscode.commands.executeCommand("workbench.action.reloadWindow");
+        }
+
+        return false;
+    };
+    const openSerialTracer = async () => {
+        if (!await ensureTeleplotReady()) {
+            return;
+        }
+        try {
+            const mode = vscodeSettings.teleplotOpenMode;
+            await vscode.commands.executeCommand(TELEPLOT_START_COMMAND);
+            if (mode === "splitRight") {
+                await vscode.commands.executeCommand("workbench.action.moveEditorToRightGroup");
+            } else if (mode === "newPanel") {
+                await vscode.commands.executeCommand("workbench.action.moveEditorToBelowGroup");
+            }
+            // "newTab" = comportement par défaut de Teleplot, pas de repositionnement
+        } catch (error) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Unable to open Teleplot: {0}", getErrorMessage(error)));
+        }
+    };
     const applyConfiguredArduinoTheme = async () => {
         await applyArduinoTheme(context, vscodeSettings.arduinoTheme);
     };
@@ -97,10 +176,6 @@ export async function activate(context: vscode.ExtensionContext) {
                 await arduinoActivatorModule.default.activate();
             }
 
-            if (!SerialMonitor.getInstance().initialized) {
-                SerialMonitor.getInstance().initialize();
-            }
-
             const arduinoPath = arduinoContextModule.default.arduinoApp.settings.arduinoPath;
             const commandPath = arduinoContextModule.default.arduinoApp.settings.commandPath;
             // Pop up vscode User Settings page when cannot resolve arduino path.
@@ -117,9 +192,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const registerNonArduinoCommand = (command: string, commandBody: (...args: any[]) => any, getUserData?: () => any): number => {
         return context.subscriptions.push(vscode.commands.registerCommand(command, async (...args: any[]) => {
-            if (!SerialMonitor.getInstance().initialized) {
-                SerialMonitor.getInstance().initialize();
-            }
             await commandExecution(command, commandBody, args, getUserData);
         }));
     };
@@ -306,15 +378,33 @@ export async function activate(context: vscode.ExtensionContext) {
         return;
     });
 
-    // serial monitor commands
-    const serialMonitor = SerialMonitor.getInstance();
-    context.subscriptions.push(serialMonitor);
-    registerNonArduinoCommand("arduino.selectSerialPort", () => serialMonitor.selectSerialPort(null, null));
-    registerNonArduinoCommand("arduino.openSerialMonitor", () => serialMonitor.openSerialMonitor());
-    registerNonArduinoCommand("arduino.changeBaudRate", () => serialMonitor.changeBaudRate());
-    registerNonArduinoCommand("arduino.changeTimestampFormat", () => serialMonitor.changeTimestampFormat());
-    registerNonArduinoCommand("arduino.sendMessageToSerialPort", () => serialMonitor.sendMessageToSerialPort());
-    registerNonArduinoCommand("arduino.closeSerialMonitor", (port, showWarning = true) => serialMonitor.closeSerialMonitor(port, showWarning));
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.openSerialTracer", openSerialTracer));
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.openSerialMonitor", async () => {
+        try {
+            await vscode.commands.executeCommand("vscode-serial-monitor.monitor0.focus");
+        } catch {
+            vscode.window.showWarningMessage(
+                vscode.l10n.t(
+                    "The built-in VS Code serial monitor is not available. Install the \"Serial Monitor\" extension or use the built-in terminal.",
+                ),
+            );
+        }
+    }));
+    registerNonArduinoCommand("arduino.selectSerialPort", async () => {
+        const ports = await listSerialPorts();
+        if (!ports.length) {
+            vscode.window.showInformationMessage(vscode.l10n.t("No serial port is available."));
+            return;
+        }
+        const chosen = await vscode.window.showQuickPick(
+            ports.map((p) => ({ label: p.port, description: p.desc }))
+                 .sort((a, b) => a.label < b.label ? -1 : a.label > b.label ? 1 : 0),
+            { placeHolder: vscode.l10n.t("Select a serial port") },
+        );
+        if (chosen) {
+            DeviceContext.getInstance().port = chosen.label;
+        }
+    });
 
     const completionProvider = new completionProviderModule.CompletionProvider();
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(ARDUINO_MODE, completionProvider, "<", '"', "."));
@@ -330,9 +420,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 await arduinoActivatorModule.default.activate();
             }
 
-            if (!SerialMonitor.getInstance().initialized) {
-                SerialMonitor.getInstance().initialize();
-            }
+
             vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
             await runPendingBoardSelection();
         })();
@@ -346,9 +434,6 @@ export async function activate(context: vscode.ExtensionContext) {
             await applyConfiguredArduinoTheme();
             if (!arduinoContextModule.default.initialized) {
                 await arduinoActivatorModule.default.activate();
-            }
-            if (!SerialMonitor.getInstance().initialized) {
-                SerialMonitor.getInstance().initialize();
             }
             vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
         }
@@ -463,6 +548,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     arduinoContextModule.default.boardManager.currentBoard.name,
             };
         });
+
     }, 100);
 
     setTimeout(() => {
@@ -478,8 +564,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate() {
-    const monitor = SerialMonitor.getInstance();
-    await monitor.closeSerialMonitor(null, false);
     usbDetectorModule.UsbDetector.getInstance().stopListening();
     Logger.traceUserData("deactivate-extension");
 }

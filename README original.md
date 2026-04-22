@@ -55,11 +55,11 @@ Alternatively, you can install it manually from the [official releases page](htt
 > **Note**: Arduino CLI is licensed under the [GPL-3.0 license](https://github.com/arduino/arduino-cli/blob/master/LICENSE.txt) by Arduino SA. See [NOTICE-ARDUINO-CLI.md](NOTICE-ARDUINO-CLI.md) for details.
 
 ## Installation
-Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `vscode-arduino`.
+Open VS Code and press <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open command palette, select **Install Extension** and type `arduino-vscode-ide`.
 
 Or launch VS Code Quick Open (<kbd>Ctrl</kbd> + <kbd>P</kbd> *or* <kbd>Cmd</kbd> + <kbd>P</kbd>), paste the following command, and press enter.
 ```bash
-ext install electropol-fr.vscode-arduino
+ext install electropol-fr.arduino-vscode-ide
 ```
 
 ## Commands
@@ -230,7 +230,7 @@ Steps to start debugging:
 > To learn more about how to debug Arduino code, visit our [team blog](https://blogs.msdn.microsoft.com/iotdev/2017/05/27/debug-your-arduino-code-with-visual-studio-code/).
 
 ## Change Log
-See the [Change log](https://github.com/FrankSAURET/vscode-arduino/blob/main/CHANGELOG.md) for details about the changes in each version.
+See the [Change log](https://github.com/FrankSAURET/Arduino-VsCode-IDE/blob/main/CHANGELOG.md) for details about the changes in each version.
 
 ## Supported Operating Systems
 Currently this extension supports the following operating systems:
@@ -244,9 +244,9 @@ Currently this extension supports the following operating systems:
 
 Contributions are welcome! This is a community-maintained fork and we appreciate any help.
 
-- **Report bugs**: Open an [issue](https://github.com/FrankSAURET/vscode-arduino/issues)
-- **Suggest features**: Open an [issue](https://github.com/FrankSAURET/vscode-arduino/issues) with the `enhancement` label
-- **Submit code**: Fork the repository, create a branch, and submit a [pull request](https://github.com/FrankSAURET/vscode-arduino/pulls)
+- **Report bugs**: Open an [issue](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues)
+- **Suggest features**: Open an [issue](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues) with the `enhancement` label
+- **Submit code**: Fork the repository, create a branch, and submit a [pull request](https://github.com/FrankSAURET/Arduino-VsCode-IDE/pulls)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup details.
 
@@ -259,8 +259,8 @@ Installation prerequisites:
 - [Npm](https://www.npmjs.com/) (>= 6.x)
 
 To *run and develop*, do the following:
-- `git clone https://github.com/FrankSAURET/vscode-arduino`
-- `cd vscode-arduino`
+- `git clone https://github.com/FrankSAURET/Arduino-VsCode-IDE`
+- `cd Arduino-VsCode-IDE`
 - Run `npm i`
 - Run `npm i -g gulp`
 - Open in Visual Studio Code (`code .`)
@@ -275,4 +275,4 @@ This extension is a fork of [Microsoft/vscode-arduino](https://github.com/Micros
 Licensed under the [MIT License](LICENSE.txt). See the [Third Party Notices](ThirdPartyNotices.txt) file for additional copyright notices and terms.
 
 ## Contact Us
-If you'd like to help improve this extension, open an issue or a pull request on [GitHub](https://github.com/FrankSAURET/vscode-arduino).
+If you'd like to help improve this extension, open an issue or a pull request on [GitHub](https://github.com/FrankSAURET/Arduino-VsCode-IDE).

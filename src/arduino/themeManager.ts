@@ -48,7 +48,21 @@ export function findThemeExtensionId(themeName: string, extensions: ReadonlyArra
     return undefined;
 }
 
+export function canStoreArduinoThemeLocally(hasWorkspaceFile: boolean, workspaceFolderCount: number): boolean {
+    return hasWorkspaceFile || workspaceFolderCount > 0;
+}
+
+async function removeArduinoThemeFromGlobal(): Promise<void> {
+    const workbenchConfig = vscode.workspace.getConfiguration("workbench");
+    const inspection = workbenchConfig.inspect<string>("colorTheme");
+    if (inspection?.globalValue && SUPPORTED_ARDUINO_THEMES.includes(inspection.globalValue)) {
+        await workbenchConfig.update("colorTheme", undefined, vscode.ConfigurationTarget.Global);
+    }
+}
+
 export async function applyArduinoTheme(context: vscode.ExtensionContext, themeName: string): Promise<void> {
+    await removeArduinoThemeFromGlobal();
+
     if (!themeName) {
         return;
     }
@@ -58,16 +72,18 @@ export async function applyArduinoTheme(context: vscode.ExtensionContext, themeN
         return;
     }
 
-    const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-    const currentTheme = workbenchConfig.get<string>("colorTheme");
-    if (currentTheme === themeName) {
+    if (!canStoreArduinoThemeLocally(!!vscode.workspace.workspaceFile, vscode.workspace.workspaceFolders?.length || 0)) {
+        Logger.info("skipApplyArduinoThemeWithoutWorkspace", { themeName });
         return;
     }
 
-    const target = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
-        ? vscode.ConfigurationTarget.Workspace
-        : vscode.ConfigurationTarget.Global;
-    await workbenchConfig.update("colorTheme", themeName, target);
+    const workbenchConfig = vscode.workspace.getConfiguration("workbench");
+    const inspection = workbenchConfig.inspect<string>("colorTheme");
+    if (inspection?.workspaceValue === themeName || inspection?.workspaceFolderValue === themeName) {
+        return;
+    }
+
+    await workbenchConfig.update("colorTheme", themeName, vscode.ConfigurationTarget.Workspace);
 }
 
 async function promptThemeInstallation(context: vscode.ExtensionContext, themeName: string): Promise<void> {

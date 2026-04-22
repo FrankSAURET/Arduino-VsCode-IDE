@@ -2,8 +2,10 @@
 // Licensed under the MIT license.
 
 import * as ccp from "cocopa";
+import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import * as vscode from "vscode";
 
 import * as constants from "../common/constants";
 import { arduinoChannel } from "../common/outputChannel";
@@ -47,15 +49,13 @@ export function isCompilerParserEnabled(dc?: DeviceContext) {
  *     as at least for the forcedIncludes IntelliSense seems to take the
  *     order into account.
  */
-export function makeCompilerParserContext(dc: DeviceContext): ICoCoPaContext {
+export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string): ICoCoPaContext {
 
-    // TODO: callback for local setting: when IG gen is re-enabled file
-    //   analysis trigger. Perhaps for global possible as well?
     if (!isCompilerParserEnabled(dc)) {
         return {
             callback: undefined,
             conclude: async () => {
-                arduinoChannel.info("IntelliSense auto-configuration disabled.");
+                arduinoChannel.info(vscode.l10n.t("IntelliSense auto-configuration disabled."));
             },
         };
     }
@@ -66,7 +66,27 @@ export function makeCompilerParserContext(dc: DeviceContext): ICoCoPaContext {
     // Set up the callback to be called after parsing
     const _conclude = async () => {
         if (!runner.result) {
-            arduinoChannel.warning("Failed to generate IntelliSense configuration.");
+            // Determine whether this build mode is upload-only (no compilation)
+            const isUploadOnly = buildMode === "Uploading using Arduino CLI"
+                              || buildMode === "Uploading (programmer) using Arduino CLI";
+            // Check whether an existing IntelliSense config is already present
+            const cppConfigPath = path.join(ArduinoWorkspace.rootPath, constants.CPP_CONFIG_FILE);
+            const hasExistingConfig = fs.existsSync(cppConfigPath);
+
+            if (isUploadOnly) {
+                // Upload-only modes never compile — no IntelliSense data is expected
+                arduinoChannel.info(vscode.l10n.t("IntelliSense configuration skipped (upload-only, no compilation)."));
+                return;
+            }
+            if (hasExistingConfig) {
+                // Compilation was requested but the build cache was reused,
+                // so no compiler commands were emitted. The existing config
+                // is still valid — this is not an error.
+                arduinoChannel.info(vscode.l10n.t("No new IntelliSense data captured (build cache reused). Existing configuration kept."));
+                return;
+            }
+            // Genuine failure: compilation should have produced output but didn't
+            arduinoChannel.warning(vscode.l10n.t("Failed to generate IntelliSense configuration."));
             return;
         }
 
@@ -101,7 +121,7 @@ export function makeCompilerParserContext(dc: DeviceContext): ICoCoPaContext {
             ? ardHeader
             : undefined;
         if (!forcedIncludes) {
-            arduinoChannel.warning("Unable to locate \"Arduino.h\" within IntelliSense include paths.");
+            arduinoChannel.warning(vscode.l10n.t("Unable to locate \"Arduino.h\" within IntelliSense include paths."));
         }
 
         // The C++ standard is set to the following default value if no compiler flag has been found.
@@ -131,19 +151,18 @@ export function makeCompilerParserContext(dc: DeviceContext): ICoCoPaContext {
         try {
 
             const cmd = os.platform() === "darwin" ? "Cmd" : "Ctrl";
-            const help = `To manually rebuild your IntelliSense configuration run "${cmd}+Alt+I"`;
+            const help = vscode.l10n.t("To manually rebuild your IntelliSense configuration run \"{0}+Alt+I\"", cmd);
             const pPath = path.join(ArduinoWorkspace.rootPath, constants.CPP_CONFIG_FILE);
             const prop = new ccp.CCppProperties();
             prop.read(pPath);
             prop.merge(content, ccp.CCppPropertiesMergeMode.ReplaceSameNames);
             if (prop.write(pPath)) {
-                arduinoChannel.info(`IntelliSense configuration updated. ${help}`);
+                arduinoChannel.info(vscode.l10n.t("IntelliSense configuration updated. {0}", help));
             } else {
-                arduinoChannel.info(`IntelliSense configuration already up to date. ${help}`);
+                arduinoChannel.info(vscode.l10n.t("IntelliSense configuration already up to date. {0}", help));
             }
         } catch (e) {
-            const estr = JSON.stringify(e);
-            arduinoChannel.error(`Failed to read or write IntelliSense configuration: ${estr}`);
+            arduinoChannel.error(vscode.l10n.t("Failed to read or write IntelliSense configuration: {0}", JSON.stringify(e)));
         }
     };
     return {
@@ -222,14 +241,6 @@ enum AnalysisEvent {
  *      multiple analysis builds
  *  * make sure that an analysis request is postponed when another build
  *      is currently in progress
- *
- * TODO: check time of c_cpp_properties.json and compare it with
- * * arduino.json
- * * main sketch file
- * This way we can perhaps optimize this further. But be aware
- * that settings events fire before their corresponding values
- * are actually written to arduino.json -> time of arduino.json
- * is outdated if no countermeasure is taken.
  */
 export class AnalysisManager {
 
@@ -278,10 +289,30 @@ export class AnalysisManager {
             this._consecutiveAnalysisCount = 0;
         }
         if (this._consecutiveAnalysisCount >= this._maxConsecutiveAnalysis) {
-            arduinoChannel.warning("Analysis request throttled to prevent high CPU usage. Try rebuilding IntelliSense manually.");
+            arduinoChannel.warning(vscode.l10n.t("Analysis request throttled to prevent high CPU usage. Try rebuilding IntelliSense manually."));
+            return;
+        }
+        if (this.isConfigUpToDate()) {
             return;
         }
         await this.update(AnalysisEvent.AnalysisRequest);
+    }
+
+    private isConfigUpToDate(): boolean {
+        if (!ArduinoWorkspace.rootPath) {
+            return false;
+        }
+        const configPath = path.join(ArduinoWorkspace.rootPath, constants.CPP_CONFIG_FILE);
+        if (!fs.existsSync(configPath)) {
+            return false;
+        }
+        const configMtime = fs.statSync(configPath).mtimeMs;
+        const arduinoJsonPath = path.join(ArduinoWorkspace.rootPath, constants.ARDUINO_CONFIG_FILE);
+        const dc = DeviceContext.getInstance();
+        const sketchPath = dc.sketch ? path.join(ArduinoWorkspace.rootPath, dc.sketch) : null;
+        const arduinoMtime = fs.existsSync(arduinoJsonPath) ? fs.statSync(arduinoJsonPath).mtimeMs : 0;
+        const sketchMtime = sketchPath && fs.existsSync(sketchPath) ? fs.statSync(sketchPath).mtimeMs : 0;
+        return configMtime > arduinoMtime && configMtime > sketchMtime;
     }
 
     /**

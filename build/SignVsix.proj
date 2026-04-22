@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FilesToSign Include="$(OutDir)\vscode-arduino.vsix">
+    <FilesToSign Include="$(OutDir)\arduino-vscode-ide.vsix">
       <Authenticode>VsixSHA2</Authenticode>
     </FilesToSign>
   </ItemGroup>

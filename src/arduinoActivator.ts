@@ -50,7 +50,6 @@ class ArduinoActivator {
                 await arduinoApp.initialize();
             }
 
-            // TODO: After use the device.json config, should remove the dependency on the ArduinoApp object.
             const deviceContext = DeviceContext.getInstance();
             await deviceContext.loadContext();
 

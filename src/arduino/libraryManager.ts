@@ -10,8 +10,8 @@ import { IArduinoSettings } from "./arduinoSettings";
 
 export interface ILibrary {
     name: string;
-    // TODO: Make this version aware
     installed: boolean;
+    installedVersion?: string;
     installedPath: string;
     srcPath: string;
     version: string;

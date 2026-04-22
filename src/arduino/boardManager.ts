@@ -93,20 +93,26 @@ export class BoardManager {
             vscode.window.showInformationMessage(vscode.l10n.t("No supported board is available."));
             return;
         }
-        // TODO:? Add separator item between different platforms.
-        const chosen = await vscode.window.showQuickPick(<vscode.QuickPickItem[]>supportedBoardTypes.map((entry): vscode.QuickPickItem => {
-            return <vscode.QuickPickItem>{
-                label: entry.name,
-                description: entry.platform.name,
-                entry,
-            };
-        }).sort((a, b): number => {
+        const sorted = supportedBoardTypes.map((entry): vscode.QuickPickItem & { entry: any } => ({
+            label: entry.name,
+            description: entry.platform.name,
+            entry,
+        })).sort((a, b) => {
             if (a.description === b.description) {
                 return a.label === b.label ? 0 : (a.label > b.label ? 1 : -1);
-            } else {
-                return a.description > b.description ? 1 : -1;
             }
-        }), { placeHolder: vscode.l10n.t("Select board type") });
+            return a.description > b.description ? 1 : -1;
+        });
+        const items: vscode.QuickPickItem[] = [];
+        let currentPlatform = "";
+        for (const item of sorted) {
+            if (item.description !== currentPlatform) {
+                currentPlatform = item.description;
+                items.push({ label: currentPlatform, kind: -1 } as any); // QuickPickItemKind.Separator
+            }
+            items.push(item);
+        }
+        const chosen = await vscode.window.showQuickPick(items, { placeHolder: vscode.l10n.t("Select board type") });
         if (chosen && chosen.label) {
             this.doChangeBoardType((<any>chosen).entry);
         }
@@ -205,8 +211,7 @@ export class BoardManager {
         try {
             rawModel = JSON.parse(packageContent);
         } catch (ex) {
-            arduinoChannel.error(`Invalid json file "${path.join(this._settings.packagePath, indexFileName)}".
-            Suggest to remove it manually and allow boardmanager to re-download it.`);
+            arduinoChannel.error(vscode.l10n.t("Invalid json file \"{0}\". Suggest to remove it manually and allow boardmanager to re-download it.", path.join(this._settings.packagePath, indexFileName)));
             return;
         }
 

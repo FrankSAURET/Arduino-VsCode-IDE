@@ -8,6 +8,7 @@ const configKeys = {
     ARDUINO_PATH: "arduino.path",
     ARDUINO_COMMAND_PATH: "arduino.commandPath",
     ARDUINO_THEME: "arduino.theme",
+    TELEPLOT_OPEN_MODE: "arduino.teleplotOpenMode",
     ADDITIONAL_URLS: "arduino.additionalUrls",
     LOG_LEVEL: "arduino.logLevel",
     CLEAR_OUTPUT_ON_START: "arduino.clearOutputOnBuild",
@@ -17,30 +18,29 @@ const configKeys = {
     DISABLE_TESTING_OPEN: "arduino.disableTestingOpen",
     IGNORE_BOARDS: "arduino.ignoreBoards",
     SKIP_HEADER_PROVIDER: "arduino.skipHeaderProvider",
-    DEFAULT_BAUD_RATE: "arduino.defaultBaudRate",
     DISABLE_INTELLISENSE_AUTO_GEN: "arduino.disableIntelliSenseAutoGen",
-    DEFAULT_TIMESTAMP_FORMAT: "arduino.defaultTimestampFormat",
     ANALYZE_ON_OPEN: "arduino.analyzeOnOpen",
     ANALYZE_ON_SETTING_CHANGE: "arduino.analyzeOnSettingChange",
     CUSTOM_LIBRARY_PATH: "arduino.customLibraryPath",
     ARDUINO_CLI_CONFIG_FILE: "arduino.arduinoCliConfigFile",
+    OUTPUT_VERBOSITY: "arduino.outputVerbosity",
 };
 
 export interface IVscodeSettings {
     arduinoPath: string;
     commandPath: string;
     arduinoTheme: string;
+    teleplotOpenMode: string;
     additionalUrls: string[];
     logLevel: string;
+    outputVerbosity: string;
     clearOutputOnBuild: boolean;
     allowPDEFiletype: boolean;
     enableUSBDetection: boolean;
     disableTestingOpen: boolean;
     ignoreBoards: string[];
     skipHeaderProvider: boolean;
-    defaultBaudRate: number;
     disableIntelliSenseAutoGen: boolean;
-    defaultTimestampFormat: string;
     analyzeOnOpen: boolean;
     analyzeOnSettingChange: boolean;
     customLibraryPath: string;
@@ -72,6 +72,10 @@ export class VscodeSettings implements IVscodeSettings {
         return this.getConfigValue<string>(configKeys.ARDUINO_THEME);
     }
 
+    public get teleplotOpenMode(): string {
+        return this.getConfigValue<string>(configKeys.TELEPLOT_OPEN_MODE) || "newTab";
+    }
+
     public get additionalUrls(): string[] {
         const value = this.getConfigValue<string | string[]>(configKeys.ADDITIONAL_URLS);
 
@@ -90,6 +94,10 @@ export class VscodeSettings implements IVscodeSettings {
 
     public get logLevel(): string {
         return this.getConfigValue<string>(configKeys.LOG_LEVEL) || "info";
+    }
+
+    public get outputVerbosity(): string {
+        return this.getConfigValue<string>(configKeys.OUTPUT_VERBOSITY) || "normal";
     }
 
     public get clearOutputOnBuild(): boolean {
@@ -116,20 +124,12 @@ export class VscodeSettings implements IVscodeSettings {
         this.setConfigValue(configKeys.IGNORE_BOARDS, value, true);
     }
 
-    public get defaultBaudRate(): number {
-        return this.getConfigValue<number>(configKeys.DEFAULT_BAUD_RATE);
-    }
-
     public get skipHeaderProvider(): boolean {
         return this.getConfigValue<boolean>(configKeys.SKIP_HEADER_PROVIDER);
     }
 
     public get disableIntelliSenseAutoGen(): boolean {
         return this.getConfigValue<boolean>(configKeys.DISABLE_INTELLISENSE_AUTO_GEN);
-    }
-
-    public get defaultTimestampFormat(): string {
-        return this.getConfigValue<string>(configKeys.DEFAULT_TIMESTAMP_FORMAT);
     }
 
     public get analyzeOnOpen(): boolean {

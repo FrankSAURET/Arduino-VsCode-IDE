@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { DeviceContext } from "../deviceContext";
 import ArduinoContext from "../arduinoContext";
 import { getDownloadedCliExecutable } from "./cliDownloader";
+import { canStoreArduinoThemeLocally } from "./themeManager";
 
 /**
  * Manages a single "VsCode Arduino" editor panel with a left icon rail
@@ -135,8 +136,7 @@ export class ArduinoHomePanel {
             "path", "commandPath", "arduinoCliConfigFile", "customLibraryPath",
             "clearOutputOnBuild", "logLevel", "additionalUrls",
             "disableIntelliSenseAutoGen", "analyzeOnOpen", "analyzeOnSettingChange",
-            "defaultBaudRate", "defaultTimestampFormat",
-            "theme", "enableUSBDetection",
+            "theme", "enableUSBDetection", "teleplotOpenMode",
             "openPDEFiletype", "skipHeaderProvider", "ignoreBoards",
         ];
         for (const key of vscodeKeys) {
@@ -169,6 +169,18 @@ export class ArduinoHomePanel {
     private async _updateSetting(scope: string, key: string, value: any) {
         if (scope === "vscode") {
             const config = vscode.workspace.getConfiguration("arduino");
+            if (key === "theme") {
+                if (!canStoreArduinoThemeLocally(!!vscode.workspace.workspaceFile, vscode.workspace.workspaceFolders?.length || 0)) {
+                    void vscode.window.showWarningMessage(
+                        vscode.l10n.t("Open a workspace folder to store the Arduino theme locally."),
+                    );
+                    return;
+                }
+
+                await config.update(key, value, vscode.ConfigurationTarget.Workspace);
+                return;
+            }
+
             await config.update(key, value, vscode.ConfigurationTarget.Global);
         } else if (scope === "project") {
             try {
@@ -282,12 +294,14 @@ export class ArduinoHomePanel {
         const boardManagerIcon = this._iconUri("boardManager.svg");
         const libManagerIcon = this._iconUri("libManager.svg");
         const examplesIcon = this._iconUri("examples.svg");
+        const openIcon = this._iconUri("open.svg");
         const selectBoardIcon = this._iconUri("selectBoard.svg");
         const verifyIcon = this._iconUri("verify.svg");
         const uploadIcon = this._iconUri("upload.svg");
-        const serialMonitorIcon = this._iconUri("serialMonitor.svg");
         const newProjectIcon = this._iconUri("newProject.svg");
         const parametersIcon = this._iconUri("parameters.svg");
+        const serialMonitorIcon = this._iconUri("serialMonitor.svg");
+        const serialTracerIcon = this._iconUri("serialTracer.svg");
 
         const defaultView = initialView || "";
 
@@ -297,7 +311,6 @@ export class ArduinoHomePanel {
             boardConfig: vscode.l10n.t("Board Configuration"),
             verify: vscode.l10n.t("Verify"),
             upload: vscode.l10n.t("Upload"),
-            serialMonitor: vscode.l10n.t("Serial Monitor"),
             boardManager: vscode.l10n.t("Board Manager"),
             libraryManager: vscode.l10n.t("Library Manager"),
             examples: vscode.l10n.t("Examples"),
@@ -316,7 +329,6 @@ export class ArduinoHomePanel {
             groupGeneralPaths: vscode.l10n.t("General / Paths"),
             groupBuildUpload: vscode.l10n.t("Build & Upload"),
             groupIntelliSense: vscode.l10n.t("IntelliSense"),
-            groupSerialMonitor: vscode.l10n.t("Serial Monitor"),
             groupInterface: vscode.l10n.t("Interface"),
             groupAdvanced: vscode.l10n.t("Advanced"),
             groupProject: vscode.l10n.t("Project (.vscode/arduino.json)"),
@@ -342,14 +354,15 @@ export class ArduinoHomePanel {
             sAnalyzeOnOpenDesc: vscode.l10n.t("Run IntelliSense analysis when the project is opened"),
             sAnalyzeOnSettingChange: vscode.l10n.t("Analyze on Setting Change"),
             sAnalyzeOnSettingChangeDesc: vscode.l10n.t("Re-run analysis when project settings change"),
-            sDefaultBaudRate: vscode.l10n.t("Default Baud Rate"),
-            sDefaultBaudRateDesc: vscode.l10n.t("Default serial monitor baud rate"),
-            sTimestampFormat: vscode.l10n.t("Timestamp Format"),
-            sTimestampFormatDesc: vscode.l10n.t("strftime format for timestamps (empty = disabled)"),
             sArduinoTheme: vscode.l10n.t("Arduino Theme"),
             sArduinoThemeDesc: vscode.l10n.t("Theme to apply for Arduino views"),
             sUsbDetection: vscode.l10n.t("USB Detection"),
             sUsbDetectionDesc: vscode.l10n.t("Automatically detect boards plugged via USB"),
+            sTeleplotOpenMode: vscode.l10n.t("Teleplot Open Mode"),
+            sTeleplotOpenModeDesc: vscode.l10n.t("Choose how Teleplot opens from the serial tracer action"),
+            sTeleplotNewTab: vscode.l10n.t("New tab"),
+            sTeleplotNewPanel: vscode.l10n.t("New panel"),
+            sTeleplotSplitRight: vscode.l10n.t("Split right"),
             sOpenPde: vscode.l10n.t("Open PDE Files"),
             sOpenPdeDesc: vscode.l10n.t("Allow opening legacy .pde sketches"),
             sDisableHeaderProvider: vscode.l10n.t("Disable Header Provider"),
@@ -375,6 +388,8 @@ export class ArduinoHomePanel {
             sPreBuildDesc: vscode.l10n.t("Command executed before each build"),
             sPostBuild: vscode.l10n.t("Post-build Command"),
             sPostBuildDesc: vscode.l10n.t("Command executed after each build"),
+            serialMonitor: vscode.l10n.t("Serial Monitor"),
+            serialTracer: vscode.l10n.t("Serial Tracer"),
         };
 
         return `<!DOCTYPE html>
@@ -404,8 +419,8 @@ export class ArduinoHomePanel {
 
         /* ───── Navigation Rail ───── */
         .rail {
-            width: 48px;
-            min-width: 48px;
+            width: 52px;
+            min-width: 52px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -417,23 +432,23 @@ export class ArduinoHomePanel {
         }
 
         .rail-logo {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             margin-bottom: 6px;
             opacity: 0.85;
         }
 
         .rail-sep {
-            width: 28px;
-            height: 1px;
+            width: 40px;
+            height: 2px;
             background: var(--vscode-panel-border);
             margin: 4px 0;
         }
 
         .rail-btn {
             position: relative;
-            width: 38px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -453,40 +468,21 @@ export class ArduinoHomePanel {
             content: '';
             position: absolute;
             left: 0;
-            top: 8px;
-            bottom: 8px;
+            top: 6px;
+            bottom: 6px;
             width: 3px;
             border-radius: 0 3px 3px 0;
             background: var(--vscode-button-background);
         }
         .rail-btn img {
-            width: 22px;
-            height: 22px;
+            width: 32px;
+            height: 32px;
             opacity: 0.8;
         }
         .rail-btn:hover img,
         .rail-btn.active img {
             opacity: 1;
         }
-
-        /* Tooltip */
-        .rail-btn .tip {
-            display: none;
-            position: absolute;
-            left: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            white-space: nowrap;
-            padding: 4px 10px;
-            border-radius: 4px;
-            background: var(--vscode-editorHoverWidget-background, #252526);
-            color: var(--vscode-editorHoverWidget-foreground, #cccccc);
-            border: 1px solid var(--vscode-editorHoverWidget-border, #454545);
-            font-size: 12px;
-            z-index: 100;
-            pointer-events: none;
-        }
-        .rail-btn:hover .tip { display: block; }
 
         /* ───── Content Area ───── */
         .content-view iframe {
@@ -813,44 +809,35 @@ export class ArduinoHomePanel {
         <div class="rail-sep"></div>
         
         <button class="rail-btn" data-cmd="arduino.initialize" title="${t.newProject}">
-            <img src="${newProjectIcon}" alt="" /><span class="tip">${t.newProject}</span>
+            <img src="${newProjectIcon}" alt="" />
         </button>
+        <button class="rail-btn" data-cmd="arduino.openProjectFolder" title="${t.openExistingProject}">
+            <img src="${openIcon}" alt="" />
+        </button>
+
+        <div class="rail-sep"></div>
+
         <button class="rail-btn" data-view="boardConfig" title="${t.boardConfig}">
-            <img src="${selectBoardIcon}" alt="" /><span class="tip">${t.boardConfig}</span>
+            <img src="${selectBoardIcon}" alt="" />
         </button>
-        <div class="rail-sep"></div>
-        
-        <button class="rail-btn" data-cmd="arduino.verify" title="${t.verify}">
-            <img src="${verifyIcon}" alt="" /><span class="tip">${t.verify}</span>
-        </button>
-        <button class="rail-btn" data-cmd="arduino.upload" title="${t.upload}">
-            <img src="${uploadIcon}" alt="" /><span class="tip">${t.upload}</span>
-        </button>
-
-        <div class="rail-sep"></div>
-
-        <button class="rail-btn" data-cmd="arduino.openSerialMonitor" title="${t.serialMonitor}">
-            <img src="${serialMonitorIcon}" alt="" /><span class="tip">${t.serialMonitor}</span>
-        </button>
-
         
         <div class="rail-sep"></div>
         
         <button class="rail-btn" data-view="boardmanager" title="${t.boardManager}">
-            <img src="${boardManagerIcon}" alt="" /><span class="tip">${t.boardManager}</span>
+            <img src="${boardManagerIcon}" alt="" />
         </button>
         <button class="rail-btn" data-view="librarymanager" title="${t.libraryManager}">
-            <img src="${libManagerIcon}" alt="" /><span class="tip">${t.libraryManager}</span>
+            <img src="${libManagerIcon}" alt="" />
         </button>
         <button class="rail-btn" data-view="examples" title="${t.examples}">
-            <img src="${examplesIcon}" alt="" /><span class="tip">${t.examples}</span>
+            <img src="${examplesIcon}" alt="" />
         </button>
 
         <div class="rail-spacer"></div>
 
         <div class="rail-sep"></div>
         <button class="rail-btn" id="settingsBtn" title="${t.settings}">
-            <img src="${parametersIcon}" alt="" /><span class="tip">${t.settings}</span>
+            <img src="${parametersIcon}" alt="" />
         </button>
         <div style="height:6px;"></div>
     </nav>
@@ -872,7 +859,7 @@ export class ArduinoHomePanel {
                     <img src="${newProjectIcon}" alt="" /> ${t.newProject}
                 </button>
                 <button class="welcome-btn" data-wcmd="arduino.openProjectFolder">
-                    <img src="${examplesIcon}" alt="" /> ${t.openExistingProject}
+                    <img src="${openIcon}" alt="" /> ${t.openExistingProject}
                 </button>
             </div>
             <p class="welcome-hint">${t.welcomeHint}</p>
@@ -1014,49 +1001,6 @@ export class ArduinoHomePanel {
                 </div>
             </div>
 
-            <!-- Serial Monitor -->
-            <div class="settings-group">
-                <h3>${t.groupSerialMonitor}</h3>
-                <div class="settings-item">
-                    <div class="settings-item-info">
-                        <div class="settings-item-label">${t.sDefaultBaudRate}</div>
-                        <div class="settings-item-desc">${t.sDefaultBaudRateDesc}</div>
-                        <div class="settings-item-key">arduino.defaultBaudRate</div>
-                    </div>
-                    <div class="settings-item-control">
-                        <select class="settings-select" data-scope="vscode" data-key="defaultBaudRate" data-type="number">
-                            <option value="300">300</option>
-                            <option value="1200">1200</option>
-                            <option value="2400">2400</option>
-                            <option value="4800">4800</option>
-                            <option value="9600">9600</option>
-                            <option value="19200">19200</option>
-                            <option value="38400">38400</option>
-                            <option value="57600">57600</option>
-                            <option value="74880">74880</option>
-                            <option value="115200">115200</option>
-                            <option value="230400">230400</option>
-                            <option value="250000">250000</option>
-                            <option value="500000">500000</option>
-                            <option value="1000000">1000000</option>
-                            <option value="2000000">2000000</option>
-                        </select>
-                        <span class="settings-saved">✓</span>
-                    </div>
-                </div>
-                <div class="settings-item">
-                    <div class="settings-item-info">
-                        <div class="settings-item-label">${t.sTimestampFormat}</div>
-                        <div class="settings-item-desc">${t.sTimestampFormatDesc}</div>
-                        <div class="settings-item-key">arduino.defaultTimestampFormat</div>
-                    </div>
-                    <div class="settings-item-control">
-                        <input class="settings-input narrow" type="text" data-scope="vscode" data-key="defaultTimestampFormat" placeholder="%H:%M:%S" />
-                        <span class="settings-saved">✓</span>
-                    </div>
-                </div>
-            </div>
-
             <!-- Interface -->
             <div class="settings-group">
                 <h3>${t.groupInterface}</h3>
@@ -1083,6 +1027,21 @@ export class ArduinoHomePanel {
                     </div>
                     <div class="settings-item-control">
                         <input class="settings-checkbox" type="checkbox" data-scope="vscode" data-key="enableUSBDetection" />
+                        <span class="settings-saved">✓</span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-info">
+                        <div class="settings-item-label">${t.sTeleplotOpenMode}</div>
+                        <div class="settings-item-desc">${t.sTeleplotOpenModeDesc}</div>
+                        <div class="settings-item-key">arduino.teleplotOpenMode</div>
+                    </div>
+                    <div class="settings-item-control">
+                        <select class="settings-select" data-scope="vscode" data-key="teleplotOpenMode">
+                            <option value="newTab">${t.sTeleplotNewTab}</option>
+                            <option value="newPanel">${t.sTeleplotNewPanel}</option>
+                            <option value="splitRight">${t.sTeleplotSplitRight}</option>
+                        </select>
                         <span class="settings-saved">✓</span>
                     </div>
                 </div>
