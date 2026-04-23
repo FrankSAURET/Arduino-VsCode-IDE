@@ -13,6 +13,7 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { arduinoChannel } from "../common/outputChannel";
+
 import compareVersions = require("compare-versions");
 
 const GITHUB_API_LATEST = "https://api.github.com/repos/arduino/arduino-cli/releases/latest";
