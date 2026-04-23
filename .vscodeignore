@@ -18,3 +18,26 @@ node_modules/**
 vendor/**
 azure-pipelines.yml
 build/**
+
+# Fichiers de développement/config inutiles dans le VSIX
+.ackrc
+.editorconfig
+.eslintrc.yml
+.claude/**
+typings/**
+tuto.md
+NEWS.md
+CONTRIBUTING.md
+
+# Arduino CLI non bundlé : l'extension utilise le CLI local ou propose le téléchargement
+arduino-cli/**
+
+# Fichiers inutiles à runtime dans out/node_modules
+out/node_modules/**/*.d.ts
+out/node_modules/**/*.d.mts
+out/node_modules/**/src/**
+out/node_modules/**/*.md
+out/node_modules/**/*.gyp
+out/node_modules/**/.releaserc
+out/node_modules/**/CODE_OF_CONDUCT*
+out/node_modules/**/CHANGELOG*

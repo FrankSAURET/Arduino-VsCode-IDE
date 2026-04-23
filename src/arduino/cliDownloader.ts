@@ -12,6 +12,7 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { arduinoChannel } from "../common/outputChannel";
+import compareVersions = require("compare-versions");
 
 const GITHUB_API_LATEST = "https://api.github.com/repos/arduino/arduino-cli/releases/latest";
 
@@ -263,30 +264,62 @@ export async function promptDownloadCli(extensionPath: string): Promise<string |
 }
 
 /**
+ * Returns the version of the system-installed arduino-cli (via PATH), or null if not found.
+ */
+function getSystemCliVersion(): string | null {
+    try {
+        const output = child_process.execSync("arduino-cli version", { encoding: "utf8", timeout: 5000 });
+        // Output: "arduino-cli  Version: 1.2.0 Commit: ... Status: ..."
+        const match = output.match(/Version:\s+v?(\d+\.\d+\.\d+)/);
+        return match ? match[1] : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Checks if a newer version of the CLI is available and offers to update.
+ * - If a CLI was downloaded by the extension (VERSION file present), offers an in-place update.
+ * - Otherwise, checks the system-installed CLI and notifies if a newer version is available online.
  */
 export async function checkForCliUpdate(extensionPath: string): Promise<void> {
     const cliDir = path.join(extensionPath, "arduino-cli");
     const versionFile = path.join(cliDir, "VERSION");
-    if (!fs.existsSync(versionFile)) {
-        return;
-    }
     try {
-        const currentVersion = fs.readFileSync(versionFile, "utf8").trim();
         const latestVersion = await getLatestCliVersion();
-        if (currentVersion !== latestVersion) {
-            const choice = await vscode.window.showInformationMessage(
-                vscode.l10n.t("Arduino CLI update available: v{0} → v{1}", currentVersion, latestVersion),
-                vscode.l10n.t("Update"),
-                vscode.l10n.t("Later"),
-            );
-            if (choice === vscode.l10n.t("Update")) {
-                // Remove old installation
-                const files = fs.readdirSync(cliDir);
-                for (const f of files) {
-                    fs.unlinkSync(path.join(cliDir, f));
+
+        if (fs.existsSync(versionFile)) {
+            // Downloaded CLI managed by the extension
+            const currentVersion = fs.readFileSync(versionFile, "utf8").trim();
+            if (compareVersions(latestVersion, currentVersion) > 0) {
+                const choice = await vscode.window.showInformationMessage(
+                    vscode.l10n.t("Arduino CLI update available: v{0} → v{1}", currentVersion, latestVersion),
+                    vscode.l10n.t("Update"),
+                    vscode.l10n.t("Later"),
+                );
+                if (choice === vscode.l10n.t("Update")) {
+                    const files = fs.readdirSync(cliDir);
+                    for (const f of files) {
+                        fs.unlinkSync(path.join(cliDir, f));
+                    }
+                    await downloadArduinoCli(extensionPath);
                 }
-                await downloadArduinoCli(extensionPath);
+            }
+        } else {
+            // Check system-installed CLI
+            const systemVersion = getSystemCliVersion();
+            if (systemVersion && compareVersions(latestVersion, systemVersion) > 0) {
+                vscode.window.showInformationMessage(
+                    vscode.l10n.t(
+                        "Arduino CLI v{0} is installed. A newer version v{1} is available.",
+                        systemVersion, latestVersion,
+                    ),
+                    vscode.l10n.t("View releases"),
+                ).then((choice) => {
+                    if (choice === vscode.l10n.t("View releases")) {
+                        vscode.env.openExternal(vscode.Uri.parse("https://github.com/arduino/arduino-cli/releases/latest"));
+                    }
+                });
             }
         }
     } catch {
