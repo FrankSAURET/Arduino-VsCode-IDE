@@ -5,6 +5,7 @@
 // See https://github.com/arduino/arduino-cli for source code and license.
 
 import * as child_process from "child_process";
+import compareVersions = require("compare-versions");
 import * as extract from "extract-zip";
 import * as fs from "fs";
 import * as https from "https";
@@ -12,7 +13,6 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { arduinoChannel } from "../common/outputChannel";
-import compareVersions = require("compare-versions");
 
 const GITHUB_API_LATEST = "https://api.github.com/repos/arduino/arduino-cli/releases/latest";
 
