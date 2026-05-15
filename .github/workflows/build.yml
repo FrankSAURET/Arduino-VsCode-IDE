@@ -13,6 +13,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -23,10 +26,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Use Node 22.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22.x
 
@@ -47,7 +50,7 @@ jobs:
           npx @vscode/vsce package --no-dependencies --out arduino-vscode-ide.vsix
 
       - name: Publish extension VSIX as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: VS Code extension VSIX (${{ matrix.os }})
           path: arduino-vscode-ide.vsix
