@@ -1,9 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## Version 2026.4.1
+## Version 2026.5.1
 
-- Release date: April 2026
+- Release date: May 2026
 - **Rebranded as "Arduino VsCode IDE" (publisher: electropol-fr)**
 - **This is the first release of the community-maintained fork by [electropol-fr](https://github.com/FrankSAURET/Arduino-VsCode-IDE).**
 

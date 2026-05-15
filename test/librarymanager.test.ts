@@ -70,17 +70,36 @@ suite("Arduino: Library Manager.", () => {
     test("should be able to install libraries", function(done) {
         this.timeout(3 * 60 * 1000);
         try {
-            // Library Manager: Install extenal libarary.
-            ArduinoContext.arduinoApp.installLibrary("AzureIoTHub", "1.0.35", true).then((result) => {
-                // check if the installation succeeds or not
-                const arduinoSettings = ArduinoContext.arduinoApp.settings;
-                const libPath = Path.join(arduinoSettings.sketchbookPath, "libraries", "AzureIoTHub");
+            const version = "1.0.21";
+            const originalSpawn = util.spawn;
+            const arduinoSettings = ArduinoContext.arduinoApp.settings;
+            const libPath = Path.join(arduinoSettings.sketchbookPath, "libraries", "AzureIoTHub");
+            const fixtureLibPath = Path.join(Resources.mockedSketchbookPath, "libraries", "AzureIoTHub");
+            const librariesRoot = Path.join(arduinoSettings.sketchbookPath, "libraries");
 
+            if (!util.directoryExistsSync(librariesRoot)) {
+                util.mkdirRecursivelySync(librariesRoot);
+            }
+            if (util.directoryExistsSync(libPath)) {
+                util.rmdirRecursivelySync(libPath);
+            }
+
+            (util as any).spawn = async (command, args: string[]) => {
+                assert.deepStrictEqual(args, ["lib", "install", `AzureIoTHub@${version}`]);
+                util.cp(fixtureLibPath, libPath);
+                return { code: 0 };
+            };
+
+            ArduinoContext.arduinoApp.installLibrary("AzureIoTHub", version, true).then((result) => {
+                (util as any).spawn = originalSpawn;
                 if (util.directoryExistsSync(libPath)) {
                     done();
                 } else {
                     done(new Error("AzureIoTHub library install failure, can't find library path: " + libPath));
                 }
+            }).catch((error) => {
+                (util as any).spawn = originalSpawn;
+                done(error);
             });
 
         } catch (error) {

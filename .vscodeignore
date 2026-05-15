@@ -28,6 +28,13 @@ typings/**
 tuto.md
 NEWS.md
 CONTRIBUTING.md
+images/ArduinoCommunityLogo_Complet.svg
+images/ArduinoCommunityLogo_Couleur.svg
+images/examples/**
+images/serialMonitor - Copie.svg
+images/serialTracer-V1.svg
+images/upload-v1.svg
+images/verify-V1.svg
 
 # Arduino CLI non bundlé : l'extension utilise le CLI local ou propose le téléchargement
 arduino-cli/**
@@ -41,3 +48,21 @@ out/node_modules/**/*.gyp
 out/node_modules/**/.releaserc
 out/node_modules/**/CODE_OF_CONDUCT*
 out/node_modules/**/CHANGELOG*
+out/node_modules/@serialport/binding-mock/**
+out/node_modules/@serialport/parser-byte-length/**
+out/node_modules/@serialport/parser-cctalk/**
+out/node_modules/@serialport/parser-inter-byte-timeout/**
+out/node_modules/@serialport/parser-packet-length/**
+out/node_modules/@serialport/parser-ready/**
+out/node_modules/@serialport/parser-regex/**
+out/node_modules/@serialport/parser-slip-encoder/**
+out/node_modules/@serialport/parser-spacepacket/**
+out/node_modules/impor/tsconfig.json
+out/node_modules/node-addon-api/**
+out/node_modules/node-gyp-build/bin.js
+out/node_modules/node-gyp-build/build-test.js
+out/node_modules/serialport/dist/index.js
+out/node_modules/serialport/dist/serialport-mock.js
+out/node_modules/usb-detection/.eslintrc
+out/node_modules/uuid/AUTHORS
+out/node_modules/uuid/bin/**

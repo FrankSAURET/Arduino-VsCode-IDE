@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as Path from "path";
 import * as TypeMoq from "typemoq";
+import * as vscode from "vscode";
 
 import * as Resources from "./resources";
 
@@ -29,19 +30,19 @@ suite("Arduino: Example Manager.", () => {
         exampleManager.loadExamples().then((examples) => {
             // console.log(examples);
             assert.equal(examples.length, 3);
-            assert.equal(examples[0].name, "Built-in Examples", "Verify Built-in Examples");
+            assert.equal(examples[0].name, vscode.l10n.t("Built-in Examples"), "Verify Built-in Examples");
             assert.equal(examples[0].children.length, 1);
             assert.equal(examples[0].children[0].name, "01.Basics");
             assert.equal(examples[0].children[0].children.length, 1);
 
-            assert.equal(examples[1].name, "Examples for any board", "Verify Examples for any board");
+            assert.equal(examples[1].name, vscode.l10n.t("Examples for any board"), "Verify Examples for any board");
             assert.equal(examples[1].children.length, 1);
             assert.equal(examples[1].children[0].name, "Ethernet");
             assert.equal(examples[1].children[0].children.length, 1);
             assert.equal(examples[1].children[0].children[0].name, "WebServer");
             assert.equal(examples[1].children[0].children[0].path, Path.join(Resources.mockedIDELibPath, "Ethernet", "examples", "WebServer"));
 
-            assert.equal(examples[2].name, "Examples from Custom Libraries", "Verify Examples from Custom Libraries");
+            assert.equal(examples[2].name, vscode.l10n.t("Examples from Custom Libraries"), "Verify Examples from Custom Libraries");
             assert.equal(examples[2].children.length, 1);
             assert.equal(examples[2].children[0].name, "AzureIoTHub");
             assert.equal(examples[2].children[0].children.length, 1);

@@ -292,9 +292,13 @@ export async function checkForCliUpdate(extensionPath: string): Promise<void> {
             // Downloaded CLI managed by the extension
             const currentVersion = fs.readFileSync(versionFile, "utf8").trim();
             if (compareVersions(latestVersion, currentVersion) > 0) {
-                const choice = await vscode.window.showInformationMessage(
-                    vscode.l10n.t("Arduino CLI update available: v{0} → v{1}", currentVersion, latestVersion),
+                const choice = await vscode.window.showWarningMessage(
+                    vscode.l10n.t(
+                        "Arduino CLI update available: v{0} → v{1}. Warning: updating may cause extension malfunction. If so, reinstall the extension and open a GitHub issue to request an update.",
+                        currentVersion, latestVersion,
+                    ),
                     vscode.l10n.t("Update"),
+                    vscode.l10n.t("Open GitHub issue"),
                     vscode.l10n.t("Later"),
                 );
                 if (choice === vscode.l10n.t("Update")) {
@@ -303,21 +307,26 @@ export async function checkForCliUpdate(extensionPath: string): Promise<void> {
                         fs.unlinkSync(path.join(cliDir, f));
                     }
                     await downloadArduinoCli(extensionPath);
+                } else if (choice === vscode.l10n.t("Open GitHub issue")) {
+                    await vscode.env.openExternal(vscode.Uri.parse("https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/new?title=Request+Arduino+CLI+update+to+v" + latestVersion));
                 }
             }
         } else {
             // Check system-installed CLI
             const systemVersion = getSystemCliVersion();
             if (systemVersion && compareVersions(latestVersion, systemVersion) > 0) {
-                vscode.window.showInformationMessage(
+                vscode.window.showWarningMessage(
                     vscode.l10n.t(
-                        "Arduino CLI v{0} is installed. A newer version v{1} is available.",
+                        "Arduino CLI v{0} is installed. A newer version v{1} is available. Warning: updating may cause extension malfunction. If so, reinstall the extension and open a GitHub issue to request an update.",
                         systemVersion, latestVersion,
                     ),
                     vscode.l10n.t("View releases"),
+                    vscode.l10n.t("Open GitHub issue"),
                 ).then((choice) => {
                     if (choice === vscode.l10n.t("View releases")) {
-                        vscode.env.openExternal(vscode.Uri.parse("https://github.com/arduino/arduino-cli/releases/latest"));
+                        void vscode.env.openExternal(vscode.Uri.parse("https://github.com/arduino/arduino-cli/releases/latest"));
+                    } else if (choice === vscode.l10n.t("Open GitHub issue")) {
+                        void vscode.env.openExternal(vscode.Uri.parse("https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/new?title=Request+Arduino+CLI+update+to+v" + latestVersion));
                     }
                 });
             }

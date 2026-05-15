@@ -10,6 +10,7 @@ import { BoardManager } from "../arduino/boardManager";
 import * as platform from "../common/platform";
 import * as util from "../common/util";
 import { DeviceContext } from "../deviceContext";
+import * as Logger from "../logger/logger";
 
 export class DebuggerManager {
     private _usbDetector;
@@ -46,7 +47,13 @@ export class DebuggerManager {
         // For anyone looking at blame history, I doubt this import works as-is.
         // I swapped it out for the old import to remove dependency on "node-usb-native",
         // but otherwise anything that was broken before is still broken.
-        this._usbDetector = require("usb-detection");
+        try {
+            this._usbDetector = require("usb-detection");
+        } catch (error) {
+            const normalizedError = error instanceof Error ? error : new Error(String(error));
+            Logger.traceWarning("DebuggerUsbDetectorRequireFailed", normalizedError);
+            this._usbDetector = null;
+        }
         this._debugServerPath = platform.findFile(platform.getExecutableFileName("openocd"),
             path.join(this._arduinoSettings.packagePath, "packages"));
         if (!util.fileExistsSync(this._debugServerPath)) {
@@ -69,6 +76,9 @@ export class DebuggerManager {
     }
 
     public async listDebuggers(): Promise<any[]> {
+        if (!this._usbDetector) {
+            return [];
+        }
         const usbDeviceList = await this._usbDetector.find();
         const keys = [];
         const results = [];

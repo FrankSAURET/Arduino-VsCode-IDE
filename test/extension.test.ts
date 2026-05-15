@@ -4,6 +4,7 @@
 //
 import * as assert from "assert";
 import * as os from "os";
+import * as path from "path";
 import * as vscode from "vscode";
 const impor = require("impor")(__dirname);
 
@@ -30,38 +31,23 @@ suite("Arduino: Extension Tests", () => {
         }
     });
 
-    test("should be able to register arduino commands", () => {
-            return vscode.commands.getCommands(true).then((commands) => {
-                const ARDUINO_COMMANDS = [
-                    "arduino.verify",
-                    "arduino.upload",
-                    "arduino.uploadUsingProgrammer",
-                    "arduino.rebuildIntelliSenseConfig",
-                    "arduino.selectProgrammer",
-                    "arduino.showBoardManager",
-                    "arduino.showLibraryManager",
-                    "arduino.showBoardConfig",
-                    "arduino.showExamples",
-                    "arduino.changeBoardType",
-                    "arduino.initialize",
-                    "arduino.selectSerialPort",
-                    "arduino.openSerialTracer",
-                    "arduino.reloadExample",
-                    "arduino.showExampleExplorer",
-                    "arduino.loadPackages",
-                    "arduino.installBoard",
-                    "arduino.selectSketch",
-                    "arduino.cliUpload",
-                    "arduino.cliUploadUsingProgrammer",
-                ];
+    test("should be able to register arduino commands", async () => {
+            await new Promise((resolve) => setTimeout(resolve, 300));
 
-                const foundArduinoCommands = commands.filter((value) => {
-                    return ARDUINO_COMMANDS.indexOf(value) >= 0 || value.startsWith("arduino.");
-                });
+            const commands = await vscode.commands.getCommands(true);
+            const manifest = require(path.resolve(__dirname, "../../package.json"));
+            const expectedCommands = Array.from(new Set([
+                ...manifest.contributes.commands.map((commandContribution) => commandContribution.command),
+                "arduino.openExample",
+                "arduino.loadPackages",
+                "arduino.installBoard",
+                "arduino.reloadExample",
+            ])).sort();
 
-                const errorMsg = "Some Arduino commands are not registered properly or a new command is not added to the test";
-                assert.equal(foundArduinoCommands.length, ARDUINO_COMMANDS.length, errorMsg);
-            });
+            const foundArduinoCommands = commands.filter((value) => value.startsWith("arduino.")).sort();
+
+            const errorMsg = "Some Arduino commands are not registered properly or a new command is not added to the test";
+            assert.deepStrictEqual(foundArduinoCommands, expectedCommands, errorMsg);
         });
 
     suiteTeardown(() => {

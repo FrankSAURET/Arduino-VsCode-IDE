@@ -200,8 +200,10 @@
   "Download": "Télécharger",
   "Configure manually": "Configurer manuellement",
   "Failed to download Arduino CLI: {0}": "Échec du téléchargement d'Arduino CLI : {0}",
-  "Arduino CLI update available: v{0} → v{1}": "Mise à jour Arduino CLI disponible : v{0} → v{1}",
+  "Arduino CLI update available: v{0} → v{1}. Warning: updating may cause extension malfunction. If so, reinstall the extension and open a GitHub issue to request an update.": "Mise à jour Arduino CLI disponible : v{0} → v{1}. Attention : la mise à jour peut provoquer un dysfonctionnement de l'extension. Dans ce cas, réinstallez l'extension et ouvrez un ticket GitHub pour demander une mise à jour.",
+  "Arduino CLI v{0} is installed. A newer version v{1} is available. Warning: updating may cause extension malfunction. If so, reinstall the extension and open a GitHub issue to request an update.": "Arduino CLI v{0} est installé. Une version plus récente v{1} est disponible. Attention : la mise à jour peut provoquer un dysfonctionnement de l'extension. Dans ce cas, réinstallez l'extension et ouvrez un ticket GitHub pour demander une mise à jour.",
   "Update": "Mettre à jour",
+  "Open GitHub issue": "Ouvrir un ticket GitHub",
   "Later": "Plus tard",
 
   "Please select a board.": "Veuillez sélectionner une carte.",

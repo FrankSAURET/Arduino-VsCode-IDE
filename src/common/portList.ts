@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { SerialPort } from "serialport";
+const { SerialPort }: { SerialPort: typeof import("serialport").SerialPort } = require("serialport/dist/serialport");
 
 export interface ISerialPortDetail {
     port: string;

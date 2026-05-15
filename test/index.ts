@@ -4,7 +4,15 @@ import * as path from "path";
 
 export function run(): Promise<void> {
     // Create the mocha test
-    const mocha = new Mocha({ ui: "tdd" });
+    const grep = process.env.MOCHA_GREP ? new RegExp(process.env.MOCHA_GREP) : undefined;
+    const mochaOptions: Mocha.MochaOptions = {
+        ui: "tdd",
+        grep,
+    };
+    if (process.env.MOCHA_INVERT === "1") {
+        (mochaOptions as any).invert = true;
+    }
+    const mocha = new Mocha(mochaOptions);
     mocha.useColors(true);
 
     const testsRoot = path.resolve(__dirname, "..");

@@ -252,7 +252,7 @@ This system allows you to setup and use own IntelliSense configurations in paral
 ## Debugging Arduino Code <sup>preview</sup>
 Before you start to debug your Arduino code, please read [this document](https://code.visualstudio.com/docs/editor/debugging) to learn about the basic mechanisms of debugging in Visual Studio Code. Also see [debugging for C++ in VSCode](https://code.visualstudio.com/docs/languages/cpp#_debugging) for further reference.
 
-Make sure that your Arduino board can work with [STLink](http://www.st.com/en/development-tools/st-link-v2.html), [Jlink](https://www.segger.com/jlink-debug-probes.html) or [EDBG](http://www.atmel.com/webdoc/protocoldocs/ch01s01.html). The debugging support is currently fully tested with the following boards:
+Make sure that your Arduino board can work with [STLink](https://www.st.com/en/development-tools/st-link-v2.html), [Jlink](https://www.segger.com/jlink-debug-probes.html) or [EDBG](https://www.microchip.com/en-us/development-tool/edbg). The debugging support is currently fully tested with the following boards:
 - [MXChip IoT Developer Kit - AZ3166](https://microsoft.github.io/azure-iot-developer-kit/)
 - [Arduino M0 PRO](https://www.arduino.cc/en/Main/ArduinoBoardM0PRO)
 - [Adafruit WICED WiFi Feather](https://www.adafruit.com/product/3056)

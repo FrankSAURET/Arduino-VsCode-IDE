@@ -48,7 +48,13 @@ export class UsbDetector {
         if (os.platform() === "linux" || !enableUSBDetection) {
             return;
         }
-        this._usbDetector = require("usb-detection");
+        try {
+            this._usbDetector = require("usb-detection");
+        } catch (error) {
+            const normalizedError = error instanceof Error ? error : new Error(String(error));
+            Logger.traceWarning("UsbDetectorRequireFailed", normalizedError);
+            return;
+        }
 
         if (!this._usbDetector) {
             return;

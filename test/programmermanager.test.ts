@@ -14,12 +14,15 @@ import { DeviceContext } from "../src/deviceContext";
 suite("Arduino: Programmer Manager.", () => {
     let programmerManager: ProgrammerManager;
     let restoreSuppress: boolean;
+    let restoreProgrammer: string;
     let programmers: IProgrammer[];
 
     setup((done) => {
         // Suppress saving the device context, as not to polute the test arduino.json file
         restoreSuppress = DeviceContext.getInstance().suppressSaveContext;
         DeviceContext.getInstance().suppressSaveContext = true;
+        restoreProgrammer = DeviceContext.getInstance().programmer;
+        DeviceContext.getInstance().programmer = "unknown:programmer";
 
         // Mock two different platforms
         const platformMock1 = TypeMoq.Mock.ofType<IPlatform>();
@@ -59,19 +62,20 @@ suite("Arduino: Programmer Manager.", () => {
     });
 
     teardown(() => {
+        DeviceContext.getInstance().programmer = restoreProgrammer;
         // Restpre the supression state for the DeviceContext
         DeviceContext.getInstance().suppressSaveContext = restoreSuppress;
     });
 
     test("value stored in arduino.ino should load by default", () => {
-        assert.equal(programmerManager.currentProgrammer, "arduino:jtag3isp");
-        assert.equal(programmerManager.currentDisplayName, "arduino:jtag3isp");
+        assert.equal(programmerManager.currentProgrammer, "unknown:programmer");
+        assert.equal(programmerManager.currentDisplayName, "unknown:programmer");
     });
 
     test("changing arduino.ino value should change programmer", (done) => {
         DeviceContext.getInstance().programmer = programmers[0].name;
         setTimeout(() => {
-            assert.equal(programmerManager.currentProgrammer, programmers[0].key);
+            assert.equal(programmerManager.currentProgrammer, programmers[0].name);
             assert.equal(programmerManager.currentDisplayName, programmers[0].displayName);
             done();
         }, 200);
