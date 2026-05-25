@@ -32,13 +32,17 @@ import { listSerialPorts } from "./common/portList";
 import * as Logger from "./logger/logger";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
 
+type ArduinoContentProviderInstance = InstanceType<typeof arduinoContentProviderModule.ArduinoContentProvider>;
+
 const TELEPLOT_EXTENSION_ID = "alexnesnes.teleplot";
 const TELEPLOT_START_COMMAND = "teleplot.start";
 
 export async function activate(context: vscode.ExtensionContext) {
     Logger.configure(context);
     const pendingBoardSelectionKey = "arduino.pendingBoardSelectionPath";
+    const showHomeOnActivateKey = "arduino.showHomeOnActivate";
     const vscodeSettings = VscodeSettings.getInstance();
+    const shouldShowHomeOnActivate = !!context.globalState.get<boolean>(showHomeOnActivateKey);
 
     const getErrorMessage = (error: any): string => {
         if (error instanceof Error && error.message) {
@@ -143,6 +147,80 @@ export async function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(quickAccessTreeView);
 
+    let arduinoManagerProvider: ArduinoContentProviderInstance | undefined;
+    let arduinoManagerProviderPromise: Promise<ArduinoContentProviderInstance> | undefined;
+
+    const ensureArduinoManagerProvider = async (): Promise<ArduinoContentProviderInstance> => {
+        if (arduinoManagerProvider) {
+            return arduinoManagerProvider;
+        }
+
+        if (!arduinoManagerProviderPromise) {
+            arduinoManagerProviderPromise = (async () => {
+                const provider = new arduinoContentProviderModule.ArduinoContentProvider(context.extensionPath);
+                await provider.initialize();
+                context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(ARDUINO_MANAGER_PROTOCOL, provider));
+                arduinoManagerProvider = provider;
+                return provider;
+            })().catch((error) => {
+                arduinoManagerProviderPromise = undefined;
+                Logger.traceError("initializeHomePanelError", error);
+                throw error;
+            });
+        }
+
+        return arduinoManagerProviderPromise;
+    };
+
+    const safeOpenHomePanel = async (view?: string) => {
+        try {
+            const provider = await ensureArduinoManagerProvider();
+            arduinoHomePanelModule.ArduinoHomePanel.createOrShow(
+                context.extensionUri,
+                provider.serverUrl,
+                provider.authToken,
+                view,
+            );
+        } catch (error) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Unable to open Arduino home: {0}", getErrorMessage(error)));
+        }
+    };
+
+    const updateHomePanelView = async (uri: vscode.Uri) => {
+        try {
+            const provider = await ensureArduinoManagerProvider();
+            provider.update(uri);
+        } catch {
+        }
+    };
+
+    const revealHomeFromActivityBar = async () => {
+        await vscode.commands.executeCommand("workbench.view.explorer");
+        await safeOpenHomePanel();
+    };
+
+    const openPrimarySketch = async (): Promise<boolean> => {
+        const inoFiles = await vscode.workspace.findFiles("**/*.ino", undefined, 1);
+        if (!inoFiles.length) {
+            return false;
+        }
+
+        await vscode.commands.executeCommand("setContext", "arduino.hasProject", true);
+        await vscode.commands.executeCommand("vscode.open", inoFiles[0], vscode.ViewColumn.Two);
+        return true;
+    };
+
+    const showStartupHomeLayout = async () => {
+        await vscode.commands.executeCommand("workbench.view.explorer");
+        await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+        await vscode.commands.executeCommand("vscode.setEditorLayout", {
+            orientation: 0,
+            groups: [{ size: 0.38 }, { size: 0.62 }],
+        });
+        await safeOpenHomePanel();
+        await openPrimarySketch();
+    };
+
     const runPendingBoardSelection = async () => {
         const pendingBoardSelectionPath = context.globalState.get<string>(pendingBoardSelectionKey);
         if (!pendingBoardSelectionPath || !ArduinoWorkspace.rootPath) {
@@ -202,6 +280,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
         // Open the project folder in the current window (this reloads the window)
+        await context.globalState.update(showHomeOnActivateKey, true);
         await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(projectFolder), false);
     }));
     context.subscriptions.push(vscode.commands.registerCommand("arduino.openProjectFolder", async () => {
@@ -211,6 +290,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
         // Open the project folder in the current window
+        await context.globalState.update(showHomeOnActivateKey, true);
         await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(folderPath), false);
     }));
 
@@ -406,6 +486,26 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    registerArduinoCommand("arduino.changeBoardType", async () => {
+        try {
+            await arduinoContextModule.default.boardManager.changeBoardType();
+        } catch (exception) {
+            Logger.error(exception.message);
+        }
+        await updateHomePanelView(LIBRARY_MANAGER_URI);
+        await updateHomePanelView(EXAMPLES_URI);
+    }, () => {
+        return { board: arduinoContextModule.default.boardManager.currentBoard.name };
+    });
+    registerArduinoCommand("arduino.reloadExample", async () => {
+        await updateHomePanelView(EXAMPLES_URI);
+    }, () => {
+        return {
+            board: (arduinoContextModule.default.boardManager.currentBoard === null) ? null :
+                arduinoContextModule.default.boardManager.currentBoard.name,
+        };
+    });
+
     const completionProvider = new completionProviderModule.CompletionProvider();
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(ARDUINO_MODE, completionProvider, "<", '"', "."));
     context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider("arduino", new
@@ -465,90 +565,50 @@ export async function activate(context: vscode.ExtensionContext) {
     }
     Logger.traceUserData("end-activate-extension");
 
-    // At startup: show Explorer sidebar, close Welcome tab, set up 2-group layout
-    vscode.commands.executeCommand("workbench.view.explorer");
-    vscode.commands.executeCommand("workbench.action.closeAllEditors");
-
-    setTimeout(async () => {
-        const arduinoManagerProvider = new arduinoContentProviderModule.ArduinoContentProvider(context.extensionPath);
-        await arduinoManagerProvider.initialize();
-
-        const openHomePanel = (view?: string) => {
-            arduinoHomePanelModule.ArduinoHomePanel.createOrShow(
-                context.extensionUri,
-                arduinoManagerProvider.serverUrl,
-                arduinoManagerProvider.authToken,
-                view,
-            );
-        };
-
-        context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(ARDUINO_MANAGER_PROTOCOL, arduinoManagerProvider));
-        context.subscriptions.push(vscode.commands.registerCommand("arduino.showBoardManager", () => {
-            openHomePanel("boardmanager");
-        }));
-        context.subscriptions.push(vscode.commands.registerCommand("arduino.showLibraryManager", () => {
-            openHomePanel("librarymanager");
-        }));
-        context.subscriptions.push(vscode.commands.registerCommand("arduino.showBoardConfig", () => {
-            openHomePanel("boardConfig");
-        }));
-        context.subscriptions.push(vscode.commands.registerCommand("arduino.showExamples", (forceRefresh: boolean = false) => {
-            vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
-            if (forceRefresh) {
-                vscode.commands.executeCommand("arduino.reloadExample");
-            }
-            openHomePanel("examples");
-        }));
-        context.subscriptions.push(vscode.commands.registerCommand("arduino.showHome", () => {
-            openHomePanel();
-        }));
-
-        // Auto-open home panel when the sidebar tree view becomes visible (activity bar click)
-        context.subscriptions.push(quickAccessTreeView.onDidChangeVisibility((e) => {
-            if (e.visible) {
-                openHomePanel();
-            }
-        }));
-
-        // Startup layout: Home Panel in group 1, .ino file in group 2
-        // Set editor layout: 2 groups side by side (~38% / 62%)
-        await vscode.commands.executeCommand("vscode.setEditorLayout", {
-            orientation: 0,
-            groups: [{ size: 0.38 }, { size: 0.62 }],
-        });
-
-        // Open Home Panel in group 1 (ViewColumn.One) with welcome screen
-        openHomePanel();
-
-        // Re-open .ino file in group 2 (ViewColumn.Two) if one exists in workspace
-        const inoFiles = await vscode.workspace.findFiles("**/*.ino", null, 1);
-        if (inoFiles.length > 0) {
-            await vscode.commands.executeCommand("setContext", "arduino.hasProject", true);
-            await vscode.commands.executeCommand("vscode.open", inoFiles[0], vscode.ViewColumn.Two);
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.showBoardManager", async () => {
+        if (!arduinoContextModule.default.initialized) {
+            await arduinoActivatorModule.default.activate();
         }
+        await safeOpenHomePanel("boardmanager");
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.showLibraryManager", async () => {
+        if (!arduinoContextModule.default.initialized) {
+            await arduinoActivatorModule.default.activate();
+        }
+        await safeOpenHomePanel("librarymanager");
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.showBoardConfig", async () => {
+        if (!arduinoContextModule.default.initialized) {
+            await arduinoActivatorModule.default.activate();
+        }
+        await safeOpenHomePanel("boardConfig");
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.showExamples", async (forceRefresh: boolean = false) => {
+        vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
+        if (!arduinoContextModule.default.initialized) {
+            await arduinoActivatorModule.default.activate();
+        }
+        if (forceRefresh) {
+            await vscode.commands.executeCommand("arduino.reloadExample");
+        }
+        await safeOpenHomePanel("examples");
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("arduino.showHome", async () => {
+        await safeOpenHomePanel();
+    }));
 
-        // change board type
-        registerArduinoCommand("arduino.changeBoardType", async () => {
-            try {
-                await arduinoContextModule.default.boardManager.changeBoardType();
-            } catch (exception) {
-                Logger.error(exception.message);
-            }
-            arduinoManagerProvider.update(LIBRARY_MANAGER_URI);
-            arduinoManagerProvider.update(EXAMPLES_URI);
-        }, () => {
-            return { board: arduinoContextModule.default.boardManager.currentBoard.name };
-        });
-        registerArduinoCommand("arduino.reloadExample", () => {
-            arduinoManagerProvider.update(EXAMPLES_URI);
-        }, () => {
-            return {
-                board: (arduinoContextModule.default.boardManager.currentBoard === null) ? null :
-                    arduinoContextModule.default.boardManager.currentBoard.name,
-            };
-        });
+    context.subscriptions.push(quickAccessTreeView.onDidChangeVisibility((e) => {
+        if (e.visible) {
+            void revealHomeFromActivityBar();
+        }
+    }));
 
-    }, 100);
+    if (shouldShowHomeOnActivate) {
+        await context.globalState.update(showHomeOnActivateKey, undefined);
+        await showStartupHomeLayout();
+    } else if (quickAccessTreeView.visible) {
+        await revealHomeFromActivityBar();
+    }
 
     setTimeout(() => {
         // delay to detect usb

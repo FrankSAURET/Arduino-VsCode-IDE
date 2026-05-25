@@ -1,3 +1,4 @@
+debug.log
 .vscode/**
 .vscode-test/**
 out/test/**
@@ -42,7 +43,6 @@ arduino-cli/**
 # Fichiers inutiles à runtime dans out/node_modules
 out/node_modules/**/*.d.ts
 out/node_modules/**/*.d.mts
-out/node_modules/**/src/**
 out/node_modules/**/*.md
 out/node_modules/**/*.gyp
 out/node_modules/**/.releaserc

@@ -1,3 +1,5 @@
+debug.log
+.vscode/settings.json
 arduino.log
 out
 node_modules
