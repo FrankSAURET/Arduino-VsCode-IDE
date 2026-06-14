@@ -1,0 +1,2 @@
+- [x] les mots de code tels que HIGH, pinMode ou encore millis sont soulignés en rouge
+- [x] Si on rouvre l'onglet de l'interface (VsCode Arduino) il le rouvre à droite du volet explorateur et autre et su celui ci est fermé il l'ouvre à droite de la barre activity. Les autres onglets ouvert se mettent à droite de l'onglet de l'interface (VsCode Arduino). Ca largeur par défaut est toujours minimale (largeur du logo)

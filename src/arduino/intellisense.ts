@@ -18,6 +18,47 @@ export interface ICoCoPaContext {
     conclude: () => Promise<void>;
 }
 
+function hasArduinoForcedInclude(configPath: string): boolean {
+    try {
+        const raw = fs.readFileSync(configPath, "utf8");
+        const content = JSON.parse(raw) as {
+            configurations?: Array<{
+                name?: string;
+                forcedInclude?: string[];
+            }>;
+        };
+        const arduinoConfig = content.configurations?.find((configuration) => {
+            return configuration?.name === constants.C_CPP_PROPERTIES_CONFIG_NAME;
+        });
+        if (!arduinoConfig || !Array.isArray(arduinoConfig.forcedInclude)) {
+            return false;
+        }
+        return arduinoConfig.forcedInclude.some((includePath) => path.basename(includePath) === "Arduino.h");
+    } catch {
+        return false;
+    }
+}
+
+function sanitizeCompilerOptions(options: string[] | undefined): string[] {
+    if (!options) {
+        return [];
+    }
+
+    const sanitized: string[] = [];
+    for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        if (option === "-MMD" || option === "-MD") {
+            continue;
+        }
+        if (option === "-MF" || option === "-MT" || option === "-MQ") {
+            i++;
+            continue;
+        }
+        sanitized.push(option);
+    }
+    return sanitized;
+}
+
 /**
  * Returns true if the combination of global enable/disable and project
  * specific override enable the auto-generation of the IntelliSense
@@ -110,7 +151,7 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string)
                     normalizedOptions.push(opt);
                 }
             }
-            runner.result.options = normalizedOptions;
+            runner.result.options = sanitizeCompilerOptions(normalizedOptions);
         }
 
         // Search for Arduino.h in the include paths - we need it for a
@@ -124,21 +165,6 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string)
             arduinoChannel.warning(vscode.l10n.t("Unable to locate \"Arduino.h\" within IntelliSense include paths."));
         }
 
-        // The C++ standard is set to the following default value if no compiler flag has been found.
-        const content = new ccp.CCppPropertiesContentResult(runner.result,
-                                                            constants.C_CPP_PROPERTIES_CONFIG_NAME,
-                                                            ccp.CCppPropertiesISMode.Gcc_X64,
-                                                            ccp.CCppPropertiesCStandard.C11,
-                                                            ccp.CCppPropertiesCppStandard.Cpp11,
-                                                            forcedIncludes);
-
-        // The following 4 lines are added to prevent null.d from being created in the workspace
-        // directory on MacOS and Linux. This is may be a bug in intelliSense
-        const mmdIndex = runner.result.options.findIndex((element) => element === "-MMD");
-        if (mmdIndex) {
-            runner.result.options.splice(mmdIndex);
-        }
-
         // Add USB Connected macro to defines
         runner.result.defines.push("USBCON");
 
@@ -147,6 +173,14 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string)
         if (!runner.result.defines.find((d) => d.startsWith("ARDUINO="))) {
             runner.result.defines.push("ARDUINO=10813");
         }
+
+        // The C++ standard is set to the following default value if no compiler flag has been found.
+        const content = new ccp.CCppPropertiesContentResult(runner.result,
+                                                            constants.C_CPP_PROPERTIES_CONFIG_NAME,
+                                                            ccp.CCppPropertiesISMode.Gcc_X64,
+                                                            ccp.CCppPropertiesCStandard.C11,
+                                                            ccp.CCppPropertiesCppStandard.Cpp11,
+                                                            forcedIncludes);
 
         try {
 
@@ -304,6 +338,9 @@ export class AnalysisManager {
         }
         const configPath = path.join(ArduinoWorkspace.rootPath, constants.CPP_CONFIG_FILE);
         if (!fs.existsSync(configPath)) {
+            return false;
+        }
+        if (!hasArduinoForcedInclude(configPath)) {
             return false;
         }
         const configMtime = fs.statSync(configPath).mtimeMs;

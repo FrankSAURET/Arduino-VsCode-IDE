@@ -15,6 +15,10 @@ export class ArduinoHomePanel {
     public static currentPanel: ArduinoHomePanel | undefined;
     private static readonly viewType = "arduinoHome";
 
+    private static getPreferredViewColumn(): vscode.ViewColumn {
+        return vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One;
+    }
+
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionUri: vscode.Uri;
     private _serverBaseUrl: string;
@@ -28,8 +32,10 @@ export class ArduinoHomePanel {
         authToken: string,
         initialView?: string,
     ) {
+        const viewColumn = ArduinoHomePanel.getPreferredViewColumn();
+
         if (ArduinoHomePanel.currentPanel) {
-            ArduinoHomePanel.currentPanel._panel.reveal();
+            ArduinoHomePanel.currentPanel._panel.reveal(viewColumn, false);
             if (initialView) {
                 ArduinoHomePanel.currentPanel.navigateTo(initialView);
             }
@@ -39,7 +45,7 @@ export class ArduinoHomePanel {
         const panel = vscode.window.createWebviewPanel(
             ArduinoHomePanel.viewType,
             "VsCode Arduino",
-            { viewColumn: vscode.ViewColumn.One, preserveFocus: false },
+            { viewColumn, preserveFocus: false },
             {
                 enableScripts: true,
                 retainContextWhenHidden: true,
