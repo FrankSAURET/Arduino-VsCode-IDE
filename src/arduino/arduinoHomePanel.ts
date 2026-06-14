@@ -338,7 +338,7 @@ export class ArduinoHomePanel {
             groupIntelliSense: vscode.l10n.t("IntelliSense"),
             groupInterface: vscode.l10n.t("Interface"),
             groupAdvanced: vscode.l10n.t("Advanced"),
-            groupProject: vscode.l10n.t("Project (.vscode/arduino.json)"),
+            groupProject: vscode.l10n.t("Project (.vscode/arduino.yaml)"),
             // Settings labels
             sArduinoCliPath: vscode.l10n.t("Arduino CLI Path"),
             sArduinoCliPathDesc: vscode.l10n.t("Directory containing the Arduino CLI executable"),

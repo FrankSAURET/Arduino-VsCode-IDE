@@ -4,6 +4,7 @@
 import * as child_process from "child_process";
 import * as fs from "fs";
 import * as iconv from "iconv-lite";
+import * as yaml from "js-yaml";
 import * as os from "os";
 import * as path from "path";
 import * as properties from "properties";
@@ -281,6 +282,43 @@ export function tryParseJSON(jsonString: string) {
     } catch (ex) { }
 
     return undefined;
+}
+
+function stripUndefinedProperties(value: any): any {
+    if (Array.isArray(value)) {
+        return value.map((entry) => stripUndefinedProperties(entry));
+    }
+    if (value && typeof value === "object") {
+        const result = {};
+        for (const key of Object.keys(value)) {
+            const normalizedValue = stripUndefinedProperties(value[key]);
+            if (normalizedValue !== undefined) {
+                result[key] = normalizedValue;
+            }
+        }
+        return result;
+    }
+    return value;
+}
+
+export function tryParseYAML(yamlString: string) {
+    try {
+        const yamlObj = yaml.load(yamlString);
+        if (yamlObj && typeof yamlObj === "object" && !Array.isArray(yamlObj)) {
+            return yamlObj;
+        }
+    } catch (ex) { }
+
+    return undefined;
+}
+
+export function dumpYAML(value: any): string {
+    const yamlString = yaml.dump(stripUndefinedProperties(value), {
+        indent: 4,
+        noRefs: true,
+        lineWidth: -1,
+    });
+    return `${yamlString.trimEnd()}${os.EOL}`;
 }
 
 export function isJunk(filename: string): boolean {

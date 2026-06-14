@@ -74,7 +74,7 @@
   "IntelliSense": "IntelliSense",
   "Interface": "Interface",
   "Advanced": "Avancé",
-  "Project (.vscode/arduino.json)": "Projet (.vscode/arduino.json)",
+  "Project (.vscode/arduino.yaml)": "Projet (.vscode/arduino.yaml)",
 
   "Arduino CLI Path": "Chemin Arduino CLI",
   "Directory containing the Arduino CLI executable": "Répertoire contenant l'exécutable Arduino CLI",
@@ -135,7 +135,7 @@
   "Post-build Command": "Commande post-build",
   "Command executed after each build": "Commande exécutée après chaque build",
 
-  "The arduino.json file format is not correct.": "Le format du fichier arduino.json est incorrect.",
+  "The arduino.yaml file format is not correct.": "Le format du fichier arduino.yaml est incorrect.",
   "Please select the board type first.": "Veuillez d'abord sélectionner le type de carte.",
   "Cannot find Arduino CLI. Please specify the directory containing \"arduino-cli\" via \"arduino.path\" in User Settings. Requires a restart after change.": "Arduino CLI introuvable. Veuillez spécifier le répertoire contenant « arduino-cli » via « arduino.path » dans les paramètres utilisateur. Nécessite un redémarrage après modification.",
   "Please check the \"arduino.commandPath\" in the User Settings.": "Veuillez vérifier « arduino.commandPath » dans les paramètres utilisateur.",
@@ -179,7 +179,7 @@
   "Invalid board configuration detected in configuration file{0}. Falling back to defaults.": "Configuration de carte invalide détectée dans le fichier de configuration{0}. Retour aux valeurs par défaut.",
 
   "Workspace doesn't seem to have a folder added to it yet.": "L'espace de travail ne semble pas encore contenir de dossier.",
-  "No sketch file was found. Please specify the sketch in the arduino.json file": "Aucun fichier sketch trouvé. Veuillez le spécifier dans le fichier arduino.json",
+  "No sketch file was found. Please specify the sketch in the arduino.yaml file": "Aucun fichier sketch trouvé. Veuillez le spécifier dans le fichier arduino.yaml",
   "Serial port is not specified. Do you want to select a serial port for uploading?": "Le port série n'est pas spécifié. Voulez-vous sélectionner un port série pour le téléversement ?",
 
   "<Select Programmer>": "<Sélectionner le programmeur>",
@@ -207,7 +207,7 @@
   "Later": "Plus tard",
 
   "Please select a board.": "Veuillez sélectionner une carte.",
-  "Cannot find {0}, Please specify the sketch in the arduino.json file": "Impossible de trouver {0}, veuillez spécifier le sketch dans le fichier arduino.json",
+  "Cannot find {0}, Please specify the sketch in the arduino.yaml file": "Impossible de trouver {0}, veuillez spécifier le sketch dans le fichier arduino.yaml",
   "Failed to verify the program, please check the output for details.": "Échec de la vérification du programme, veuillez consulter la sortie pour plus de détails.",
   "Cannot find the elf file.": "Fichier elf introuvable.",
   "Cannot find the debugger path.": "Chemin du débogueur introuvable.",

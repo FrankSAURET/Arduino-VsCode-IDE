@@ -18,7 +18,7 @@ suite("Arduino: Programmer Manager.", () => {
     let programmers: IProgrammer[];
 
     setup((done) => {
-        // Suppress saving the device context, as not to polute the test arduino.json file
+        // Suppress saving the device context, as not to polute the test arduino.yaml file
         restoreSuppress = DeviceContext.getInstance().suppressSaveContext;
         DeviceContext.getInstance().suppressSaveContext = true;
         restoreProgrammer = DeviceContext.getInstance().programmer;

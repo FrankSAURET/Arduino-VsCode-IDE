@@ -95,7 +95,7 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
     private constructor() {
         if (vscode.workspace && ArduinoWorkspace.rootPath) {
             this._watcher = vscode.workspace.createFileSystemWatcher(path.join(ArduinoWorkspace.rootPath, ARDUINO_CONFIG_FILE));
-            // We only care about the deletion arduino.json in the .vscode folder:
+            // We only care about the deletion arduino.yaml in the .vscode folder:
             this._vscodeWatcher = vscode.workspace.createFileSystemWatcher(path.join(ArduinoWorkspace.rootPath, ".vscode"), true, true, false);
 
             this._watcher.onDidCreate(() => this.loadContext());
@@ -142,7 +142,7 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
                 // vscode.window.showErrorMessage(reason.toString());
                 // Logger.notifyUserError("arduinoFileUnhandleError", new Error(reason.toString()));
 
-                 // Workaround for change in API, populate required props for arduino.json
+                 // Workaround for change in API, populate required props for arduino.yaml
                 this._settings.reset();
                 return this;
             });
@@ -386,10 +386,10 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
         const snippets = fs.readFileSync(path.join(this.extensionPath, "snippets", "sample.ino"));
         fs.writeFileSync(sketchFilePath, snippets);
         util.mkdirRecursivelySync(path.dirname(arduinoConfigPath));
-        fs.writeFileSync(arduinoConfigPath, JSON.stringify({
+        fs.writeFileSync(arduinoConfigPath, util.dumpYAML({
             sketch: sketchFileName,
             output: "build",
-        }, undefined, 4));
+        }));
 
         return projectFolder;
     }

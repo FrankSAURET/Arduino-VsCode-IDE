@@ -1,6 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.06.1
+
+- Release date: June 2026
+
+### Added
+
+- YAML project configuration support via `.vscode/arduino.yaml` using `js-yaml`
+
+### Changed
+
+- Replaced the legacy `.vscode/arduino.json` project file with `.vscode/arduino.yaml` across project loading, saving, initialization, examples, tests, and user documentation
+- Updated IntelliSense and debug error messages, localized strings, and project settings UI labels to reference `arduino.yaml`
+- Home Panel reopening now follows the active editor group instead of always forcing the left-most group with a collapsed width
+- IntelliSense config staleness detection now forces regeneration when `Arduino.h` is missing from forced includes, preventing Arduino symbols like `HIGH`, `pinMode`, and `millis` from staying unresolved
+
 ## Version 2026.5.1
 
 - Release date: May 2026

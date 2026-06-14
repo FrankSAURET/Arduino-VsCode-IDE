@@ -9,8 +9,8 @@ import { ARDUINO_CONFIG_FILE } from "./constants";
 export class ArduinoWorkspace {
     /**
      * Issue #71: Returns the workspace root path based on the active editor's folder.
-     * In multi-root workspaces, each folder can have its own arduino.json.
-     * Falls back to the first folder with arduino.json, then the first workspace folder.
+    * In multi-root workspaces, each folder can have its own arduino.yaml.
+    * Falls back to the first folder with arduino.yaml, then the first workspace folder.
      */
     static get rootPath(): string | undefined {
         const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -27,7 +27,7 @@ export class ArduinoWorkspace {
             }
         }
 
-        // Fall back to finding a folder with arduino.json
+        // Fall back to finding a folder with arduino.yaml
         for (const workspaceFolder of workspaceFolders) {
             const workspaceFolderPath = workspaceFolder.uri.fsPath;
             const arduinoConfigPath = path.join(workspaceFolderPath, ARDUINO_CONFIG_FILE);

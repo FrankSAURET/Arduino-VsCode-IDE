@@ -71,7 +71,7 @@ suite("Arduino: Commands Tests", () => {
 
             assert.equal(normalizeTestPath(openedFolder), normalizeTestPath(projectFolder));
             assert.equal(fs.existsSync(path.join(projectFolder, `${projectName}.ino`)), true);
-            assert.equal(fs.existsSync(path.join(projectFolder, ".vscode", "arduino.json")), true);
+            assert.equal(fs.existsSync(path.join(projectFolder, ".vscode", "arduino.yaml")), true);
         } finally {
             commandsAny.executeCommand = originalExecuteCommand;
             windowAny.showOpenDialog = originalShowOpenDialog;

@@ -526,7 +526,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
     vscode.window.onDidChangeActiveTextEditor(async () => {
         const activeEditor = vscode.window.activeTextEditor;
-        if (activeEditor && ((path.basename(activeEditor.document.fileName) === "arduino.json"
+        if (activeEditor && ((path.basename(activeEditor.document.fileName) === path.basename(ARDUINO_CONFIG_FILE)
             && path.basename(path.dirname(activeEditor.document.fileName)) === ".vscode")
             || activeEditor.document.fileName.endsWith(".ino")
         )) {

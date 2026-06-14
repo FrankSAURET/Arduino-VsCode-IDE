@@ -167,19 +167,17 @@ The following Visual Studio Code settings are available for the Arduino extensio
 *Note:* You only need to set `arduino.path` if `arduino-cli` is not already available on your PATH.
 
 The following settings are as per sketch settings of the Arduino extension. You can find them in
-`.vscode/arduino.json` under the workspace.
+`.vscode/arduino.yaml` under the workspace.
 
-```json
-{
-    "sketch": "example.ino",
-    "port": "COM5",
-    "board": "adafruit:samd:adafruit_feather_m0",
-    "output": "../build",
-    "debugger": "jlink",
-    "prebuild": "./prebuild.sh",
-    "postbuild": "./postbuild.sh",
-    "intelliSenseGen": "global"
-}
+```yaml
+sketch: example.ino
+port: COM5
+board: adafruit:samd:adafruit_feather_m0
+output: ../build
+debugger: jlink
+prebuild: ./prebuild.sh
+postbuild: ./postbuild.sh
+intelliSenseGen: global
 ```
 - `sketch` - The main sketch file name of Arduino.
 - `port` - Name of the serial port connected to the device. Can be set by the `Arduino: Select Serial Port` command. For Mac users could be "/dev/cu.wchusbserial1420".
@@ -209,17 +207,15 @@ The commands run within the workspace root directory and vscode-arduino sets the
 **`VSCA_BOARD`** Your board and configuration, e.g. `arduino:avr:nano:cpu=atmega328`.
 **`VSCA_WORKSPACE_DIR`** The absolute path of your workspace root directory.
 **`VSCA_LOG_LEVEL`** The current log level. This allows you to control the verbosity of your scripts.
-**`VSCA_SERIAL`** The serial port used for uploading. Not set if you haven't set one in your `arduino.json`.
-**`VSCA_BUILD_DIR`** The build directory. Not set if you haven't set one in your `arduino.json`.
+**`VSCA_SERIAL`** The serial port used for uploading. Not set if you haven't set one in your `arduino.yaml`.
+**`VSCA_BUILD_DIR`** The build directory. Not set if you haven't set one in your `arduino.yaml`.
 
-For example under Windows the following `arduino.json` setup
-```json
-{
-    "board": "arduino:avr:nano",
-    "sketch": "test.ino",
-    "configuration": "cpu=atmega328",
-    "prebuild": "IF \"%VSCA_BUILD_MODE%\"==\"Verifying\" (echo VSCA_BUILD_MODE=%VSCA_BUILD_MODE% && echo VSCA_BOARD=%VSCA_BOARD%)"
-}
+For example under Windows the following `arduino.yaml` setup
+```yaml
+board: arduino:avr:nano
+sketch: test.ino
+configuration: cpu=atmega328
+prebuild: IF "%VSCA_BUILD_MODE%"=="Verifying" (echo VSCA_BUILD_MODE=%VSCA_BUILD_MODE% && echo VSCA_BOARD=%VSCA_BOARD%)
 ```
 will produce
 ```

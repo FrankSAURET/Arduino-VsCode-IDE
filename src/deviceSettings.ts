@@ -208,7 +208,7 @@ export class DeviceSettings {
      * @returns true if the settings are loaded successfully.
      */
     public load(file: string, commit: boolean = true) {
-        const settings = util.tryParseJSON(fs.readFileSync(file, "utf8"));
+        const settings = util.tryParseYAML(fs.readFileSync(file, "utf8"));
         if (settings) {
             this.port.value = settings.port;
             this.board.value = settings.board;
@@ -235,7 +235,7 @@ export class DeviceSettings {
      * Writes the settings to the given file if there are modified
      * values. The modification flags are reset (commit()) on successful write.
      * On write failure the modification flags are left unmodified.
-     * @param file Path to file the JSON representation of the settings should
+        * @param file Path to file the YAML representation of the settings should
      * written to. If either the folder or the file does not exist they are
      * created.
      * @returns true on succes, false on write failure.
@@ -248,7 +248,7 @@ export class DeviceSettings {
 
         let settings: any = {};
         if (util.fileExistsSync(file)) {
-            settings = util.tryParseJSON(fs.readFileSync(file, "utf8"));
+            settings = util.tryParseYAML(fs.readFileSync(file, "utf8"));
         }
         if (!settings) {
             logger.notifyUserError(
@@ -267,7 +267,7 @@ export class DeviceSettings {
         settings.programmer = this.programmer.value;
 
         util.mkdirRecursivelySync(path.dirname(file));
-        fs.writeFileSync(file, JSON.stringify(settings, undefined, 4));
+        fs.writeFileSync(file, util.dumpYAML(settings));
 
         this.commit();
 

@@ -32,7 +32,7 @@ Exemple :
 MonProjetBlink/
 ```
 
-Travaillez de préférence avec un dossier dédié par sketch. L'extension stocke la configuration du projet dans `.vscode/arduino.json`.
+Travaillez de préférence avec un dossier dédié par sketch. L'extension stocke la configuration du projet dans `.vscode/arduino.yaml`.
 
 ## 3. Initialiser le projet
 
@@ -70,7 +70,7 @@ Après initialisation, vous aurez en général une structure proche de :
 MonProjetBlink/
 ├─ sketch.ino
 └─ .vscode/
-   └─ arduino.json
+    └─ arduino.yaml
 ```
 
 ## 4. Configurer la carte et le port
@@ -91,19 +91,17 @@ Si votre carte n'est pas encore installée :
 
 Pour certaines cartes tierces, ajoutez au préalable leurs URL dans `arduino.additionalUrls`.
 
-## 5. Comprendre .vscode/arduino.json
+## 5. Comprendre .vscode/arduino.yaml
 
-Le fichier `.vscode/arduino.json` contient la configuration du sketch courant.
+Le fichier `.vscode/arduino.yaml` contient la configuration du sketch courant.
 
 Exemple minimal :
 
-```json
-{
-    "sketch": "sketch.ino",
-    "port": "COM5",
-    "board": "arduino:avr:uno",
-    "output": "build"
-}
+```yaml
+sketch: sketch.ino
+port: COM5
+board: arduino:avr:uno
+output: build
 ```
 
 Champs les plus utiles :
@@ -162,7 +160,7 @@ Si la compilation échoue, vérifiez d'abord :
 - le backend utilisé, CLI ou IDE ;
 - la carte choisie ;
 - les bibliothèques requises ;
-- le contenu de `.vscode/arduino.json`.
+- le contenu de `.vscode/arduino.yaml`.
 
 ## 8. Uploader sur la carte
 
@@ -231,17 +229,15 @@ Si vous voulez aller au plus vite :
 
 ## 12. Si vous préférez créer le projet manuellement
 
-Vous pouvez aussi partir d'un dossier contenant déjà un `.ino`, puis créer vous-même `.vscode/arduino.json`.
+Vous pouvez aussi partir d'un dossier contenant déjà un `.ino`, puis créer vous-même `.vscode/arduino.yaml`.
 
 Exemple :
 
-```json
-{
-    "sketch": "monprojet.ino",
-    "port": "COM5",
-    "board": "arduino:avr:uno",
-    "output": "build"
-}
+```yaml
+sketch: monprojet.ino
+port: COM5
+board: arduino:avr:uno
+output: build
 ```
 
 C'est utile si vous importez un projet existant ou si vous voulez garder la main sur la structure du dépôt.
@@ -262,7 +258,7 @@ C'est utile si vous importez un projet existant ou si vous voulez garder la main
 
 ### La compilation est lente
 
-- définissez `output` dans `.vscode/arduino.json` ;
+- définissez `output` dans `.vscode/arduino.yaml` ;
 - gardez un dossier de build stable, par exemple `build`.
 
 ### IntelliSense ne suit pas

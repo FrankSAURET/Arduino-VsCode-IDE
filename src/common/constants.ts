@@ -4,7 +4,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
 
-export const ARDUINO_CONFIG_FILE = path.join(".vscode", "arduino.json");
+export const ARDUINO_CONFIG_FILE = path.join(".vscode", "arduino.yaml");
 
 export const CPP_CONFIG_FILE = path.join(".vscode", "c_cpp_properties.json");
 /** The name of the intellisense configuration managed by vscode-arduino. */
@@ -27,7 +27,7 @@ export const BOARD_CONFIG_URI = vscode.Uri.parse("arduino-manager://arduino/ardu
 export const EXAMPLES_URI = vscode.Uri.parse("arduino-manager://arduino/arduino-examples");
 
 export const messages = {
-    ARDUINO_FILE_ERROR: vscode.l10n.t("The arduino.json file format is not correct."),
+    ARDUINO_FILE_ERROR: vscode.l10n.t("The arduino.yaml file format is not correct."),
     NO_BOARD_SELECTED: vscode.l10n.t("Please select the board type first."),
     INVALID_ARDUINO_PATH: vscode.l10n.t("Cannot find Arduino CLI. Please specify the directory containing \"arduino-cli\" via \"arduino.path\" in User Settings. Requires a restart after change."),
     INVALID_COMMAND_PATH: vscode.l10n.t("Please check the \"arduino.commandPath\" in the User Settings.") +

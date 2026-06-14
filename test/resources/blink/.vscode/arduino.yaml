@@ -1,0 +1,6 @@
+sketch: blink.ino
+port: COM4
+board: arduino:avr:diecimila
+_debugger: null
+configuration: cpu=atmega328
+programmer: unknown:programmer

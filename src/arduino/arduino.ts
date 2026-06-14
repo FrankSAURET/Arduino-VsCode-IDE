@@ -374,12 +374,12 @@ export class ArduinoApp {
                 return util.isArduinoFile(path.join(destExample, item));
             });
             if (sketchFile) {
-                // Generate arduino.json
+                // Generate arduino.yaml
                 const dc = DeviceContext.getInstance();
                 const defaultPort = os.platform() === "win32" ? "COM1"
                     : os.platform() === "darwin" ? "/dev/cu.usbmodem1"
                     : "/dev/ttyUSB0";
-                const arduinoJson = {
+                const arduinoConfig = {
                     sketch: sketchFile,
                     port: dc.port || defaultPort,
                     board: dc.board,
@@ -387,7 +387,7 @@ export class ArduinoApp {
                 };
                 const arduinoConfigFilePath = path.join(destExample, constants.ARDUINO_CONFIG_FILE);
                 util.mkdirRecursivelySync(path.dirname(arduinoConfigFilePath));
-                fs.writeFileSync(arduinoConfigFilePath, JSON.stringify(arduinoJson, null, 4));
+                fs.writeFileSync(arduinoConfigFilePath, util.dumpYAML(arduinoConfig));
             }
 
             // Step 3: Open the sketch file in a new tab on the right side.
@@ -552,7 +552,7 @@ export class ArduinoApp {
                 return false;
             }
             if (!await dc.resolveMainSketch()) {
-                vscode.window.showErrorMessage(vscode.l10n.t("No sketch file was found. Please specify the sketch in the arduino.json file"));
+                vscode.window.showErrorMessage(vscode.l10n.t("No sketch file was found. Please specify the sketch in the arduino.yaml file"));
                 return false;
             }
         }

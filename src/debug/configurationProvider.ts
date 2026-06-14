@@ -132,12 +132,12 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             }
 
             if (!dc.sketch) {
-                vscode.window.showErrorMessage(vscode.l10n.t("No sketch file was found. Please specify the sketch in the arduino.json file"));
+                vscode.window.showErrorMessage(vscode.l10n.t("No sketch file was found. Please specify the sketch in the arduino.yaml file"));
                 return false;
             }
 
             if (!util.fileExistsSync(path.join(ArduinoWorkspace.rootPath, dc.sketch))) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Cannot find {0}, Please specify the sketch in the arduino.json file", dc.sketch));
+                vscode.window.showErrorMessage(vscode.l10n.t("Cannot find {0}, Please specify the sketch in the arduino.yaml file", dc.sketch));
                 return false;
             }
             config.program = path.join(outputPath, `${path.basename(dc.sketch)}.elf`);

@@ -4,7 +4,7 @@ import { DeviceContext } from "../src/deviceContext";
 
 suite("Arduino: Device Context config", () => {
 
-    test("should be able to resolve arduino.json correctly", async () => {
+    test("should be able to resolve arduino.yaml correctly", async () => {
         const deviceContext = DeviceContext.getInstance();
         await deviceContext.loadContext();
         assert.equal(deviceContext.board, "arduino:avr:diecimila");
