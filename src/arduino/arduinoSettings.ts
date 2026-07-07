@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as child_process from "child_process";
 import * as os from "os";
 import * as path from "path";
 import * as WinReg from "winreg";
 import * as util from "../common/util";
 
 import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
+import { ArduinoWorkspace } from "../common/workspace";
 import { getDownloadedCliPath } from "./cliDownloader";
 
 import { VscodeSettings } from "./vscodeSettings";
@@ -83,6 +85,61 @@ export class ArduinoSettings implements IArduinoSettings {
             } else {
                 this._sketchbookPath = path.join(process.env.HOME, "Documents/Arduino");
             }
+        }
+
+        // La vérité vient du CLI : arduino-cli.yaml (directories.user/data) peut pointer ailleurs
+        // que le registre/preferences.txt — cause du bug « libs installées mais non détectées ».
+        await this.applyCliConfigDirectories();
+    }
+
+    /**
+     * Interroge `arduino-cli config dump` pour utiliser les dossiers réels du CLI
+     * (sketchbook = directories.user, packages = directories.data).
+     * En cas d'échec (CLI absent, version exotique), la résolution héritée est conservée.
+     */
+    private async applyCliConfigDirectories(): Promise<void> {
+        const dumpArgs = ["config", "dump", "--json"];
+        // Respecter un éventuel fichier de config CLI personnalisé (réglage arduino.arduinoCliConfigFile)
+        const cliConfigFile = VscodeSettings.getInstance().arduinoCliConfigFile;
+        if (cliConfigFile) {
+            const resolved = path.isAbsolute(cliConfigFile)
+                ? cliConfigFile
+                : (ArduinoWorkspace.rootPath ? path.resolve(ArduinoWorkspace.rootPath, cliConfigFile) : "");
+            if (resolved && util.fileExistsSync(resolved)) {
+                dumpArgs.push("--config-file", resolved);
+            }
+        }
+
+        const runDump = (args: string[]) => new Promise<string>((resolve, reject) => {
+            child_process.execFile(this.commandPath, args, { timeout: 10000 }, (error, stdout) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(stdout);
+                }
+            });
+        });
+
+        try {
+            let output: string;
+            try {
+                output = await runDump(dumpArgs);
+            } catch (error) {
+                // Anciennes versions du CLI (< 1.0) : --json s'écrit --format json
+                output = await runDump(["config", "dump", "--format", "json"].concat(dumpArgs.slice(3)));
+            }
+            const parsed = JSON.parse(output);
+            const config = parsed.config ?? parsed;
+            if (config && config.directories) {
+                if (config.directories.user) {
+                    this._sketchbookPath = config.directories.user;
+                }
+                if (config.directories.data) {
+                    this._packagePath = config.directories.data;
+                }
+            }
+        } catch (error) {
+            // CLI indisponible ou sortie inattendue : garder les chemins résolus ci-dessus
         }
     }
 

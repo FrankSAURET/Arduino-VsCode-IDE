@@ -45,7 +45,7 @@ export interface IVscodeSettings {
     analyzeOnSettingChange: boolean;
     customLibraryPath: string;
     arduinoCliConfigFile: string;
-    updateAdditionalUrls(urls: string[]): void;
+    updateAdditionalUrls(urls: string[]): Promise<void>;
 }
 
 export class VscodeSettings implements IVscodeSettings {

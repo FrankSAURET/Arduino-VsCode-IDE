@@ -27,7 +27,7 @@ suite("Arduino: Board Manager.", () => {
         arduinoSettings.setup((x) => x.sketchbookPath).returns(() => Resources.mockedSketchbookPath);
 
         const arduinoApp = TypeMoq.Mock.ofType(ArduinoApp);
-        arduinoApp.setup((x) => x.setPref(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+        arduinoApp.setup((x) => x.updateIndex(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
         arduinoApp.setup((x) => x.initialize(TypeMoq.It.isAny()));
 
         try {

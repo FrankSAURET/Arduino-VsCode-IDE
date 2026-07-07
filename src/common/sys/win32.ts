@@ -8,10 +8,11 @@ import { fileExistsSync } from "../util";
 export async function resolveArduinoPath() {
     let pathString = "";
     try {
-        pathString = childProcess.execSync("where arduino-cli", { encoding: "utf8" });
-        pathString = path.resolve(pathString).trim();
-        if (fileExistsSync(pathString)) {
-            pathString = path.dirname(path.resolve(pathString));
+        // "where" peut renvoyer plusieurs résultats (un par ligne) : ne garder que le premier
+        const whereOutput = childProcess.execSync("where arduino-cli", { encoding: "utf8" });
+        const firstMatch = whereOutput.split(/\r?\n/).map((line) => line.trim()).find((line) => line.length > 0) || "";
+        if (firstMatch && fileExistsSync(firstMatch)) {
+            pathString = path.dirname(path.resolve(firstMatch));
         }
     } catch (error) {
         // Ignore the errors.

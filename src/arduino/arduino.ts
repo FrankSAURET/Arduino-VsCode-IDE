@@ -97,17 +97,8 @@ export class ArduinoApp {
      * @param {boolean} force - Whether force initialize the arduino
      */
     public async initialize(force: boolean = false) {
-        if (!util.fileExistsSync(this._settings.preferencePath)) {
-            try {
-                // Use empty pref value to initialize preference.txt file
-                await this.setPref("boardsmanager.additional.urls", "");
-                this._settings.reloadPreferences(); // reload preferences.
-            } catch (ex) {
-            }
-        }
         if (force || !util.fileExistsSync(path.join(this._settings.packagePath, "package_index.json"))) {
             try {
-                // Use the dummy package to initialize package indexes.
                 await this.installBoard("dummy", "", "", true);
             } catch (ex) {
             }
@@ -142,16 +133,29 @@ export class ArduinoApp {
     }
 
     /**
-     * Set the Arduino preferences value.
-     * @param {string} key - The preference key
-     * @param {string} value - The preference value
+     * Met à jour les fichiers d'index du CLI (cores ou bibliothèques).
+     * @param kind "core" ou "lib"
+     * @param showOutput afficher la sortie brute du CLI
      */
-    public async setPref(key, value) {
-        try {
-            await util.spawn(this._settings.commandPath,
-                ["--build-property", `${key}=${value}`]);
-        } catch (ex) {
+    public async updateIndex(kind: "core" | "lib", showOutput: boolean = true) {
+        const args = [kind, "update-index", ...this.getAdditionalUrlsArgs()];
+        await util.spawn(this._settings.commandPath, args, undefined,
+            { channel: showOutput ? arduinoChannel.channel : undefined });
+    }
+
+    /**
+     * URLs additionnelles (réglage VS Code + preferences.txt hérité de l'IDE 1.x)
+     * sous forme de flag global du CLI. Vide si aucune URL configurée.
+     */
+    public getAdditionalUrlsArgs(): string[] {
+        const settingsUrls = VscodeSettings.getInstance().additionalUrls || [];
+        let preferencesUrls: string[] = [];
+        const preferences = this._settings.preferences;
+        if (preferences && preferences.has("boardsmanager.additional.urls")) {
+            preferencesUrls = util.toStringArray(preferences.get("boardsmanager.additional.urls"));
         }
+        const urls = util.union(settingsUrls, preferencesUrls).filter((u) => !!u);
+        return urls.length ? ["--additional-urls", urls.join(",")] : [];
     }
 
     /**
@@ -212,7 +216,8 @@ export class ArduinoApp {
         const dc = DeviceContext.getInstance();
         const appPath = path.join(ArduinoWorkspace.rootPath, dc.sketch);
         if (util.fileExistsSync(appPath)) {
-            const hFiles = glob.sync(`${libraryPath}/*.h`, {
+            // glob n'accepte que des séparateurs "/" : normaliser le chemin Windows
+            const hFiles = glob.sync(`${libraryPath.replace(/\\/g, "/")}/*.h`, {
                 nodir: true,
                 matchBase: true,
             });
@@ -245,45 +250,34 @@ export class ArduinoApp {
       */
     public async installBoard(packageName: string, arch: string = "", version: string = "", showOutput: boolean = true) {
         arduinoChannel.show();
+        // Héritage : installBoard("dummy") signifie « rafraîchir les index des packages »
         const updatingIndex = packageName === "dummy" && !arch && !version;
         if (updatingIndex) {
             arduinoChannel.start(vscode.l10n.t("Update package index files..."));
-        } else {
             try {
-                const packagePath = path.join(this._settings.packagePath, "packages", packageName, arch);
-                if (util.directoryExistsSync(packagePath)) {
-                    util.rmdirRecursivelySync(packagePath);
-                }
-                arduinoChannel.start(vscode.l10n.t("Install package - {0}...", packageName));
+                await this.updateIndex("core", showOutput);
+                arduinoChannel.end(vscode.l10n.t("Updated package index files."));
             } catch (error) {
-                arduinoChannel.start(vscode.l10n.t("Install package - {0} failed under directory: {1}\nPlease make sure the folder is not occupied by other procedures.", packageName, error.path));
-                arduinoChannel.error(vscode.l10n.t("Error message - {0}", error.message));
                 arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
-                return;
+                throw error;
             }
+            return;
         }
+
+        arduinoChannel.start(vscode.l10n.t("Install package - {0}...", packageName));
         arduinoChannel.info(`${packageName}${arch && ":" + arch}${version && ":" + version}`);
         try {
+            // Le CLI gère lui-même le remplacement de version : pas de nettoyage préalable
             await util.spawn(this._settings.commandPath,
-                ["core", "install", `${packageName}${arch && ":" + arch}${version && "@" + version}`],
+                ["core", "install", `${packageName}${arch && ":" + arch}${version && "@" + version}`,
+                 ...this.getAdditionalUrlsArgs()],
                 undefined,
                 { channel: showOutput ? arduinoChannel.channel : null });
-            if (updatingIndex) {
-                arduinoChannel.end(vscode.l10n.t("Updated package index files."));
-            } else {
-                arduinoChannel.end(vscode.l10n.t("Installed board package - {0}", packageName));
-            }
+            arduinoChannel.end(vscode.l10n.t("Installed board package - {0}", packageName));
         } catch (error) {
-            // If a platform with the same version is already installed, nothing is installed and program exits with exit code 1
-            if (error.code === 1) {
-                if (updatingIndex) {
-                    arduinoChannel.end(vscode.l10n.t("Updated package index files."));
-                } else {
-                    arduinoChannel.end(vscode.l10n.t("Installed board package - {0}", packageName));
-                }
-            } else {
-                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
-            }
+            // Le CLI moderne sort 0 si le package est déjà installé : tout code non nul est une vraie erreur
+            arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+            throw error;
         }
     }
 
@@ -302,33 +296,31 @@ export class ArduinoApp {
 
     public async installLibrary(libName: string, version: string = "", showOutput: boolean = true) {
         arduinoChannel.show();
+        // Héritage : installLibrary("dummy") signifie « rafraîchir l'index des bibliothèques »
         const updatingIndex = (libName === "dummy" && !version);
         if (updatingIndex) {
             arduinoChannel.start(vscode.l10n.t("Update library index files..."));
-        } else {
-            arduinoChannel.start(vscode.l10n.t("Install library - {0}", libName));
+            try {
+                await this.updateIndex("lib", showOutput);
+                arduinoChannel.end(vscode.l10n.t("Updated library index files."));
+            } catch (error) {
+                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+                throw error;
+            }
+            return;
         }
+
+        arduinoChannel.start(vscode.l10n.t("Install library - {0}", libName));
         try {
             await util.spawn(this._settings.commandPath,
                 ["lib", "install", `${libName}${version && "@" + version}`],
                 undefined,
                 { channel: showOutput ? arduinoChannel.channel : undefined });
-            if (updatingIndex) {
-                arduinoChannel.end(vscode.l10n.t("Updated library index files."));
-            } else {
-                arduinoChannel.end(vscode.l10n.t("Installed library - {0}", libName));
-            }
+            arduinoChannel.end(vscode.l10n.t("Installed library - {0}", libName));
         } catch (error) {
-            // If a library with the same version is already installed, nothing is installed and program exits with exit code 1
-            if (error.code === 1) {
-                if (updatingIndex) {
-                    arduinoChannel.end(vscode.l10n.t("Updated library index files."));
-                } else {
-                    arduinoChannel.end(vscode.l10n.t("Installed library - {0}", libName));
-                }
-            } else {
-                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
-            }
+            // Le CLI moderne sort 0 si la bibliothèque est déjà installée : tout code non nul est une vraie erreur
+            arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+            throw error;
         }
     }
 
@@ -535,9 +527,13 @@ export class ArduinoApp {
             }
         }
 
+        // Les modes CliUpload* utilisent "arduino-cli upload" qui ne connaît pas
+        // les flags de compilation (--library, --build-property)
+        const isCompileMode = buildMode !== BuildMode.CliUpload && buildMode !== BuildMode.CliUploadProgrammer;
+
         // Issue #50: Support custom library path
         const customLibraryPath = VscodeSettings.getInstance().customLibraryPath;
-        if (customLibraryPath) {
+        if (isCompileMode && customLibraryPath) {
             args.push("--library", customLibraryPath);
         }
 
@@ -622,7 +618,7 @@ export class ArduinoApp {
             args.unshift("compile");
         }
 
-        if (dc.buildPreferences) {
+        if (isCompileMode && dc.buildPreferences) {
             for (const pref of dc.buildPreferences) {
                 // Note: BuildPrefSetting makes sure that each preference
                 // value consists of exactly two items (key and value).

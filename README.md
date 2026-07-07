@@ -10,7 +10,7 @@
 
 ## Quick Start
 
-![alt text](<images/Doc-Page 1.png>)
+![alt text](images/Doc-Page%201.png)
 
 After installing this extension:
 1. Click on the new icon on the activity bar.

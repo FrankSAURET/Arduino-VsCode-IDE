@@ -245,7 +245,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 result = await Promise.resolve(result);
             }
         } catch (error) {
-            Logger.traceError("executeCommandError", error, { command });
+            // Notifier l'utilisateur : une commande qui échoue en silence semble "ne rien faire"
+            Logger.notifyUserError("executeCommandError", error, `${command}: ${error.message || error}`);
         }
     };
     const registerArduinoCommand = (command: string, commandBody: (...args: any[]) => any, getUserData?: () => any): number => {
@@ -355,7 +356,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 path.resolve(ArduinoWorkspace.rootPath, deviceContext.output));
             excludePatterns.push(`${outputPath}/**`);
         }
-        const excludePattern = `{${excludePatterns.map((p) => p.replace("\\", "/")).join(",")}}`;
+        const excludePattern = `{${excludePatterns.map((p) => p.replace(/\\/g, "/")).join(",")}}`;
 
         const fileUris = await vscode.workspace.findFiles(includePattern, excludePattern);
         const newSketchFileName = await vscode.window.showQuickPick(fileUris.map((fileUri) =>
@@ -522,9 +523,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
             vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
             await runPendingBoardSelection();
-        })();
+        })().catch((error) => {
+            Logger.notifyUserError("activationError", error);
+        });
     }
-    vscode.window.onDidChangeActiveTextEditor(async () => {
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async () => {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor && ((path.basename(activeEditor.document.fileName) === path.basename(ARDUINO_CONFIG_FILE)
             && path.basename(path.dirname(activeEditor.document.fileName)) === ".vscode")
@@ -536,32 +539,42 @@ export async function activate(context: vscode.ExtensionContext) {
             }
             vscode.commands.executeCommand("setContext", "vscode-arduino:showExampleExplorer", true);
         }
-    });
+    }));
 
     const allowPDEFiletype = vscodeSettings.allowPDEFiletype;
 
     if (allowPDEFiletype) {
-        vscode.workspace.onDidOpenTextDocument(async (document) => {
-            if (/\.pde$/.test(document.uri.fsPath)) {
-                const newFsName = document.uri.fsPath.replace(/\.pde$/, ".ino");
-                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
-                fs.renameSync(document.uri.fsPath, newFsName);
-                await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(newFsName));
+        // Renommage .pde -> .ino : les deux listeners ci-dessous peuvent se déclencher pour le
+        // même fichier ; le Set évite un double renameSync (ENOENT) et une double fermeture d'éditeur.
+        const pdeRenamesInProgress = new Set<string>();
+        const renamePdeToIno = async (document: vscode.TextDocument) => {
+            const fsPath = document.uri.fsPath;
+            if (!/\.pde$/.test(fsPath) || pdeRenamesInProgress.has(fsPath) || !fs.existsSync(fsPath)) {
+                return;
             }
-        });
+            pdeRenamesInProgress.add(fsPath);
+            try {
+                const newFsName = fsPath.replace(/\.pde$/, ".ino");
+                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+                fs.renameSync(fsPath, newFsName);
+                await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(newFsName));
+            } catch (error) {
+                Logger.traceError("renamePdeToIno", error);
+            } finally {
+                pdeRenamesInProgress.delete(fsPath);
+            }
+        };
 
-        vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+        context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async (document) => {
+            await renamePdeToIno(document);
+        }));
+
+        context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (editor) => {
             if (!editor) {
                 return;
             }
-            const document = editor.document;
-            if (/\.pde$/.test(document.uri.fsPath)) {
-                const newFsName = document.uri.fsPath.replace(/\.pde$/, ".ino");
-                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
-                fs.renameSync(document.uri.fsPath, newFsName);
-                await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(newFsName));
-            }
-        });
+            await renamePdeToIno(editor.document);
+        }));
     }
     Logger.traceUserData("end-activate-extension");
 

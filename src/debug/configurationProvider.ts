@@ -121,6 +121,15 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             const outputFolder = path.join(dc.output || `.build`);
             const outputPath = path.join(ArduinoWorkspace.rootPath, outputFolder);
 
+            // Garde-fou : le dossier de sortie doit être un sous-dossier strict du workspace,
+            // sinon la suppression récursive pourrait effacer le projet entier (ex. output: ".").
+            const resolvedOut = path.resolve(outputPath);
+            const resolvedRoot = path.resolve(ArduinoWorkspace.rootPath);
+            if (resolvedOut === resolvedRoot || !resolvedOut.startsWith(resolvedRoot + path.sep)) {
+                vscode.window.showErrorMessage(vscode.l10n.t("Invalid output path in arduino.yaml: it must be a subfolder of the workspace."));
+                return false;
+            }
+
             // if the directory was already there, clear the folder so that it's not corrupted from previous builds.
             if (util.directoryExistsSync(outputPath)) {
                 util.rmdirRecursivelySync(outputPath);
@@ -151,8 +160,8 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
             config.program = config.program.replace(/\\/g, "/");
 
             config.customLaunchSetupCommands.forEach((obj) => {
-                if (obj.text && obj.text.indexOf("${file}") > 0) {
-                    obj.text = obj.text.replace(/\$\{file\}/, config.program);
+                if (obj.text && obj.text.indexOf("${file}") >= 0) {
+                    obj.text = obj.text.replace(/\$\{file\}/g, config.program);
                 }
             });
         }

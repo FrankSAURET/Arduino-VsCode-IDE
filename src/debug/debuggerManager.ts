@@ -161,9 +161,9 @@ export class DebuggerManager {
         if (resolvedDebugger.config_file.includes("jlink")) {
             // only swd is supported now
             /* tslint:disable:max-line-length*/
-            return `-s ${scriptsFolder} -f interface/${resolvedDebugger.config_file} -c "transport select swd" -f target/${debugConfig.target} -c "gdb_port ${gdbPort}" -c "telnet_port disabled" -c "tcl_port disabled"`;
+            return `-s "${scriptsFolder}" -f interface/${resolvedDebugger.config_file} -c "transport select swd" -f target/${debugConfig.target} -c "gdb_port ${gdbPort}" -c "telnet_port disabled" -c "tcl_port disabled"`;
         }
         /* tslint:disable:max-line-length*/
-        return `-s ${scriptsFolder} -f interface/${resolvedDebugger.config_file} -f target/${debugConfig.target} -c "gdb_port ${gdbPort}" -c "telnet_port disabled" -c "tcl_port disabled"`;
+        return `-s "${scriptsFolder}" -f interface/${resolvedDebugger.config_file} -f target/${debugConfig.target} -c "gdb_port ${gdbPort}" -c "telnet_port disabled" -c "tcl_port disabled"`;
     }
 }

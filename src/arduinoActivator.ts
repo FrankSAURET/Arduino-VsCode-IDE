@@ -70,7 +70,11 @@ class ArduinoActivator {
 
             const exampleProvider = new ExampleProvider(arduinoApp.exampleManager, arduinoApp.boardManager);
             vscode.window.registerTreeDataProvider("arduinoExampleExplorer", exampleProvider);
-        })();
+        })().catch((error) => {
+            // Ne pas garder en cache une initialisation échouée : permettre un nouvel essai
+            this._initializePromise = undefined;
+            throw error;
+        });
         await this._initializePromise;
     }
 }

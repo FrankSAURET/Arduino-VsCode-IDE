@@ -101,6 +101,11 @@ function downloadFile(url: string, destPath: string, progress: vscode.Progress<{
                     }
                 });
                 res.pipe(file);
+                // Coupure réseau en cours de téléchargement : sans ce handler la promesse resterait pendante
+                res.on("error", (err) => {
+                    file.destroy();
+                    reject(err);
+                });
                 file.on("finish", () => {
                     file.close();
                     resolve();

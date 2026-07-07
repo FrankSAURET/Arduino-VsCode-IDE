@@ -86,7 +86,7 @@ export class ArduinoHomePanel {
                 } else if (message.command === "getConnectedBoards") {
                     await this._sendConnectedBoards();
                 } else if (message.command === "selectBoard") {
-                    this._selectBoard(message.port, message.fqbn, message.name);
+                    this._selectBoard(message.port, message.fqbn);
                 }
             },
             undefined,
@@ -229,7 +229,7 @@ export class ArduinoHomePanel {
             const result = await new Promise<string>((resolve, reject) => {
                 child_process.execFile(commandPath, ["board", "list", "--format", "json"], {
                     timeout: 10000,
-                }, (err, stdout, stderr) => {
+                }, (err, stdout) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -278,7 +278,7 @@ export class ArduinoHomePanel {
         });
     }
 
-    private _selectBoard(port: string, fqbn: string, name: string) {
+    private _selectBoard(port: string, fqbn: string) {
         try {
             const dc = DeviceContext.getInstance();
             if (port) {
@@ -303,12 +303,8 @@ export class ArduinoHomePanel {
         const examplesIcon = this._iconUri("examples.svg");
         const openIcon = this._iconUri("open.svg");
         const selectBoardIcon = this._iconUri("selectBoard.svg");
-        const verifyIcon = this._iconUri("verify.svg");
-        const uploadIcon = this._iconUri("upload.svg");
         const newProjectIcon = this._iconUri("newProject.svg");
         const parametersIcon = this._iconUri("parameters.svg");
-        const serialMonitorIcon = this._iconUri("serialMonitor.svg");
-        const serialTracerIcon = this._iconUri("serialTracer.svg");
 
         const defaultView = initialView || "";
 
@@ -1240,12 +1236,16 @@ export class ArduinoHomePanel {
             }
 
             // ── Board selector ──
+            // JSON.stringify côté extension : évite de casser le script si une traduction contient une apostrophe
+            var placeholderText = ${JSON.stringify(t.selectBoardPlaceholder)};
+            var noBoardText = ${JSON.stringify(t.noBoardDetected)};
             function renderBoards(boards, selectedPort) {
                 connectedBoards = boards || [];
                 // Keep only the placeholder option
-                boardSelectEl.innerHTML = '<option value="" disabled>${t.selectBoardPlaceholder}</option>';
+                boardSelectEl.innerHTML = '<option value="" disabled></option>';
+                boardSelectEl.options[0].textContent = placeholderText;
                 if (connectedBoards.length === 0) {
-                    boardSelectEl.options[0].textContent = '${t.noBoardDetected}';
+                    boardSelectEl.options[0].textContent = noBoardText;
                     boardSelectEl.selectedIndex = 0;
                     return;
                 }

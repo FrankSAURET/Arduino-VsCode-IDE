@@ -26,16 +26,18 @@ build/**
 .eslintrc.yml
 .claude/**
 typings/**
+todo.md
 tuto.md
 NEWS.md
 CONTRIBUTING.md
 images/ArduinoCommunityLogo_Complet.svg
 images/ArduinoCommunityLogo_Couleur.svg
-images/examples/**
 images/serialMonitor - Copie.svg
 images/serialTracer-V1.svg
 images/upload-v1.svg
 images/verify-V1.svg
+# Image uniquement référencée par le README (réécrit vers GitHub par vsce)
+images/Doc-Page 1.png
 
 # Arduino CLI non bundlé : l'extension utilise le CLI local ou propose le téléchargement
 arduino-cli/**
@@ -66,3 +68,15 @@ out/node_modules/serialport/dist/serialport-mock.js
 out/node_modules/usb-detection/.eslintrc
 out/node_modules/uuid/AUTHORS
 out/node_modules/uuid/bin/**
+out/node_modules/uuid/lib/md5-browser.js
+out/node_modules/uuid/lib/sha1-browser.js
+
+# Binaires pour plateformes non supportées par VS Code + sources C++ inutiles à runtime
+out/node_modules/@serialport/bindings-cpp/prebuilds/android-arm/**
+out/node_modules/@serialport/bindings-cpp/prebuilds/android-arm64/**
+out/node_modules/@serialport/bindings-cpp/src/**
+out/node_modules/usb-detection/src/**
+
+# Polices legacy (la webview Chromium utilise woff2/woff)
+out/views/fonts/*.eot
+out/views/fonts/*.ttf

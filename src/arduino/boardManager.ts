@@ -36,6 +36,10 @@ export class BoardManager {
 
     private _onBoardTypeChanged = new vscode.EventEmitter<void>();
 
+    // Garde contre l'abonnement multiple aux événements du DeviceContext (loadPackages est rappelé
+    // à chaque affichage du Board Manager)
+    private _dcListenersRegistered: boolean = false;
+
     constructor(private _settings: IArduinoSettings, private _arduinoApp: ArduinoApp) {
         this._boardConfigStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, constants.statusBarPriority.BOARD);
         this._boardConfigStatusBar.command = "arduino.showBoardConfig";
@@ -49,7 +53,6 @@ export class BoardManager {
 
         const additionalUrls = this.getAdditionalUrls();
         if (update) { // Update index files.
-            await this.setPreferenceUrls(additionalUrls);
             await this._arduinoApp.initialize(true);
         }
 
@@ -62,7 +65,6 @@ export class BoardManager {
                 continue;
             }
             if (!update && !util.fileExistsSync(path.join(rootPackageFolder, indexFileName))) {
-                await this.setPreferenceUrls(additionalUrls);
                 await this._arduinoApp.initialize(true);
             }
             this.loadPackageContent(indexFileName);
@@ -78,8 +80,11 @@ export class BoardManager {
         this._boardConfigStatusBar.show();
 
         const dc = DeviceContext.getInstance();
-        dc.onChangeBoard(() => this.onDeviceContextBoardChange());
-        dc.onChangeConfiguration(() => this.onDeviceContextConfigurationChange());
+        if (!this._dcListenersRegistered) {
+            this._dcListenersRegistered = true;
+            dc.onChangeBoard(() => this.onDeviceContextBoardChange());
+            dc.onChangeConfiguration(() => this.onDeviceContextConfigurationChange());
+        }
 
         // load initial board from DeviceContext by emulating
         // a board change event.
@@ -122,8 +127,8 @@ export class BoardManager {
         let allUrls = this.getAdditionalUrls();
         if (!(allUrls.indexOf(indexUri) >= 0)) {
             allUrls = allUrls.concat(indexUri);
-            VscodeSettings.getInstance().updateAdditionalUrls(allUrls);
-            await this._arduinoApp.setPref("boardsmanager.additional.urls", this.getAdditionalUrls().join(","));
+            // L'URL est transmise au CLI via --additional-urls lors des installations/mises à jour d'index
+            await VscodeSettings.getInstance().updateAdditionalUrls(allUrls);
         }
         return true;
     }
@@ -549,12 +554,5 @@ export class BoardManager {
             preferencesUrls = util.toStringArray(preferences.get("boardsmanager.additional.urls"));
         }
         return util.union(settingsUrls, preferencesUrls);
-    }
-
-    private async setPreferenceUrls(additionalUrls: string[]) {
-        const settingsUrls = additionalUrls.join(",");
-        if (this._settings.preferences.get("boardsmanager.additional.urls") !== settingsUrls) {
-            await this._arduinoApp.setPref("boardsmanager.additional.urls", settingsUrls);
-        }
     }
 }

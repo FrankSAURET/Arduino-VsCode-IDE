@@ -314,6 +314,10 @@ export class ArduinoContentProvider implements vscode.TextDocumentContentProvide
                 await Promise.resolve(handler(req, res));
             } catch (error) {
                 Logger.traceError("expressHandlerError", error, { handlerName });
+                // Toujours répondre, sinon le webview attend indéfiniment (spinner "Loading...")
+                if (res && !res.headersSent) {
+                    res.status(500).send(`Handler "${handlerName}" failed: ${error.message || error}`);
+                }
             }
         };
         if (post) {

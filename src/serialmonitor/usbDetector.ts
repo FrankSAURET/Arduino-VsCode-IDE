@@ -103,12 +103,17 @@ export class UsbDetector {
                                         ArduinoContext.boardManager.updateInstalledPlatforms(deviceDescriptor.package, deviceDescriptor.architecture);
                                         bd = ArduinoContext.boardManager.installedBoards.get(boardKey);
                                         this.switchBoard(bd, deviceDescriptor);
+                                    }).catch((error) => {
+                                        Logger.notifyUserError("usbDetectorInstallBoard", error);
                                     });
                             } else if (ans === vscode.l10n.t("Don't ask again")) {
                                 ignoreBoards.push(deviceDescriptor.name);
                                 VscodeSettings.getInstance().ignoreBoards = ignoreBoards;
                             }
                         });
+                    }).catch((error) => {
+                        // Ex. : mise à jour de l'index impossible hors ligne — ne pas laisser un rejet non géré
+                        Logger.traceError("usbDetectorUpdateIndex", error);
                     });
                 } else if (ArduinoContext.boardManager.currentBoard) {
                     const currBoard = ArduinoContext.boardManager.currentBoard;

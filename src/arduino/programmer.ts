@@ -7,7 +7,7 @@ export function parseProgrammerDescriptor(programmerDescriptor: string, plat: IP
     const progrmmerLineRegex = /([^.]+)\.(\S+)=(.+)/;
 
     const result = new Map<string, IProgrammer>();
-    const lines = programmerDescriptor.split(/[\r|\r\n|\n]/);
+    const lines = programmerDescriptor.split(/(?:\r|\r\n|\n)/);
 
     lines.forEach((line) => {
         // Ignore comments.

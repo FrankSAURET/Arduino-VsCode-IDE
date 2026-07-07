@@ -235,7 +235,7 @@ export class DeviceSettings {
      * Writes the settings to the given file if there are modified
      * values. The modification flags are reset (commit()) on successful write.
      * On write failure the modification flags are left unmodified.
-        * @param file Path to file the YAML representation of the settings should
+     * @param file Path to file the YAML representation of the settings should
      * written to. If either the folder or the file does not exist they are
      * created.
      * @returns true on succes, false on write failure.

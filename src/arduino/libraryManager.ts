@@ -51,7 +51,15 @@ export class LibraryManager {
 
         // Parse libraries index file "library_index.json"
         const packageContent = fs.readFileSync(libraryIndexFilePath, "utf8");
-        this.parseLibraryIndex(JSON.parse(packageContent));
+        let parsedIndex;
+        try {
+            parsedIndex = JSON.parse(packageContent);
+        } catch (error) {
+            // Index corrompu (téléchargement interrompu…) : forcer un re-téléchargement puis re-parser
+            await this._arduinoApp.initializeLibrary(true);
+            parsedIndex = JSON.parse(fs.readFileSync(libraryIndexFilePath, "utf8"));
+        }
+        this.parseLibraryIndex(parsedIndex);
 
         // Load default Arduino libraries from Arduino installation package.
         await this.loadInstalledLibraries(this._settings.defaultLibPath, true);
@@ -92,7 +100,8 @@ export class LibraryManager {
             let sourceLib = null;
             if (util.fileExistsSync(path.join(libRoot, libDir, "library.properties"))) {
                 const properties = <any>await util.parseProperties(path.join(libRoot, libDir, "library.properties"));
-                const formattedName = properties.name.replace(/\s+/g, "_");
+                // Un library.properties sans champ "name" ne doit pas faire échouer tout le chargement
+                const formattedName = (properties.name || libDir).replace(/\s+/g, "_");
                 sourceLib = this._libraryMap.get(formattedName);
                 if (!sourceLib) {
                     sourceLib = { ... properties };

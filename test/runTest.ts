@@ -2,9 +2,13 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 
-import { runTests } from "vscode-test";
+import { runTests } from "@vscode/test-electron";
 
 async function main() {
+    // Si lancé depuis un hôte Electron (VS Code, extension…), cette variable ferait
+    // démarrer le VS Code de test en mode node → "Cannot find module <workspace>"
+    delete process.env.ELECTRON_RUN_AS_NODE;
+
     const testUserDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "arduino-vscode-ide-test-user-"));
     const testExtensionsDir = fs.mkdtempSync(path.join(os.tmpdir(), "arduino-vscode-ide-test-ext-"));
     try {

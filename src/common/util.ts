@@ -166,7 +166,7 @@ export function cp(src, dest) {
         if (directoryExistsSync(dest)) {
             targetFile = path.join(dest, path.basename(src));
         }
-        if (path.relative(src, targetFile)) {
+        if (!path.relative(src, targetFile)) {
             // if the source and target file is the same, skip copying.
             return;
         }
