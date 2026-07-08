@@ -24,6 +24,7 @@ export interface IArduinoSettings {
     preferencePath: string;
     preferences: Map<string, string>;
     analyzeOnSettingChange: boolean;
+    usableCli: boolean;
     reloadPreferences(): void;
 }
 
@@ -170,6 +171,15 @@ export class ArduinoSettings implements IArduinoSettings {
         return path.join(this._arduinoPath, path.normalize(this._commandPath));
     }
 
+    /**
+     * Un arduino-cli réellement invocable existe-t-il ?
+     * arduinoPath peut pointer sur un IDE Arduino 1.x (arduino.exe) sans fournir d'arduino-cli :
+     * dans ce cas commandPath désigne un binaire absent et tous les appels CLI échouent.
+     */
+    public get usableCli(): boolean {
+        return util.fileExistsSync(this.commandPath);
+    }
+
     public get sketchbookPath() {
         return this._sketchbookPath;
     }
@@ -248,10 +258,12 @@ export class ArduinoSettings implements IArduinoSettings {
         if (!configValue || !configValue.trim()) {
             // 2 & 3. Resolve arduino path from system environment variables and usual software installation directory.
             this._arduinoPath = await Promise.resolve(resolveArduinoPath()) || "";
-            // 4. Check for a previously downloaded CLI in the extension directory.
-            if ((!this._arduinoPath || !this._arduinoPath.trim()) && this._extensionPath) {
+            // 4. Un arduino-cli téléchargé par l'extension prime sur un IDE Arduino 1.x résolu
+            // en 2/3 (celui-ci ne fournit pas d'arduino-cli, donc commandPath y serait absent).
+            if (this._extensionPath) {
                 const downloadedPath = getDownloadedCliPath(this._extensionPath);
-                if (downloadedPath) {
+                if (downloadedPath && (!this._arduinoPath || !this._arduinoPath.trim()
+                    || !util.fileExistsSync(path.join(this._arduinoPath, getExecutableFileName("arduino-cli"))))) {
                     this._arduinoPath = downloadedPath;
                 }
             }

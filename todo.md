@@ -4,7 +4,14 @@
 2. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 3. ⏳ Ajouter `package.nls.fr.json` (traduction française des titres de commandes/réglages du Marketplace)
 4. ⏳ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation (impact faible)
-5. ⏳ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
+5. ✅ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
+
+# v2026.7.1 — Régression 2026.7.0 : plus aucune carte ni bibliothèque
+
+1. ✅ Cause : sans `arduino-cli` présent, le prompt de téléchargement était `await` dans le chemin critique d'activation → VS Code annulait l'activation (« Canceled ») → `boardManager` jamais créé → tous les handlers du webview en échec (cartes, bibliothèques, exemples, config vides).
+2. ✅ `arduinoActivator` : le prompt de téléchargement du CLI passe **hors du chemin critique** (non bloquant). Les cartes/bibliothèques déjà installées se chargent depuis les fichiers d'index sans CLI. Après téléchargement, réinit des réglages + rechargement cartes/bibliothèques.
+3. ✅ `arduinoSettings.usableCli` : détection d'un `arduino-cli` réellement invocable (le binaire existe), au lieu de se fier à `arduinoPath` (qui peut désigner un IDE Arduino 1.x sans CLI).
+4. ✅ `tryResolveArduinoPath` : un `arduino-cli` téléchargé par l'extension prime sur un chemin Arduino résolu qui ne fournit pas de CLI.
 
 # v2026.7.0 — Audit complet : 25 bugs corrigés + réduction du VSIX
 

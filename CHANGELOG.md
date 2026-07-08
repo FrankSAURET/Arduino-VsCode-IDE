@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.7.1
+
+- Release date: July 2026
+
+### Fixed
+
+- **No boards or libraries shown at all (regression from 2026.7.0)**: when no `arduino-cli` was available, the download prompt was awaited inside the activation critical path, so VS Code cancelled activation ("Canceled") and the board manager was never created — every webview panel (boards, libraries, examples, config) came up empty. The CLI download prompt now runs off the critical path; already-installed boards and libraries load from the index files without a CLI, and everything reloads after the CLI is downloaded
+- CLI presence is now detected by checking that an `arduino-cli` executable actually exists, instead of trusting `arduinoPath` (which may point at an Arduino 1.x IDE that ships no CLI). A CLI downloaded by the extension takes precedence over such a path
+
 ## Version 2026.7.0
 
 - Release date: July 2026
