@@ -2,7 +2,7 @@
   "name": "arduino-vscode-ide",
   "displayName": "Arduino VsCode IDE",
   "description": "Arduino IDE integration for VS Code — CLI-based, fork of Microsoft's extension",
-  "version": "2026.7.1",
+  "version": "2026.7.2",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {
@@ -511,11 +511,20 @@
         },
         "arduino.theme": {
           "type": "string",
-          "default": "Arduino Light",
+          "default": "Arduino light",
           "enum": [
+            "Arduino light",
+            "Arduino dark",
             "Arduino",
             "Arduino Light",
             "Arduino Dark"
+          ],
+          "enumDescriptions": [
+            "%arduino.configuration.theme.light.description%",
+            "%arduino.configuration.theme.dark.description%",
+            "%arduino.configuration.theme.legacy.description%",
+            "%arduino.configuration.theme.legacy.description%",
+            "%arduino.configuration.theme.legacy.description%"
           ],
           "markdownDescription": "%arduino.configuration.theme.description%"
         },

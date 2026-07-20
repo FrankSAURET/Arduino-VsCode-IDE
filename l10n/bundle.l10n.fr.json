@@ -214,10 +214,10 @@
   "Cannot find the OpenOCD from the launch.json debugServerPath property.": "OpenOCD introuvable via la propriété debugServerPath du launch.json.",
   "Please input the right path of OpenOCD": "Veuillez indiquer le bon chemin vers OpenOCD",
 
-  "Install Arduino Theme Pack": "Installer le pack de thèmes Arduino",
-  "The theme \"{0}\" is not installed. Install the Arduino Theme Pack now?": "Le thème « {0} » n'est pas installé. Installer le pack de thèmes Arduino maintenant ?",
+  "Install Colored Theme": "Installer Colored Theme",
+  "The theme \"{0}\" is not installed. Install the Colored Theme extension now?": "Le thème « {0} » n'est pas installé. Installer l'extension Colored Theme maintenant ?",
   "Not now": "Pas maintenant",
-  "Unable to install the Arduino theme pack automatically.": "Impossible d'installer le pack de thèmes Arduino automatiquement.",
+  "Unable to install the Colored Theme extension automatically.": "Impossible d'installer l'extension Colored Theme automatiquement.",
 
   "Install board package for {0}": "Installer le paquet de carte pour {0}",
   "Don't ask again": "Ne plus demander",

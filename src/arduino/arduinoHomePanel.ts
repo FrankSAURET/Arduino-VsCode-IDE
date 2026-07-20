@@ -1015,9 +1015,8 @@ export class ArduinoHomePanel {
                     </div>
                     <div class="settings-item-control">
                         <select class="settings-select" data-scope="vscode" data-key="theme">
-                            <option value="Arduino">Arduino</option>
-                            <option value="Arduino Light">Arduino Light</option>
-                            <option value="Arduino Dark">Arduino Dark</option>
+                            <option value="Arduino light">Arduino light</option>
+                            <option value="Arduino dark">Arduino dark</option>
                         </select>
                         <span class="settings-saved">✓</span>
                     </div>

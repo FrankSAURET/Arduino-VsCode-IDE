@@ -37,7 +37,7 @@ Chaque modification est marquée selon son origine :
 | Quick Access TreeView | Vue latérale dans l'Activity Bar avec accès rapide aux commandes : New Project, Open Project, Verify, Upload, Select Board, Serial Monitor, Serial Tracer, Board Manager, Library Manager, Examples. | **[Nouveau]** v2026.4.1 |
 | Icônes dans la barre titre de l'éditeur | Boutons Verify, Upload, Serial Monitor et Serial Tracer affichés dans la barre titre des fichiers `.ino` (groupe `navigation`). | **[Nouveau]** v2026.4.1 |
 | Intégration Teleplot | Lancement de Teleplot depuis le bouton "Serial Tracer". Le paramètre `arduino.teleplotOpenMode` contrôle le placement : `newTab` (défaut), `newPanel`, `splitRight`. Installation automatique de Teleplot proposée si absent. | **[Nouveau]** v2026.4.1 |
-| Theme Manager | Sélection de thème Arduino (Arduino, Arduino Light, Arduino Dark) avec proposition d'installation de l'extension `oscarewenstudent.arduino-themes-vsc`. La préférence est enregistrée au niveau workspace pour éviter les conflits multi-workspace. | **[Nouveau]** v2026.4.1 |
+| Theme Manager | Sélection de thème Arduino (Arduino light, Arduino dark) avec proposition d'installation de l'extension `electropol-fr.coloredtheme`. La préférence est enregistrée au niveau workspace pour éviter les conflits multi-workspace. | **[Modifié]** v2026.7.2 |
 | Commandes Create/Open sans CLI pré-configuré | `Arduino: Initialize` et `Arduino: Open Project Folder` fonctionnent sans CLI installé au préalable — le téléchargement automatique est proposé si nécessaire. | **[Nouveau]** v0.5.0 |
 
 ---
@@ -79,7 +79,7 @@ Chaque modification est marquée selon son origine :
 |---|---|---|---|
 | `arduino.customLibraryPath` | `""` | Répertoire supplémentaire de bibliothèques passé au CLI (`--library`). | **[Fork community]** [#50](https://github.com/vscode-arduino/vscode-arduino/issues/50) |
 | `arduino.arduinoCliConfigFile` | `""` | Chemin vers un fichier `arduino-cli.yaml` local, utilisé à la place de la configuration globale. | **[Nouveau]** v0.5.0 |
-| `arduino.theme` | `"Arduino Light"` | Thème Arduino à appliquer (Arduino, Arduino Light, Arduino Dark). | **[Nouveau]** v2026.4.1 |
+| `arduino.theme` | `"Arduino light"` | Thème Arduino à appliquer (Arduino light, Arduino dark) — casse significative. | **[Modifié]** v2026.7.2 |
 | `arduino.teleplotOpenMode` | `"newTab"` | Mode d'ouverture de Teleplot : `newTab`, `newPanel`, `splitRight`. | **[Nouveau]** v2026.4.1 |
 | `arduino.outputVerbosity` | `"normal"` | Verbosité du panneau de sortie : `compact`, `normal`, `verbose`. | **[Nouveau]** v2026.4.1 |
 

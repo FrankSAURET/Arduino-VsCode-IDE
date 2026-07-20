@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.7.2
+
+- Release date: July 2026
+
+### Changed
+
+- **Arduino themes now come from the `electropol-fr.coloredtheme` extension** instead of `oscarewenstudent.arduino-themes-vsc`. The `arduino.theme` setting offers `Arduino light` and `Arduino dark` (note the lowercase `light`/`dark` — the labels must match the ones contributed by Colored Theme)
+- Existing setups keep working, no manual change required. The legacy names (`Arduino`, `Arduino Light`, `Arduino Dark`) remain valid values and are resolved as follows: kept as-is when only the old theme pack is installed, mapped to their Colored Theme equivalent when Colored Theme is installed (Colored Theme wins when both are present), and mapped to the Colored Theme equivalent when neither is installed, so the install prompt offers the right extension. `Arduino`, which Colored Theme does not provide, falls back to `Arduino light`
+
 ## Version 2026.7.1
 
 - Release date: July 2026

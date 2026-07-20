@@ -50,7 +50,7 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 - **Quick Access sidebar**: Activity Bar view with direct access to common commands (Verify, Upload, Select Board, Serial Monitor, Board Manager…).
 - **Editor title bar actions**: Verify, Upload, Serial Monitor and Serial Tracer buttons appear directly in the `.ino` editor title bar.
 - **Teleplot integration**: Launch Teleplot from the Serial Tracer button. The `arduino.teleplotOpenMode` setting controls the placement (`newTab`, `newPanel`, `splitRight`). Teleplot is automatically installed if absent.
-- **Arduino theme selector**: Choose between Arduino, Arduino Light and Arduino Dark themes. The extension installs the Arduino Theme Pack automatically if needed.
+- **Arduino theme selector**: Choose between the Arduino light and Arduino dark themes. The extension installs the Colored Theme extension automatically if needed.
 - **IntelliSense improvements**:
   - `--param` normalization for STM32 and other GCC-based toolchains (clang compatibility)
   - `ARDUINO` define automatically added for library compatibility
