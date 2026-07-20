@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.7.4
+
+- Release date: July 2026
+
+### Added
+
+- **French localization of the Marketplace strings** (`package.nls.fr.json`): command titles, view names and setting descriptions now appear in French in the command palette and the settings UI. Wording follows the Arduino IDE 2 French conventions ("Vérifier", "Téléverser", "Croquis"). The runtime strings (`l10n/bundle.l10n.fr.json`) were already translated
+
+### Fixed
+
+- Status bar item and the IntelliSense completion provider's file watcher are now disposed when the extension deactivates, instead of leaking
+
 ## Version 2026.7.3
 
 - Release date: July 2026

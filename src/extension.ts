@@ -508,6 +508,8 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     const completionProvider = new completionProviderModule.CompletionProvider();
+    // Le disposable d'enregistrement ne libère pas l'instance : son watcher doit l'être explicitement
+    context.subscriptions.push(completionProvider);
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(ARDUINO_MODE, completionProvider, "<", '"', "."));
     context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider("arduino", new
         arduinoDebugConfigurationProviderModule.ArduinoDebugConfigurationProvider()));

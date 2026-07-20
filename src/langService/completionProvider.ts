@@ -52,6 +52,12 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
         }
     }
 
+    public dispose() {
+        if (this._watcher) {
+            this._watcher.dispose();
+        }
+    }
+
     public async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position):
          Promise<vscode.CompletionItem[]> {
         if (VscodeSettings.getInstance().skipHeaderProvider) {

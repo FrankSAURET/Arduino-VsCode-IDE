@@ -115,6 +115,9 @@ export class DeviceContext implements IDeviceContext, vscode.Disposable {
         if (this._vscodeWatcher) {
             this._vscodeWatcher.dispose();
         }
+        if (this._sketchStatusBar) {
+            this._sketchStatusBar.dispose();
+        }
     }
 
     public get extensionPath(): string {

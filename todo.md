@@ -2,9 +2,20 @@
 
 1. ⬜ Tester sur machine réelle : installation d'une bibliothèque depuis le Library Manager (doit apparaître « installée » — correctif v2026.7.0)
 2. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
-3. ⏳ Ajouter `package.nls.fr.json` (traduction française des titres de commandes/réglages du Marketplace)
-4. ⏳ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation (impact faible)
+3. ✅ Ajouter `package.nls.fr.json` (traduction française des titres de commandes/réglages du Marketplace) — v2026.7.4
+4. ✅ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation — v2026.7.4
 5. ✅ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
+6. ⬜ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
+7. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
+
+# v2026.7.4 — Traduction française du Marketplace + fuites de ressources
+
+1. ✅ `package.nls.fr.json` créé : 48 clés traduites (titres de commandes, noms de vues, descriptions des réglages). Parité vérifiée par script — aucune clé manquante ni en trop, toutes les clés `%…%` de `package.json` résolues.
+2. ✅ Terminologie alignée sur Arduino IDE 2 en français : « Vérifier », « Téléverser », « Croquis », « Gestionnaire de bibliothèques », « programmateur ».
+3. ✅ `deviceContext.dispose()` : `_sketchStatusBar` désormais libéré (l'instance est déjà dans `context.subscriptions`, donc réellement appelé).
+4. ✅ `completionProvider` : ajout d'un `dispose()` libérant son `FileSystemWatcher`, **et** enregistrement de l'instance dans `context.subscriptions` — le disposable de `registerCompletionItemProvider` ne libère que l'enregistrement, pas l'instance, donc le watcher fuyait à chaque désactivation.
+5. ℹ️ `arduino.view.container.title` reste « Arduino » en français (nom propre) ; 4 clés définies mais non référencées dans `package.json` (`view.launcher`, `view.boardManager`, `view.libraryManager`, `view.examples`) — préexistant, hors périmètre.
+6. ⬜ Non vérifié : rendu réel des chaînes traduites dans une instance VS Code configurée en français.
 
 # v2026.7.3 — Détection de l'arduino-cli embarqué dans Arduino IDE 2
 
