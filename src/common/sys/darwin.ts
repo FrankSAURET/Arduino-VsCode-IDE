@@ -5,6 +5,22 @@ import * as childProcess from "child_process";
 import * as path from "path";
 import { fileExistsSync } from "../util";
 
+// Arduino IDE 2 embarque son propre arduino-cli dans le bundle applicatif, sans
+// l'exposer au PATH.
+const IDE2_CLI_SUBPATH = path.join("Contents", "Resources", "app", "lib", "backend", "resources");
+
+/**
+ * Emplacements d'installation habituels d'Arduino IDE 2 sous macOS :
+ * /Applications (tous les utilisateurs) ou ~/Applications (utilisateur courant).
+ */
+function getIde2CliDirectories(): string[] {
+    const roots = ["/Applications"];
+    if (process.env.HOME) {
+        roots.push(path.join(process.env.HOME, "Applications"));
+    }
+    return roots.map((root) => path.join(root, "Arduino IDE.app", IDE2_CLI_SUBPATH));
+}
+
 export function resolveArduinoPath(): string {
     let pathString;
     try {
@@ -16,6 +32,12 @@ export function resolveArduinoPath(): string {
     } catch (ex) {
         // Ignore the errors.
     }
+
+    // Repli : CLI embarqué dans une installation d'Arduino IDE 2 (absent du PATH)
+    if (!pathString) {
+        pathString = getIde2CliDirectories().find((dir) => validateArduinoPath(dir)) || "";
+    }
+
     return pathString || "";
 }
 

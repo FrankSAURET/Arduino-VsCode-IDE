@@ -6,6 +6,18 @@
 4. ⏳ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation (impact faible)
 5. ✅ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
 
+# v2026.7.3 — Détection de l'arduino-cli embarqué dans Arduino IDE 2
+
+1. ✅ Cause : Arduino IDE 2 embarque son propre `arduino-cli` dans ses ressources internes (`resources/app/lib/backend/resources`) **sans l'exposer au PATH**. Les 3 étapes de résolution échouaient toutes (réglage `arduino.path` non défini, `where arduino-cli` négatif, dossier `arduino-cli/` exclu du VSIX) → prompt de téléchargement affiché alors qu'un CLI valide était installé.
+2. ✅ `win32.ts` : repli sur `%ProgramFiles%`, `%ProgramFiles(x86)%` et `%LOCALAPPDATA%\Programs` + `Arduino IDE\resources\app\lib\backend\resources`.
+3. ✅ `darwin.ts` : repli sur `/Applications` et `~/Applications` + `Arduino IDE.app/Contents/Resources/app/lib/backend/resources`.
+4. ✅ `linux.ts` : repli sur `/opt`, `/usr/local/share`, `/usr/share`, `~/.local/share`, `~` (dossiers `arduino-ide` / `Arduino IDE`).
+5. ✅ Le repli ne s'active que si le PATH n'a rien donné : aucun changement de comportement pour un CLI déjà dans le PATH.
+6. ✅ Effet de bord bénéfique : `applyCliConfigDirectories()` interroge ce CLI et récupère les dossiers réels de l'IDE 2 (`arduino-cli.yaml`) → cartes et sketchbook partagés avec l'IDE, sans duplication.
+7. ✅ Vérifié à l'exécution sous Windows (vrai code compilé) : `resolveArduinoPath()` → `C:\Program Files\Arduino IDE\resources\app\lib\backend\resources`, `usableCli` = true.
+8. ⏳ macOS et Linux non testés sur machine réelle (chemins déduits du packaging Electron).
+9. ⏳ AppImage Linux non couvert : ressources montées dans un dossier temporaire imprévisible → `arduino.path` reste nécessaire pour ce format.
+
 # v2026.7.1 — Régression 2026.7.0 : plus aucune carte ni bibliothèque
 
 1. ✅ Cause : sans `arduino-cli` présent, le prompt de téléchargement était `await` dans le chemin critique d'activation → VS Code annulait l'activation (« Canceled ») → `boardManager` jamais créé → tous les handlers du webview en échec (cartes, bibliothèques, exemples, config vides).

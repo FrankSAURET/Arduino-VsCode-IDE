@@ -5,6 +5,25 @@ import * as childProcess from "child_process";
 import * as path from "path";
 import { fileExistsSync } from "../util";
 
+// Arduino IDE 2 embarque son propre arduino-cli dans ses ressources internes, sans
+// l'exposer au PATH. Chemin relatif au dossier d'installation de l'IDE.
+const IDE2_CLI_SUBPATH = path.join("resources", "app", "lib", "backend", "resources");
+
+/**
+ * Emplacements d'installation habituels d'Arduino IDE 2 sous Windows :
+ * installation "pour tous les utilisateurs" (Program Files) ou "pour moi" (LOCALAPPDATA).
+ */
+function getIde2CliDirectories(): string[] {
+    const roots = [
+        process.env.ProgramFiles,
+        process.env["ProgramFiles(x86)"],
+        process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, "Programs") : undefined,
+    ];
+    return roots
+        .filter((root) => !!root)
+        .map((root) => path.join(root, "Arduino IDE", IDE2_CLI_SUBPATH));
+}
+
 export async function resolveArduinoPath() {
     let pathString = "";
     try {
@@ -16,6 +35,11 @@ export async function resolveArduinoPath() {
         }
     } catch (error) {
         // Ignore the errors.
+    }
+
+    // Repli : CLI embarqué dans une installation d'Arduino IDE 2 (absent du PATH)
+    if (!pathString) {
+        pathString = getIde2CliDirectories().find((dir) => validateArduinoPath(dir)) || "";
     }
 
     return pathString || "";

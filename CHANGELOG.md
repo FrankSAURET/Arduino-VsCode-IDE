@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.7.3
+
+- Release date: July 2026
+
+### Fixed
+
+- **"Arduino CLI not found" prompt shown even with Arduino IDE 2 installed**: Arduino IDE 2 bundles its own `arduino-cli` inside its internal resources without adding it to the `PATH`, so none of the lookup steps found it. The usual Arduino IDE 2 install locations are now searched as a fallback on Windows (`%ProgramFiles%`, `%ProgramFiles(x86)%`, `%LOCALAPPDATA%\Programs`), macOS (`/Applications`, `~/Applications`) and Linux (`/opt`, `/usr/local/share`, `/usr/share`, `~/.local/share`, `~`)
+- The fallback only kicks in when the `PATH` lookup finds nothing, so setups with an `arduino-cli` already on the `PATH` are unaffected. As a side effect, boards and the sketchbook are now shared with Arduino IDE 2 rather than duplicated, since the extension reads that CLI's own configuration
+- Linux AppImage installs are not covered (resources are mounted in an unpredictable temporary directory); the `arduino.path` setting is still required there
+
 ## Version 2026.7.2
 
 - Release date: July 2026
