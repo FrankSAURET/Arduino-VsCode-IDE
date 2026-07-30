@@ -27,6 +27,7 @@ import { DeviceContext } from "./deviceContext";
 const completionProviderModule = impor("./langService/completionProvider") as typeof import ("./langService/completionProvider");
 import { BuildMode } from "./arduino/arduino";
 import { checkForCliUpdate } from "./arduino/cliDownloader";
+import { recommendKablix } from "./arduino/extensionRecommendation";
 import { applyArduinoTheme } from "./arduino/themeManager";
 import { listSerialPorts } from "./common/portList";
 import * as Logger from "./logger/logger";
@@ -635,6 +636,11 @@ export async function activate(context: vscode.ExtensionContext) {
     setTimeout(() => {
         checkForCliUpdate(context.extensionPath).catch(() => { /* ignore */ });
     }, 5000);
+
+    // Recommend Kablix on first launch and after each update (non blocking)
+    setTimeout(() => {
+        recommendKablix(context).catch((error) => Logger.traceError("recommendKablixError", error));
+    }, 8000);
 }
 
 export async function deactivate() {

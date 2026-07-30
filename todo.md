@@ -7,6 +7,18 @@
 5. ✅ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
 6. ⬜ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
 7. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
+8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
+
+# v2026.7.5 — Recommandation de l'extension Kablix
+
+1. ✅ `src/arduino/extensionRecommendation.ts` : notification recommandant `electropol-fr.kablix` (simulateur Arduino et Pico pi, C/C++ et MicroPython).
+2. ✅ Déclenchement au **premier lancement** et **après chaque mise à jour** : la version de l'extension du dernier affichage est mémorisée dans `globalState` (`arduino.kablixRecommendation`) ; un numéro de version différent rejoue la proposition.
+3. ✅ Pas de notification si Kablix est déjà installée. Boutons : « Installer Kablix » (installe via `workbench.extensions.installExtension`), « Plus tard », « Ne plus proposer » (silence définitif).
+4. ✅ Marquage « affiché » **avant** l'attente de la réponse : fermer la notification sans répondre ne la fait pas revenir à l'activation suivante.
+5. ✅ Appel non bloquant dans `extension.ts` (`setTimeout` 8 s, après le contrôle de mise à jour du CLI) — aucun impact sur le chemin critique d'activation.
+6. ✅ Repli si l'installation automatique échoue : avertissement + ouverture du Marketplace filtré sur `@id:electropol-fr.kablix`.
+7. ✅ Traductions FR ajoutées à `l10n/bundle.l10n.fr.json` (texte exact demandé, avec guillemets français).
+8. ✅ 8 assertions vérifiées sur `shouldRecommendKablix` (premier lancement, mise à jour, même version, déjà installée, refus définitif, version inconnue) + `test/extensionRecommendation.test.ts` ajouté à la suite.
 
 # v2026.7.4 — Traduction française du Marketplace + fuites de ressources
 

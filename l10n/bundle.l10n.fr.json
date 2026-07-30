@@ -219,6 +219,11 @@
   "Not now": "Pas maintenant",
   "Unable to install the Colored Theme extension automatically.": "Impossible d'installer l'extension Colored Theme automatiquement.",
 
+  "Arduino VsCode IDE recommends \"Kablix\": an Arduino and Pico Pi simulator (in C/C++ and MicroPython).": "Arduino VsCode IDE vous recommande « Kablix » : simulateur arduino et Pico pi (en C/C++ et MicroPython).",
+  "Install Kablix": "Installer Kablix",
+  "Don't show again": "Ne plus proposer",
+  "Unable to install Kablix automatically.": "Impossible d'installer Kablix automatiquement.",
+
   "Install board package for {0}": "Installer le paquet de carte pour {0}",
   "Don't ask again": "Ne plus demander",
   "Detected board {0}. Would you like to switch to this board type?": "Carte {0} détectée. Voulez-vous basculer vers ce type de carte ?",

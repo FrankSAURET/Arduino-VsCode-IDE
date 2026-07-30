@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.7.5
+
+- Release date: July 2026
+
+### Added
+
+- **Kablix recommendation**: a non-blocking notification suggests the [Kablix](https://marketplace.visualstudio.com/items?itemName=electropol-fr.kablix) extension (Arduino and Pico Pi simulator, C/C++ and MicroPython) on first launch and after each update of Arduino VsCode IDE. It is skipped when Kablix is already installed, and "Don't show again" silences it permanently
+
 ## Version 2026.7.4
 
 - Release date: July 2026
