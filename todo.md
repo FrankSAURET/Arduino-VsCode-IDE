@@ -8,6 +8,23 @@
 6. ⬜ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
 7. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
+9. ⬜ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
+10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
+
+# v2026.8.0 — `ms-vscode.cpptools` : dépendance dure → recommandation
+
+1. ✅ Cause : `extensionDependencies: ["ms-vscode.cpptools"]` forçait l'installation de C/C++ alors que l'extension n'appelle **aucune** de ses API — le seul lien est le fichier `.vscode/c_cpp_properties.json` généré par `src/arduino/intellisense.ts`, que cpptools lit pour l'IntelliSense.
+2. ✅ Blocage Open VSX : `ms-vscode.cpptools` n'y est pas publié (licence Microsoft, non redistribuable) → sur VSCodium/Gitpod l'installation échouait avec « dépendance introuvable », rendant la publication Open VSX inutilisable.
+3. ✅ `package.json` : bloc `extensionDependencies` supprimé. Compilation, téléversement, moniteur série, gestionnaires de cartes/bibliothèques : aucun impact (aucun appel à cpptools dans `src/`).
+4. ✅ Coloration syntaxique préservée : elle vient de `syntaxes/arduino.tmLanguage` + la grammaire `cpp` native de VS Code, pas de cpptools.
+5. ✅ `src/arduino/extensionRecommendation.ts` : logique factorisée (`shouldRecommend` + `promptRecommendation`) et nouvelle `recommendCppTools()` — notification douce proposant d'installer C/C++, affichée **uniquement** si cpptools est absent **et** que la génération IntelliSense est active (`isCompilerParserEnabled()`).
+6. ✅ Même cadence que Kablix : premier lancement + après chaque mise à jour, état dans `globalState` (`arduino.cppToolsRecommendation`), boutons « Installer C/C++ » / « Plus tard » / « Ne plus proposer ». Repli sur la recherche du Marketplace si l'installation automatique échoue (cas Open VSX).
+7. ✅ Appel non bloquant dans `extension.ts` à 20 s (après Kablix à 8 s) pour ne jamais empiler deux notifications.
+8. ✅ `gulpfile.js` : suppression du hack qui vidait puis restaurait `extensionDependencies` autour de `npm test` (et de l'import `fs` devenu inutile) — devenu sans objet.
+9. ✅ Traductions FR ajoutées à `l10n/bundle.l10n.fr.json` (3 chaînes).
+10. ✅ README : nouvelle section « C/C++ extension (optional) » sous *Prerequisites*, mentionnant clangd comme solution de repli sur les éditeurs sans Marketplace Microsoft.
+11. ✅ Build + lint OK, suite de tests **47 passing** — dont la suite exécutée pour la première fois sans le contournement du gulpfile.
+12. ℹ️ `shouldRecommendKablix` conservé comme alias de `shouldRecommend` (compatibilité des tests existants).
 
 # v2026.7.5 — Recommandation de l'extension Kablix
 

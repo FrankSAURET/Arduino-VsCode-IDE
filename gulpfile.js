@@ -9,7 +9,6 @@ const webpack = require("webpack");
 const del = require("del");
 const download = require("download");
 const extract = require("extract-zip");
-const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
 const argv = require("minimist")(process.argv.slice(2));
@@ -79,22 +78,6 @@ gulp.task("clean", (done) => {
 });
 
 gulp.task("test", (done) => {
-    function removeExtensionDependencies() {
-        const packageJson = JSON.parse(fs.readFileSync("package.json"));
-        packageJson.extensionDependencies = [];
-        fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2) + "\n");
-    }
-    function restoreExtensionDependencies() {
-        const packageJson = JSON.parse(fs.readFileSync("package.json"));
-        packageJson.extensionDependencies = ["ms-vscode.cpptools"];
-        fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2) + "\n");
-    }
-
-    // When using cli command "npm test" to exec test, the depended extensions (cpptools) are not available so that
-    // the extension cannot be activated. As a workaround, remove extensionDependencies from package.json before
-    // running test and restore extensionDependencies after test exited.
-    removeExtensionDependencies();
-
     const child = childProcess.spawn("node", ["./out/test/runTest"], {
         cwd: __dirname,
         env: Object.assign({}, process.env),
@@ -113,7 +96,6 @@ gulp.task("test", (done) => {
     });
 
     child.on("exit", (code) => {
-        restoreExtensionDependencies();
         if (code === 0) {
             done();
         } else {

@@ -27,7 +27,7 @@ import { DeviceContext } from "./deviceContext";
 const completionProviderModule = impor("./langService/completionProvider") as typeof import ("./langService/completionProvider");
 import { BuildMode } from "./arduino/arduino";
 import { checkForCliUpdate } from "./arduino/cliDownloader";
-import { recommendKablix } from "./arduino/extensionRecommendation";
+import { recommendCppTools, recommendKablix } from "./arduino/extensionRecommendation";
 import { applyArduinoTheme } from "./arduino/themeManager";
 import { listSerialPorts } from "./common/portList";
 import * as Logger from "./logger/logger";
@@ -641,6 +641,13 @@ export async function activate(context: vscode.ExtensionContext) {
     setTimeout(() => {
         recommendKablix(context).catch((error) => Logger.traceError("recommendKablixError", error));
     }, 8000);
+
+    // C/C++ is no longer a hard dependency: suggest it only when IntelliSense
+    // generation is on and the extension is missing. Delayed after Kablix so
+    // both notifications never stack up.
+    setTimeout(() => {
+        recommendCppTools(context).catch((error) => Logger.traceError("recommendCppToolsError", error));
+    }, 20000);
 }
 
 export async function deactivate() {

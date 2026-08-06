@@ -1,6 +1,17 @@
 import * as assert from "assert";
 
-import { shouldRecommendKablix } from "../src/arduino/extensionRecommendation";
+import { shouldRecommend, shouldRecommendKablix } from "../src/arduino/extensionRecommendation";
+
+suite("Arduino: extension recommendation", () => {
+    test("shouldRecommendKablix is the shared implementation", () => {
+        assert.equal(shouldRecommendKablix, shouldRecommend);
+    });
+
+    test("should recommend C/C++ only when it is missing", () => {
+        assert.equal(shouldRecommend(false, "2026.8.0", undefined), true);
+        assert.equal(shouldRecommend(true, "2026.8.0", undefined), false);
+    });
+});
 
 suite("Arduino: Kablix recommendation", () => {
     test("should recommend on first launch", () => {

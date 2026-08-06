@@ -224,6 +224,10 @@
   "Don't show again": "Ne plus proposer",
   "Unable to install Kablix automatically.": "Impossible d'installer Kablix automatiquement.",
 
+  "Install the \"C/C++\" extension to get IntelliSense (completion, navigation, error checking) in your sketches. Everything else works without it.": "Installez l'extension « C/C++ » pour bénéficier d'IntelliSense (complétion, navigation, détection d'erreurs) dans vos croquis. Tout le reste fonctionne sans elle.",
+  "Install C/C++": "Installer C/C++",
+  "Unable to install the \"C/C++\" extension automatically.": "Impossible d'installer l'extension « C/C++ » automatiquement.",
+
   "Install board package for {0}": "Installer le paquet de carte pour {0}",
   "Don't ask again": "Ne plus demander",
   "Detected board {0}. Would you like to switch to this board type?": "Carte {0} détectée. Voulez-vous basculer vers ce type de carte ?",

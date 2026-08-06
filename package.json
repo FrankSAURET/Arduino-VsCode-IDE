@@ -2,7 +2,7 @@
   "name": "arduino-vscode-ide",
   "displayName": "Arduino VsCode IDE",
   "description": "Arduino IDE integration for VS Code — CLI-based, fork of Microsoft's extension",
-  "version": "2026.7.5",
+  "version": "2026.8.0",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {
@@ -675,9 +675,6 @@
     "lint": "gulp --no-color tslint",
     "build:ext": "gulp --no-color build_without_view"
   },
-  "extensionDependencies": [
-    "ms-vscode.cpptools"
-  ],
   "devDependencies": {
     "@types/compare-versions": "^3.0.0",
     "@types/express": "^4.17.13",
