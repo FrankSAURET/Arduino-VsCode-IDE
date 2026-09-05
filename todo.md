@@ -11,6 +11,18 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.8.0.3 — Panneau de sortie : messages entre crochets colorises
+
+1. ✅ Demande : coloriser `[Démarrage]`, `[Terminé]`, `[Avertissement]`, `[Erreur]` selon leur sens, dans toutes les langues, avec des couleurs qui suivent le thème clair ou foncé.
+2. ✅ Défaut trouvé : `syntaxes/arduino.output.tmLanguage` existait déjà et était bien déclaré dans `package.json`, mais **ne s'appliquait jamais** — `createOutputChannel("Arduino")` ne rattachait le panneau à aucun langage. Second argument `"arduino-output"` ajouté : la coloration s'active enfin.
+3. ✅ Deuxième défaut : l'ancienne grammaire reconnaissait les mots traduits **en dur** (`Erreur|Fehler|エラー`…). Toute langue non prévue perdait sa couleur.
+4. ✅ Correction : `src/common/outputChannel.ts` ajoute en fin de ligne un caractère **invisible** propre à chaque catégorie (`U+200B` démarrage, `U+200C` terminé, `U+200D` avertissement, `U+2060` erreur). La grammaire reconnaît ce repère, plus le mot — donc n'importe quelle langue, y compris celles ajoutées plus tard.
+5. ✅ Couleurs (jetons du thème, donc adaptées clair/foncé automatiquement) : `[Démarrage]` et `[Terminé]` → `token.info-token` (bleu), `[Avertissement]` → `token.warn-token` (jaune-orange), `[Erreur]` → `token.error-token` (rouge).
+6. ✅ Le texte du message derrière le crochet reste en couleur normale — l'ancienne grammaire le peignait en `string` (orange), ce qui saturait le panneau.
+7. ✅ Règle de repli conservée : une ligne `[Quelque chose]` sans repère (sortie d'un outil externe) garde le bleu d'information.
+8. ✅ Transtypage sur `createOutputChannel` : les typages `@types/vscode` du projet sont figés en 1.56 et ignorent cette surcharge, disponible depuis la 1.57. Les monter exigerait aussi de monter TypeScript (3.9 aujourd'hui, incapable de lire les typages récents) — hors périmètre, donc contourné localement avec un commentaire explicatif.
+9. ✅ Vérifié : `tsc --noEmit` sans erreur, `npm run lint` propre, `npm run build:ext` OK, simulation des expressions sur 9 lignes types (fr, en, de, ja, sans repère) toutes correctement classées.
+10. ⏳ À vérifier sur une instance VS Code réelle : rendu des couleurs sur un thème clair et un thème foncé, après un Vérifier et un Téléverser.
 # v2026.8.0.2 — F5 : la fenêtre de débogage ne se referme plus toute seule
 
 1. ✅ Symptôme : à chaque F5, la fenêtre « Extension Development Host » s'ouvrait puis disparaissait aussitôt.

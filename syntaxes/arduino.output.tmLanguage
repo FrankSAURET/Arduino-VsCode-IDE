@@ -8,22 +8,19 @@
         <string>arduino-output</string>
         <key>patterns</key>
         <array>
+            <!-- Les lignes emises par arduinoChannel portent un marqueur invisible
+                 en fin de ligne : la categorie est reconnue quelle que soit la langue. -->
             <dict>
                 <key>captures</key>
                 <dict>
                     <key>1</key>
                     <dict>
                         <key>name</key>
-                        <string>token.info-token</string>
-                    </dict>
-                    <key>2</key>
-                    <dict>
-                        <key>name</key>
                         <string>token.error-token</string>
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>(\[(?:Error|Erreur|Fehler|Error|エラー|错误)\])(.+)</string>
+                <string>^(\[[^\]]+\]).*⁠$</string>
                 <key>name</key>
                 <string>arduino-output.error</string>
             </dict>
@@ -33,16 +30,11 @@
                     <key>1</key>
                     <dict>
                         <key>name</key>
-                        <string>token.info-token</string>
-                    </dict>
-                    <key>2</key>
-                    <dict>
-                        <key>name</key>
-                        <string>token.warning-token</string>
+                        <string>token.warn-token</string>
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>(\[(?:Warning|Avertissement|Warnung|Advertencia|警告)\])(.+)</string>
+                <string>^(\[[^\]]+\]).*‍$</string>
                 <key>name</key>
                 <string>arduino-output.warning</string>
             </dict>
@@ -54,16 +46,26 @@
                         <key>name</key>
                         <string>token.info-token</string>
                     </dict>
-                    <key>2</key>
+                </dict>
+                <key>match</key>
+                <string>^(\[[^\]]+\]).*[​‌]$</string>
+                <key>name</key>
+                <string>arduino-output.info</string>
+            </dict>
+            <!-- Repli : lignes entre crochets sans marqueur (sorties externes). -->
+            <dict>
+                <key>captures</key>
+                <dict>
+                    <key>1</key>
                     <dict>
                         <key>name</key>
-                        <string>string</string>
+                        <string>token.info-token</string>
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>(\[[^\]]+\])(.*)</string>
+                <string>^(\[[^\]]+\])</string>
                 <key>name</key>
-                <string>arduino-output.info</string>
+                <string>arduino-output.default</string>
             </dict>
         </array>
     </dict>
