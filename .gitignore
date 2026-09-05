@@ -11,3 +11,6 @@ test/**/c_cpp_properties.json
 .claude/
 arduino-cli/arduino-cli.exe
 arduino-cli/arduino-cli
+
+# Artefacts de construction des croquis de test
+test/**/.build/

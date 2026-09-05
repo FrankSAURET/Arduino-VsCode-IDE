@@ -65,6 +65,8 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 - **Custom paths**: New `arduino.customLibraryPath` and `arduino.arduinoCliConfigFile` settings.
 - **Build output verbosity**: New `arduino.outputVerbosity` setting (`compact`, `normal`, `verbose`).
 - **Build path fix**: Output build path is properly normalized and the full directory structure is created automatically.
+- **No hard dependency on the C/C++ extension**: IntelliSense is a recommendation, not a requirement, so the extension installs cleanly on VSCodium, Gitpod and other Open VSX based editors.
+- **Non-intrusive output panel**: the Arduino panel no longer steals focus during background IntelliSense analysis, and its bracketed prefixes are coloured with theme tokens in every UI language.
 
 ## Prerequisites
 

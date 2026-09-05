@@ -11,6 +11,23 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.9.0.10 — Plantage 134 : trois hypothèses infirmées, corrections conservées ; préparation de la publication
+
+1. ℹ️ **Le plantage 134 n'est toujours pas expliqué.** Trois hypothèses successives ont été formulées puis **infirmées par contre-épreuve**. Aucune correction du jour ne le traite. À dire tel quel : ne pas créditer ces changements du correctif.
+2. ❌ **Hypothèse « ressources non libérées à l'arrêt » (v2026.8.0.8) : fausse.** L'hôte meurt 1,2 s après *son propre* démarrage, pas à la fermeture du précédent.
+3. ❌ **Hypothèse « corps de `activate()` » : fausse.** Les fenêtres mortes n'ont **aucun dossier `exthost/`** et s'arrêtent toutes à la même ligne (manifeste de `idleberg.nsis`). L'hôte meurt pendant *son démarrage*, avant d'ouvrir son journal, donc avant que le moindre code d'extension soit chargé. Bissection menée sur 44 lancements : elle n'a jamais rien testé du code d'`activate()`.
+4. ❌ **Hypothèse « `activationEvents` » : fausse.** Contre-épreuve décisive exigée par Frank : code d'origine restauré, **10 lancements, 0 plantage**. Au passage, `workspaceContains:**/*.ino` **se déclenche bel et bien** en F5 — VS Code applique le motif au dossier de développement lui-même, qui contient des `.ino` de test. L'affirmation inverse, tenue plus tôt dans la journée, était fausse.
+5. ℹ️ **Piste non tranchée — le rythme des lancements.** Sur les 152 lancements journalisés du jour : **83 % de plantages** quand le lancement suit le précédent de 19 à 25 s (10 sur 12), contre **6 %** pour tout autre écart (8 sur 140). Échantillon trop mince (12 cas) et non reproduit : le test de confirmation a échoué à viser la bande (écarts réels de 29 à 39 s, la mesure portant sur les *sorties* d'hôte et non sur les F5). À reprendre avec un script qui contrôle le rythme.
+6. ℹ️ **Fait solide, invariant sur toutes les sessions** : dans une fenêtre morte l'hôte meurt pendant son démarrage, à 1,20–1,25 s, avec une régularité de métronome, sans jamais créer `exthost/`. Les fenêtres saines atteignent leur `exthost.log` à 1,80–1,93 s.
+7. ℹ️ Le défaut ne s'est plus manifesté après 16:23:47, sur ~80 lancements et près de deux heures, toutes configurations confondues. Il ne touche que le F5 de développement, jamais les utilisateurs.
+8. ✅ **Corrections conservées, sur leur seul mérite** : libération des ressources à la désactivation (serveur HTTP local, minuteur du panneau d'accueil, minuteurs différés, `deactivate()` en `try/catch` isolés).
+9. ✅ **Vrai trou bouché** : `debuggerManager.ts` chargeait `usb-detection` **sans garde-fou ABI** alors que `onDebug` est un événement d'activation. Nouveau `src/common/usbDetectionLoader.ts` — chargeur unique, garde-fou ABI, cache ; les deux appelants y passent.
+10. ✅ Dépôt nettoyé : 64 artefacts de construction (`test/resources/blink/.build/`) sortis du suivi git, fichiers **conservés sur disque**, dossier ajouté à `.gitignore`.
+11. ✅ Version publique passée en **2026.9.0** (calver : mois de septembre, incrément reparti à 0), interne **2026.9.0.10**.
+12. ✅ README et CHANGELOG mis à jour pour la publication.
+13. ⏳ **À trancher par Frank** : reprendre la piste du rythme avec un script de reproduction automatisée, ou classer le défaut (il ne gêne que la mise au point).
+14. ⏳ Branche `diag/plantage-134-sonde` conservée, **à ne pas fusionner** : elle ne contient que l'instrumentation de bissection.
+
 # v2026.8.0.9 — Plantage 134 : un délai fixe mesuré, le code de l'extension est hors de cause
 
 1. ℹ️ **Correction du diagnostic v2026.8.0.8.** « Le 134 tombe à la fermeture d'un hôte » était faux. La coïncidence avec la fermeture de la fenêtre précédente venait simplement de l'enchaînement rapide des F5.

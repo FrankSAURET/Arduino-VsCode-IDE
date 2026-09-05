@@ -1,6 +1,26 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.9.0
+
+- Release date: September 2026
+
+### Changed
+
+- **`ms-vscode.cpptools` is no longer a hard dependency**: the extension never called any of its APIs — the only link is the `.vscode/c_cpp_properties.json` file it generates for IntelliSense. Installing Arduino VsCode IDE no longer forces the C/C++ extension to be installed. This also unblocks VSCodium, Gitpod and any Open VSX based editor, where `ms-vscode.cpptools` is not published and the dependency made installation fail outright. Syntax highlighting is unaffected — it comes from the bundled Arduino grammar and VS Code's own C++ grammar
+- **Bundled Arduino CLI updated to 1.5.1** (from 1.4.1)
+
+### Added
+
+- **C/C++ extension recommendation**: a non-blocking notification offers to install C/C++, shown only when it is absent *and* IntelliSense generation is enabled. Offers "Install C/C++", "Later" and "Don't show again", and falls back to a Marketplace search when automatic installation is unavailable. Editors without the Microsoft Marketplace can use clangd instead — see the README
+
+### Fixed
+
+- **Output panel no longer steals focus during IntelliSense analysis**: the "Arduino" panel opened on every background compilation, interrupting you when opening a sketch, changing board or saving. It now opens only for real builds (Verify, Upload, Upload via programmer); analysis messages are still written to the panel
+- **Output panel colouring now works in every language**: the "Arduino" channel was created without a language, so the bundled grammar never applied, and it matched hard-coded English words. Bracketed prefixes are now classified by an invisible per-line marker and coloured with theme tokens, so they adapt to both light and dark themes in any UI language
+- **Resources released on deactivation**: the local HTTP server was never closed, the home panel's 5 s interval survived unless the panel was disposed, and the deferred startup timers could not be cancelled. All are now released, each step isolated so one failure cannot block the others
+- **`usb-detection` loaded without an ABI guard on the debug path**: the debugger manager required the native module directly, bypassing the guard used elsewhere, even though `onDebug` triggers that path. Both call sites now go through a single cached loader that checks the ABI first
+
 ## Version 2026.7.5
 
 - Release date: July 2026
