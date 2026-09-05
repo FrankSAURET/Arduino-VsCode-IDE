@@ -1,15 +1,9 @@
 # À faire
 
-1. ✅ Tester sur machine réelle : installation d'une bibliothèque depuis le Library Manager (doit apparaître « installée » — correctif v2026.7.0)
-2. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
-3. ✅ Ajouter `package.nls.fr.json` (traduction française des titres de commandes/réglages du Marketplace) — v2026.7.4
-4. ✅ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation — v2026.7.4
-5. ✅ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
-6. ✅ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
-7. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
+1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
+3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
-9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
-10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
+9. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
 # v2026.9.0.10 — Plantage 134 : trois hypothèses infirmées, corrections conservées ; préparation de la publication
 
