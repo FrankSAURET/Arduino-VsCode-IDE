@@ -11,6 +11,17 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.8.0.4 — F5 : le profil de débogage sort du projet
+
+1. ✅ Symptôme revenu : la fenêtre « Extension Development Host » s'ouvrait puis se refermait aussitôt.
+2. ✅ Vraie cause (le diagnostic « mutex coincé » de la v2026.8.0.2 était faux) : le dossier de profil `.vscode-test-profile` avait disparu. Quand il manque, VS Code doit le reconstruire de zéro — **environ 40 secondes**. Le débogueur attend la fenêtre bien moins longtemps, conclut à un échec, et ferme tout.
+3. ✅ Mesuré : lancement avec profil existant → fenêtre en quelques secondes. Lancement avec profil absent → première fenêtre à ~40 s (journal détaillé capturé, aucune erreur dedans, juste la lenteur).
+4. ✅ Piège de fond : le profil était **dans** le projet et listé au `.gitignore`. Chaque `git clean`, changement de machine ou nettoyage de disque l'effaçait — et le F5 suivant échouait à nouveau. Le remède de la v2026.8.0.2 s'auto-détruisait.
+5. ✅ Correction : les trois configurations de `.vscode/launch.json` pointent désormais vers `${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile`, hors du dépôt. Plus aucun nettoyage du projet ne peut l'effacer.
+6. ✅ `.gitignore` : ligne `.vscode-test-profile` retirée, l'ancien dossier n'existe plus dans le projet.
+7. ✅ Profil pré-créé sur la machine : le premier F5 de la journée démarre déjà vite.
+8. ℹ️ Rappel : ce profil démarre sans les extensions ni les réglages de l'instance principale — c'est l'environnement propre voulu pour mettre au point une extension.
+
 # v2026.8.0.3 — Panneau de sortie : messages entre crochets colorises
 
 1. ✅ Demande : coloriser `[Démarrage]`, `[Terminé]`, `[Avertissement]`, `[Erreur]` selon leur sens, dans toutes les langues, avec des couleurs qui suivent le thème clair ou foncé.

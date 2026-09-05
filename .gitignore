@@ -4,7 +4,6 @@ arduino.log
 out
 node_modules
 .vscode-test
-.vscode-test-profile
 .idea
 src/views/app/sprites-generated
 test/**/c_cpp_properties.json

@@ -9,9 +9,11 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}",
-                // Profil isole : evite l'erreur "mutex already exists" qui fait
-                // disparaitre la fenetre de debogage au demarrage (F5)
-                "--user-data-dir=${workspaceRoot}/.vscode-test-profile"
+                // Profil isole, hors du projet : garde la fenetre de debogage
+                // separee de l'instance de travail. Hors du depot, il survit aux
+                // nettoyages (git clean) — sinon le premier F5 qui suit doit le
+                // recreer, ce qui prend ~40 s et fait echouer le lancement.
+                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,
@@ -29,9 +31,11 @@
                 "${workspaceRoot}/test/resources/blink",
                 "--extensionDevelopmentPath=${workspaceRoot}",
                 "--extensionTestsPath=${workspaceRoot}/out/test",
-                // Profil isole : evite l'erreur "mutex already exists" qui fait
-                // disparaitre la fenetre de debogage au demarrage (F5)
-                "--user-data-dir=${workspaceRoot}/.vscode-test-profile"
+                // Profil isole, hors du projet : garde la fenetre de debogage
+                // separee de l'instance de travail. Hors du depot, il survit aux
+                // nettoyages (git clean) — sinon le premier F5 qui suit doit le
+                // recreer, ce qui prend ~40 s et fait echouer le lancement.
+                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,
@@ -47,9 +51,11 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}",
-                // Profil isole : evite l'erreur "mutex already exists" qui fait
-                // disparaitre la fenetre de debogage au demarrage (F5)
-                "--user-data-dir=${workspaceRoot}/.vscode-test-profile"
+                // Profil isole, hors du projet : garde la fenetre de debogage
+                // separee de l'instance de travail. Hors du depot, il survit aux
+                // nettoyages (git clean) — sinon le premier F5 qui suit doit le
+                // recreer, ce qui prend ~40 s et fait echouer le lancement.
+                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,
