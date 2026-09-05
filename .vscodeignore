@@ -30,6 +30,12 @@ todo.md
 tuto.md
 NEWS.md
 CONTRIBUTING.md
+
+# Dossiers de tri et notes de diagnostic : versionnes dans git, jamais publies
+A Examiner/**
+Archives/**
+PLANTAGE-134.md
+DIAG-SONDE-134.md
 images/ArduinoCommunityLogo_Complet.svg
 images/ArduinoCommunityLogo_Couleur.svg
 images/serialMonitor - Copie.svg
