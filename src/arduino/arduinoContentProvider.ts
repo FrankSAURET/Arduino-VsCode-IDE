@@ -57,6 +57,18 @@ export class ArduinoContentProvider implements vscode.TextDocumentContentProvide
         await this._webserver.start();
     }
 
+    /**
+     * Libere le serveur HTTP local. Appele a la desactivation de l'extension :
+     * un serveur encore a l'ecoute empeche l'hote d'extensions de se terminer.
+     */
+    public async dispose(): Promise<void> {
+        this._onDidChange.dispose();
+        if (this._webserver) {
+            await this._webserver.stop();
+            this._webserver = undefined;
+        }
+    }
+
     public async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
         if (!ArduinoContext.initialized) {
             await ArduinoActivator.activate();

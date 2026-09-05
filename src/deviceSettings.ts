@@ -136,7 +136,7 @@ export class DeviceSettings {
     public port = new StrSetting();
     public board = new StrSetting();
     public sketch = new StrSetting();
-    public output = new StrSetting();
+    public output = new StrSetting(constants.DEFAULT_BUILD_OUTPUT);
     public debugger = new StrSetting();
     public intelliSenseGen = new StrSetting();
     public configuration = new StrSetting();
@@ -214,7 +214,9 @@ export class DeviceSettings {
             this.board.value = settings.board;
             this.sketch.value = settings.sketch;
             this.configuration.value = settings.configuration;
-            this.output.value = settings.output;
+            // Une cle output absente ou vide retombe sur le defaut : sans dossier de
+            // sortie, chaque compilation repart de zero.
+            this.output.value = settings.output || constants.DEFAULT_BUILD_OUTPUT;
             this.debugger.value = settings.debugger;
             this.intelliSenseGen.value = settings.intelliSenseGen;
             this.prebuild.value = settings.prebuild;

@@ -10,6 +10,11 @@ export const CPP_CONFIG_FILE = path.join(".vscode", "c_cpp_properties.json");
 /** The name of the intellisense configuration managed by vscode-arduino. */
 export const C_CPP_PROPERTIES_CONFIG_NAME = "Arduino";
 
+// Dossier de sortie de compilation par defaut, applique a tout projet qui n'en
+// definit pas dans arduino.yaml. Sans lui arduino-cli compile dans un dossier
+// temporaire jete apres coup : aucune reutilisation possible, builds lents.
+export const DEFAULT_BUILD_OUTPUT = ".build";
+
 export enum LogLevel {
     Info = "info",
     Verbose = "verbose",

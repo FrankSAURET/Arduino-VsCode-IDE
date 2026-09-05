@@ -35,6 +35,14 @@ const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import 
 
 type ArduinoContentProviderInstance = InstanceType<typeof arduinoContentProviderModule.ArduinoContentProvider>;
 
+// Conserve hors de activate() pour que deactivate() puisse fermer le serveur
+// HTTP local : tant qu'il ecoute, l'hote d'extensions ne se termine jamais et
+// VS Code finit par l'abattre (abort(), code 134).
+let activeArduinoManagerProvider: ArduinoContentProviderInstance | undefined;
+
+// Minuteurs de demarrage differe, annulables a la desactivation.
+const pendingTimers = new Set<NodeJS.Timeout>();
+
 const TELEPLOT_EXTENSION_ID = "alexnesnes.teleplot";
 const TELEPLOT_START_COMMAND = "teleplot.start";
 
@@ -162,6 +170,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 await provider.initialize();
                 context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(ARDUINO_MANAGER_PROTOCOL, provider));
                 arduinoManagerProvider = provider;
+                activeArduinoManagerProvider = provider;
                 return provider;
             })().catch((error) => {
                 arduinoManagerProviderPromise = undefined;
@@ -626,31 +635,78 @@ export async function activate(context: vscode.ExtensionContext) {
         await revealHomeFromActivityBar();
     }
 
-    setTimeout(() => {
+    // Les demarrages differes sont enregistres pour etre annules a la
+    // desactivation : un minuteur encore arme empeche l'hote d'extensions de se
+    // terminer et VS Code l'abat (abort(), code 134).
+    const deferred = (delay: number, action: () => void) => {
+        const timer = setTimeout(() => {
+            pendingTimers.delete(timer);
+            action();
+        }, delay);
+        pendingTimers.add(timer);
+        context.subscriptions.push({
+            dispose: () => {
+                clearTimeout(timer);
+                pendingTimers.delete(timer);
+            },
+        });
+    };
+
+    deferred(200, () => {
         // delay to detect usb
         usbDetectorModule.UsbDetector.getInstance().initialize(context.extensionPath);
-        usbDetectorModule.UsbDetector.getInstance().startListening();
-    }, 200);
+        usbDetectorModule.UsbDetector.getInstance().startListening()
+            .catch((error) => Logger.traceError("startUsbDetectorError", error));
+    });
 
     // Silently check for Arduino CLI updates (downloaded CLIs only)
-    setTimeout(() => {
+    deferred(5000, () => {
         checkForCliUpdate(context.extensionPath).catch(() => { /* ignore */ });
-    }, 5000);
+    });
 
     // Recommend Kablix on first launch and after each update (non blocking)
-    setTimeout(() => {
+    deferred(8000, () => {
         recommendKablix(context).catch((error) => Logger.traceError("recommendKablixError", error));
-    }, 8000);
+    });
 
     // C/C++ is no longer a hard dependency: suggest it only when IntelliSense
     // generation is on and the extension is missing. Delayed after Kablix so
     // both notifications never stack up.
-    setTimeout(() => {
+    deferred(20000, () => {
         recommendCppTools(context).catch((error) => Logger.traceError("recommendCppToolsError", error));
-    }, 20000);
+    });
 }
 
 export async function deactivate() {
-    usbDetectorModule.UsbDetector.getInstance().stopListening();
+    // Chaque etape est isolee : une exception ici laisserait des ressources
+    // vivantes et l'hote d'extensions serait tue au lieu de se terminer.
+    for (const timer of pendingTimers) {
+        clearTimeout(timer);
+    }
+    pendingTimers.clear();
+
+    try {
+        usbDetectorModule.UsbDetector.getInstance().stopListening();
+    } catch (error) {
+        Logger.traceError("deactivateStopUsbDetector", error);
+    }
+
+    try {
+        arduinoHomePanelModule.ArduinoHomePanel.disposeCurrent();
+    } catch (error) {
+        Logger.traceError("deactivateDisposeHomePanel", error);
+    }
+
+    // Le serveur HTTP local doit etre ferme explicitement, sinon son `listen`
+    // maintient l'hote en vie au-dela du delai d'arret accorde par VS Code.
+    try {
+        if (activeArduinoManagerProvider) {
+            await activeArduinoManagerProvider.dispose();
+            activeArduinoManagerProvider = undefined;
+        }
+    } catch (error) {
+        Logger.traceError("deactivateDisposeContentProvider", error);
+    }
+
     Logger.traceUserData("deactivate-extension");
 }

@@ -5,6 +5,9 @@
 // See https://github.com/arduino/arduino-cli for source code and license.
 
 import * as child_process from "child_process";
+import { promisify } from "util";
+
+const execFileAsync = promisify(child_process.execFile);
 import compareVersions = require("compare-versions");
 import * as extract from "extract-zip";
 import * as fs from "fs";
@@ -271,9 +274,15 @@ export async function promptDownloadCli(extensionPath: string): Promise<string |
 /**
  * Returns the version of the system-installed arduino-cli (via PATH), or null if not found.
  */
-function getSystemCliVersion(): string | null {
+async function getSystemCliVersion(): Promise<string | null> {
     try {
-        const output = child_process.execSync("arduino-cli version", { encoding: "utf8", timeout: 5000 });
+        // Asynchrone : un execSync fige la boucle d'evenements de l'hote d'extensions,
+        // qui cesse alors de repondre au signal de vie et se fait tuer (code 134).
+        const { stdout: output } = await execFileAsync("arduino-cli", ["version"], {
+            encoding: "utf8",
+            timeout: 5000,
+            windowsHide: true,
+        });
         // Output: "arduino-cli  Version: 1.2.0 Commit: ... Status: ..."
         const match = output.match(/Version:\s+v?(\d+\.\d+\.\d+)/);
         return match ? match[1] : null;
@@ -318,7 +327,7 @@ export async function checkForCliUpdate(extensionPath: string): Promise<void> {
             }
         } else {
             // Check system-installed CLI
-            const systemVersion = getSystemCliVersion();
+            const systemVersion = await getSystemCliVersion();
             if (systemVersion && compareVersions(latestVersion, systemVersion) > 0) {
                 vscode.window.showWarningMessage(
                     vscode.l10n.t(

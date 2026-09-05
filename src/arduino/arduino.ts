@@ -645,28 +645,31 @@ export class ArduinoApp {
         }
         arduinoChannel.start(vscode.l10n.t("{0} sketch '{1}'", translateBuildMode(buildMode), dc.sketch));
 
-        if (buildDir || dc.output) {
-            // Issue #72: Properly resolve and validate output build path
-            if (dc.output) {
-                buildDir = path.resolve(ArduinoWorkspace.rootPath ?? "", dc.output);
-            } else {
-                buildDir = path.resolve(ArduinoWorkspace.rootPath ?? "", buildDir);
-            }
+        // Issue #72: Properly resolve and validate output build path.
+        // Un dossier de sortie est toujours fourni : sans lui arduino-cli compile dans un
+        // dossier temporaire jete apres coup, donc tout est recompile a chaque fois.
+        const rootPath = ArduinoWorkspace.rootPath ?? "";
+        let outputSetting = buildDir || dc.output || constants.DEFAULT_BUILD_OUTPUT;
+        buildDir = path.normalize(path.resolve(rootPath, outputSetting));
 
-            // Normalize the path to resolve any ".." or "." segments
-            buildDir = path.normalize(buildDir);
-
-            // Ensure the build directory is created (including parent dirs)
-            if (!util.directoryExistsSync(buildDir)) {
-                util.mkdirRecursivelySync(buildDir);
-            }
-
-            args.push("--build-path", buildDir);
-
-            arduinoChannel.info(vscode.l10n.t("Please see the build logs in output path: {0}", buildDir));
-        } else {
-            arduinoChannel.warning(vscode.l10n.t("Output path is not specified. Unable to reuse previously compiled files. Build will be slower. See README."));
+        // Garde-fou : le dossier de sortie ne doit jamais etre le projet lui-meme
+        // (ex. output: "."), son contenu pouvant etre efface pendant la compilation.
+        if (rootPath && path.resolve(buildDir) === path.resolve(rootPath)) {
+            arduinoChannel.warning(vscode.l10n.t(
+                "Invalid output path '{0}': it must not be the workspace folder itself. Falling back to '{1}'.",
+                outputSetting, constants.DEFAULT_BUILD_OUTPUT));
+            outputSetting = constants.DEFAULT_BUILD_OUTPUT;
+            buildDir = path.normalize(path.resolve(rootPath, outputSetting));
         }
+
+        // Ensure the build directory is created (including parent dirs)
+        if (!util.directoryExistsSync(buildDir)) {
+            util.mkdirRecursivelySync(buildDir);
+        }
+
+        args.push("--build-path", buildDir);
+
+        arduinoChannel.info(vscode.l10n.t("Please see the build logs in output path: {0}", buildDir));
 
         // Environment variables passed to pre- and post-build commands
         const env = {

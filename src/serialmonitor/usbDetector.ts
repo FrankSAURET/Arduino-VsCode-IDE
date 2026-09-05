@@ -10,6 +10,7 @@ import { VscodeSettings } from "../arduino/vscodeSettings";
 import ArduinoActivator from "../arduinoActivator";
 import ArduinoContext from "../arduinoContext";
 import { ARDUINO_CONFIG_FILE } from "../common/constants";
+import { loadUsbDetection } from "../common/usbDetectionLoader";
 import { ArduinoWorkspace } from "../common/workspace";
 
 import { listSerialPorts } from "../common/portList";
@@ -48,14 +49,7 @@ export class UsbDetector {
         if (os.platform() === "linux" || !enableUSBDetection) {
             return;
         }
-        try {
-            this._usbDetector = require("usb-detection");
-        } catch (error) {
-            const normalizedError = error instanceof Error ? error : new Error(String(error));
-            Logger.traceWarning("UsbDetectorRequireFailed", normalizedError);
-            return;
-        }
-
+        this._usbDetector = loadUsbDetection("UsbDetector");
         if (!this._usbDetector) {
             return;
         }

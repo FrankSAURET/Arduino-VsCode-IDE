@@ -3,4 +3,5 @@ port: COM4
 board: arduino:avr:diecimila
 _debugger: null
 configuration: cpu=atmega328
+output: .build
 programmer: unknown:programmer

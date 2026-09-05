@@ -1,0 +1,538 @@
+2026-09-05 12:30:48.492 [trace] PolicyConfiguration#initialize
+2026-09-05 12:30:48.492 [trace] PolicyConfiguration#updatePolicyDefinitions ["update.mode","update.channel","update.enableWindowsBackgroundUpdates","update.showReleaseNotes","update.showPostInstallInfo","update.titleBar","http.useLocalProxyConfiguration","http.electronFetch","http.proxy","http.proxyStrictSSL","http.proxyKerberosServicePrincipal","http.noProxy","http.proxyAuthorization","http.proxySupport","http.systemCertificates","http.systemCertificatesNode","http.experimental.systemCertificatesV2","http.fetchAdditionalSupport","http.webSocketAdditionalSupport","http.experimental.networkInterfaceCheckInterval","telemetry.telemetryLevel","telemetry.feedback.enabled","telemetry.enableTelemetry","extensions.allowed","chat.agentMerge.enabled","chat.agentMerge.addressReviews","chat.agentMerge.fixCI","chat.agentMerge.resolveConflicts","chat.agentMerge.mergePullRequest","chat.agentMerge.mergeMethod","chat.agentMerge.replyAttribution","chat.agentHost.experimental.activeAgentTitleGeneration","chat.artifactTools.enabled","chat.agentHost.experimental.markdownPlanRichLinks","chat.agentHost.systemProxy.enabled","chat.agentHost.githubMcpServer.enabled","chat.agentHost.claudeAgent.enabled","chat.agentHost.byokModels.enabled","chat.agentHost.codexAgent.enabled","chat.agentHost.otel.enabled","chat.agentHost.otel.exporterType","chat.agentHost.otel.otlpEndpoint","chat.agentHost.otel.captureContent","chat.agentHost.otel.outfile","chat.agentHost.otel.dbSpanExporter.enabled"]
+2026-09-05 12:30:48.493 [trace] NativePolicyService#_updatePolicyDefinitions - Found 11 policy definitions
+2026-09-05 12:30:48.493 [trace] Creating watcher for productName VSCode
+2026-09-05 12:30:48.493 [trace] NativePolicyService#_onDidPolicyChange - Updated policy values: {}
+2026-09-05 12:30:48.493 [trace] PolicyConfiguration#update ["update.mode","telemetry.telemetryLevel","telemetry.feedback.enabled","extensions.allowed","chat.agentHost.claudeAgent.enabled","chat.agentHost.codexAgent.enabled","chat.agentHost.otel.enabled","chat.agentHost.otel.exporterType","chat.agentHost.otel.otlpEndpoint","chat.agentHost.otel.captureContent","chat.agentHost.otel.outfile"]
+2026-09-05 12:30:48.493 [trace] PolicyConfiguration#updatePolicyDefinitions ["chat.agentHost.copilotAgent.multiRootEnabled","chat.agentHost.claudeAgent.multiRootEnabled","chat.agentHost.codexAgent.multiRootEnabled","chat.agentHost.codexAgent.sdkRoot","chat.agentHost.codexAgent.codexHome","chat.agentHost.codexAgent.binaryArgs","chat.agentHost.otel.otlpProtocol","chat.agentHost.otel.serviceName","chat.agentHost.otel.resourceAttributes","chat.agentHost.otel.headers"]
+2026-09-05 12:30:48.493 [trace] NativePolicyService#_updatePolicyDefinitions - Found 15 policy definitions
+2026-09-05 12:30:48.493 [trace] Creating watcher for productName VSCode
+2026-09-05 12:30:48.493 [trace] [File Watcher (node.js)] Request to start watching: c:\Program Files\GitHubCopilot\managed-settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>),c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>),c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:48.493 [trace] NativePolicyService#_onDidPolicyChange - Updated policy values: {}
+2026-09-05 12:30:48.493 [trace] PolicyConfiguration#update ["chat.agentHost.otel.otlpProtocol","chat.agentHost.otel.serviceName","chat.agentHost.otel.resourceAttributes","chat.agentHost.otel.headers"]
+2026-09-05 12:30:48.493 [trace] [File Watcher (node.js)] ignoring a path for watching who's stat info failed to resolve: c:\Program Files\GitHubCopilot\managed-settings.json (error: Error: ENOENT: no such file or directory, stat 'c:\Program Files\GitHubCopilot\managed-settings.json')
+2026-09-05 12:30:48.493 [trace] [File Watcher (node.js)] starting fs.watchFile() on c:\Program Files\GitHubCopilot\managed-settings.json (correlationId: undefined)
+2026-09-05 12:30:48.493 [trace] [File Watcher (node.js)] ignoring a path for watching who's stat info failed to resolve: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (error: Error: ENOENT: no such file or directory, stat 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json')
+2026-09-05 12:30:48.493 [trace] [File Watcher (node.js)] starting fs.watchFile() on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (correlationId: undefined)
+2026-09-05 12:30:48.493 [debug] Starting VS Code
+2026-09-05 12:30:48.493 [debug] from: c:\Program Files\Microsoft VS Code\a44adf7f53\resources\app
+2026-09-05 12:30:48.493 [debug] args: {"_":[],"diff":false,"merge":false,"add":false,"remove":false,"goto":false,"new-window":true,"reuse-window":false,"agents":false,"wait":true,"waitMarkerFilePath":"V:\\Temp\\PNxWK9ao","user-data-dir":"c:\\- VS Code\\Extensions\\Arduino-VsCode-IDE\\.vscode-test-profile","help":false,"list-extensions":false,"show-versions":false,"pre-release":false,"update-extensions":false,"version":false,"verbose":true,"status":false,"prof-startup":false,"no-cached-data":false,"prof-v8-extensions":false,"disable-extensions":false,"disable-lcd-text":false,"disable-gpu":false,"disable-chromium-sandbox":false,"sandbox":false,"telemetry":false,"extensionDevelopmentPath":["c:\\- VS Code\\Extensions\\Arduino-VsCode-IDE"],"debugRenderer":false,"enable-smoke-test-driver":false,"skip-sessions-welcome":false,"logExtensionHostCommunication":false,"skip-release-notes":false,"skip-welcome":false,"disable-telemetry":false,"disable-updates":false,"share-secrets-with-agents-app":false,"transient":false,"use-inmemory-secretstorage":false,"disable-workspace-trust":false,"disable-crash-reporter":false,"crash-reporter-id":"3c072dff-86ff-4d00-a2fb-472a9a743cee","skip-add-to-recently-opened":false,"open-url":false,"file-write":false,"file-chmod":false,"force":false,"do-not-sync":false,"do-not-include-pack-dependencies":false,"trace":false,"trace-memory-infra":false,"preserve-env":false,"force-user-env":false,"force-disable-user-env":false,"open-devtools":false,"disable-gpu-sandbox":false,"__enable-file-policy":false,"enable-coi":false,"enable-rdp-display-tracking":false,"disable-layout-restore":false,"disable-experiments":false,"no-proxy-server":false,"no-sandbox":false,"nolazy":false,"force-renderer-accessibility":false,"ignore-certificate-errors":false,"allow-insecure-localhost":false,"disable-dev-shm-usage":false,"profile-temp":false,"logsPath":"c:\\- VS Code\\Extensions\\Arduino-VsCode-IDE\\.vscode-test-profile\\logs\\20260905T123047"}
+2026-09-05 12:30:48.493 [trace] Resolving machine identifier...
+2026-09-05 12:30:48.493 [trace] Resolving SQM identifier...
+2026-09-05 12:30:48.494 [trace] Resolving devDevice identifier...
+2026-09-05 12:30:48.494 [trace] Resolved machine identifier: e65efa0ad96ff16e6bb7e008981a93e2b207070c2b7e865f0a68a4c4fca47cc6
+2026-09-05 12:30:48.494 [trace] Resolved SQM identifier: {13CA6B2D-A97C-4B55-8B60-E0CB871D113F}
+2026-09-05 12:30:48.494 [trace] Resolved devDevice identifier: 9691886d-d839-4267-9f7d-4338d942deeb
+2026-09-05 12:30:48.494 [trace] Main->SharedProcess#connect
+2026-09-05 12:30:48.494 [trace] PolicyConfiguration#updatePolicyDefinitions ["terminal.integrated.automationProfile.linux","terminal.integrated.automationProfile.osx","terminal.integrated.automationProfile.windows","terminal.integrated.agentHostProfile.linux","terminal.integrated.agentHostProfile.osx","terminal.integrated.agentHostProfile.windows","terminal.integrated.profiles.windows","terminal.integrated.profiles.osx","terminal.integrated.profiles.linux","terminal.integrated.useWslProfiles","terminal.integrated.inheritEnv","terminal.integrated.persistentSessionScrollback","terminal.integrated.showLinkHover","terminal.integrated.ignoreProcessNames"]
+2026-09-05 12:30:48.494 [trace] PolicyConfiguration#updatePolicyDefinitions ["terminal.integrated.defaultProfile.linux","terminal.integrated.defaultProfile.osx","terminal.integrated.defaultProfile.windows"]
+2026-09-05 12:30:48.494 [trace] PolicyConfiguration#update []
+2026-09-05 12:30:48.494 [trace] PolicyConfiguration#update []
+2026-09-05 12:30:48.494 [trace] StorageMainService: creating application storage
+2026-09-05 12:30:48.494 [info] StorageMainService: creating application shared storage
+2026-09-05 12:30:48.494 [trace] ElectronURLListener: waiting for window to be ready to handle URLs...
+2026-09-05 12:30:48.494 [trace] lifecycle (main): phase changed (value: 2)
+2026-09-05 12:30:48.494 [trace] windowsManager#open
+2026-09-05 12:30:48.494 [trace] windowsManager#open pathsToOpen [{}]
+2026-09-05 12:30:48.494 [trace] windowsManager#doOpenEmpty {"restore":false,"forceNewWindow":true}
+2026-09-05 12:30:48.494 [trace] IPC Object URL: Registered new channel vscode:222d1ffb-fe3e-4acf-9b26-68468291a096.
+2026-09-05 12:30:48.494 [trace] window#validateWindowState: validating window state on 3 display(s) {"width":1200,"height":800,"mode":1,"x":360,"y":140,"hasDefaultState":true}
+2026-09-05 12:30:48.494 [trace] window#validateWindowState: multi-monitor working area {"x":0,"y":0,"width":1920,"height":1080}
+2026-09-05 12:30:48.494 [trace] window#ctor: using window state {"width":1200,"height":800,"mode":1,"x":360,"y":140,"hasDefaultState":true}
+2026-09-05 12:30:48.494 [trace] window#load: attempt to load window (id: 1)
+2026-09-05 12:30:48.494 [trace] windowsManager#open used window count 1 (workspacesToOpen: 0, foldersToOpen: 0, emptyToRestore: 0, maybeOpenEmptyWindow: true)
+2026-09-05 12:30:48.494 [trace] lifecycle (main): phase changed (value: 3)
+2026-09-05 12:30:48.494 [trace] resolveShellEnv(): skipped (Windows)
+2026-09-05 12:30:48.494 [error] Error: Error mutex already exists
+    at $s.installMutex (file:///C:/Program%20Files/Microsoft%20VS%20Code/a44adf7f53/resources/app/out/main.js:561:27488)
+2026-09-05 12:30:48.494 [info] [shared storage] Creating shared storage database at 'c:\Users\Frank\.vscode-shared\sharedStorage\state.vscdb' (wasCreated: false)
+2026-09-05 12:30:48.494 [info] [shared storage] Initializing fallback application storage (path: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\state.vscdb)
+2026-09-05 12:30:48.503 [trace] [File Watcher (node.js)] Started watching: 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User'
+2026-09-05 12:30:48.514 [info] [shared storage] Fallback application storage initialized with 3 items
+2026-09-05 12:30:48.528 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:48.529 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:48.530 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:48.530 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:48.536 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:48.536 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:48.569 [trace] resolveShellEnv(): skipped (Windows)
+2026-09-05 12:30:48.605 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:48.607 [debug] User data changed
+2026-09-05 12:30:48.803 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:48.803 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:48.872 [trace] [File Watcher (node.js)] Request to stop watching: c:\Program Files\GitHubCopilot\managed-settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>),c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:48.872 [trace] [File Watcher (node.js)] stopping file watcher (c:\Program Files\GitHubCopilot\managed-settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>))
+2026-09-05 12:30:48.872 [trace] [File Watcher (node.js)] stopping file watcher (c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>))
+2026-09-05 12:30:48.887 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:48.887 [debug] User data changed
+2026-09-05 12:30:49.885 [trace] NativeManagedSettingsService#updateWatcher - Found 2 managed-settings definitions
+2026-09-05 12:30:49.886 [trace] Creating native managed-settings watcher for productName GitHubCopilot
+2026-09-05 12:30:49.889 [trace] StorageMainService: creating workspace storage (ext-dev)
+2026-09-05 12:30:49.891 [trace] NativePolicyService#_updatePolicyDefinitions - Found 41 policy definitions
+2026-09-05 12:30:49.892 [trace] Creating watcher for productName VSCode
+2026-09-05 12:30:49.893 [trace] NativeManagedSettingsService#updateWatcher - Found 12 managed-settings definitions
+2026-09-05 12:30:49.896 [trace] NativeManagedSettingsService#_onDidManagedSettingsChange - Updated managed-settings values: {}
+2026-09-05 12:30:49.896 [trace] Creating native managed-settings watcher for productName GitHubCopilot
+2026-09-05 12:30:49.897 [trace] NativePolicyService#_onDidPolicyChange - Updated policy values: {}
+2026-09-05 12:30:49.897 [trace] PolicyConfiguration#onDidChangePolicies []
+2026-09-05 12:30:49.897 [trace] PolicyConfiguration#update []
+2026-09-05 12:30:49.898 [trace] NativeManagedSettingsService#_onDidManagedSettingsChange - Updated managed-settings values: {}
+2026-09-05 12:30:49.901 [trace] NativePolicyService#_updatePolicyDefinitions - Found 51 policy definitions
+2026-09-05 12:30:49.903 [trace] Creating watcher for productName VSCode
+2026-09-05 12:30:49.903 [trace] NativeManagedSettingsService#updateWatcher - Found 21 managed-settings definitions
+2026-09-05 12:30:49.905 [trace] Creating native managed-settings watcher for productName GitHubCopilot
+2026-09-05 12:30:49.906 [trace] NativePolicyService#_onDidPolicyChange - Updated policy values: {}
+2026-09-05 12:30:49.906 [trace] PolicyConfiguration#onDidChangePolicies []
+2026-09-05 12:30:49.906 [trace] PolicyConfiguration#update []
+2026-09-05 12:30:49.907 [trace] NativeManagedSettingsService#_onDidManagedSettingsChange - Updated managed-settings values: {}
+2026-09-05 12:30:49.985 [info] update#setState idle
+2026-09-05 12:30:50.021 [trace] resolveShellEnv(): skipped (Windows)
+2026-09-05 12:30:50.023 [trace] [UtilityProcess type: agentHost, pid: <none>]: creating new...
+2026-09-05 12:30:50.026 [info] AgentHostProcessManager: agent host started
+2026-09-05 12:30:50.045 [trace] [UtilityProcess type: agentHost, pid: 28864]: successfully created
+2026-09-05 12:30:50.376 [trace] [File Watcher (node.js)] [raw] ["change"] workspaceStorage
+2026-09-05 12:30:50.376 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\workspaceStorage
+2026-09-05 12:30:50.382 [trace] window#load: window reported ready (id: 1)
+2026-09-05 12:30:50.383 [trace] ElectronURLListener#flush(): flushing URLs
+2026-09-05 12:30:50.468 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\workspaceStorage
+2026-09-05 12:30:50.468 [debug] User data changed
+2026-09-05 12:30:50.469 [trace] [SharedProcess] onWindowConnection for: vscode:createSharedProcessChannelConnectionResult
+2026-09-05 12:30:50.470 [trace] [UtilityProcess type: shared-process, pid: <none>]: creating new...
+2026-09-05 12:30:50.471 [trace] [UtilityProcess type: shared-process, pid: <none>]: payload sent via postMessage()
+2026-09-05 12:30:50.472 [trace] [UtilityProcessWorker]: createWorker(window: 1, moduleId: vs/platform/files/node/watcher/watcherMain)
+2026-09-05 12:30:50.473 [trace] [UtilityProcess id: 1, type: fileWatcher, pid: <none>]: creating new...
+2026-09-05 12:30:50.491 [trace] [UtilityProcess type: shared-process, pid: 23196]: successfully created
+2026-09-05 12:30:50.519 [trace] [UtilityProcess id: 1, type: fileWatcher, pid: 39652]: successfully created
+2026-09-05 12:30:50.667 [trace] [UtilityProcess id: 1, type: extensionHost, pid: <none>]: creating new...
+2026-09-05 12:30:50.688 [trace] [File Watcher (node.js)] [raw] ["rename"] chatLanguageModels.json
+2026-09-05 12:30:50.691 [trace] [File Watcher (node.js)] [raw] ["change"] chatLanguageModels.json
+2026-09-05 12:30:50.692 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\chatLanguageModels.json
+2026-09-05 12:30:50.692 [trace] [UtilityProcess id: 1, type: extensionHost, pid: 12460]: successfully created
+2026-09-05 12:30:50.782 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\chatLanguageModels.json
+2026-09-05 12:30:50.782 [debug] User data changed
+2026-09-05 12:30:50.808 [trace] [SharedProcess] IPC ready
+2026-09-05 12:30:50.808 [trace] Main->SharedProcess#connect: connection established
+2026-09-05 12:30:50.863 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\chatLanguageModels.json
+2026-09-05 12:30:50.864 [trace] NativePolicyService#_updatePolicyDefinitions - Found 51 policy definitions
+2026-09-05 12:30:50.866 [trace] Creating watcher for productName VSCode
+2026-09-05 12:30:50.876 [error] [AgentHost:stderr] (node:28864) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `Code --trace-deprecation ...` to show where the warning was created)
+
+2026-09-05 12:30:50.877 [trace] NativePolicyService#_onDidPolicyChange - Updated policy values: {}
+2026-09-05 12:30:50.877 [trace] PolicyConfiguration#onDidChangePolicies []
+2026-09-05 12:30:50.877 [trace] PolicyConfiguration#update []
+2026-09-05 12:30:50.912 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:50.912 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:50.912 [trace] [File Watcher (node.js)] Request to start watching: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>),c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:50.915 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:50.916 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:50.916 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:50.916 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:50.916 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:50.917 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:50.920 [trace] [File Watcher (node.js)] ignoring a path for watching who's stat info failed to resolve: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (error: Error: ENOENT: no such file or directory, stat 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json')
+2026-09-05 12:30:50.921 [trace] [File Watcher (node.js)] starting fs.watchFile() on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (correlationId: undefined)
+2026-09-05 12:30:50.922 [trace] lifecycle (main): phase changed (value: 4)
+2026-09-05 12:30:51.107 [warning] updateWindowsJumpList#setJumpList unexpected result: customCategoryAccessDeniedError
+2026-09-05 12:30:51.141 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.141 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.163 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\chatLanguageModels.json
+2026-09-05 12:30:51.163 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.163 [debug] User data changed
+2026-09-05 12:30:51.182 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.183 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.183 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.183 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.184 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.184 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.184 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.184 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.185 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.185 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.185 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.185 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.193 [trace] [SharedProcess] Overall ready
+2026-09-05 12:30:51.261 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.262 [debug] User data changed
+2026-09-05 12:30:51.264 [trace] [File Watcher (node.js)] Started watching: 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User'
+2026-09-05 12:30:51.288 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.288 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.290 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.290 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.291 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.291 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.292 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.293 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.324 [trace] [File Watcher (node.js)] Request to start watching: c:\Users\Frank\.vscode\extensions (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>),c:\Users\Frank\.vscode\extensions\extensions.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:51.324 [trace] [File Watcher (node.js)] Request to stop watching: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:51.324 [trace] [File Watcher (node.js)] stopping file watcher (c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>))
+2026-09-05 12:30:51.334 [trace] [File Watcher (node.js)] Started watching: 'c:\Users\Frank\.vscode\extensions'
+2026-09-05 12:30:51.337 [trace] [File Watcher (node.js)] Started watching: 'c:\Users\Frank\.vscode\extensions\extensions.json'
+2026-09-05 12:30:51.362 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.367 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.367 [debug] User data changed
+2026-09-05 12:30:51.454 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.454 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.454 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.455 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.537 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.538 [debug] User data changed
+2026-09-05 12:30:51.538 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.593 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.593 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.594 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:51.594 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.677 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.678 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:51.678 [debug] User data changed
+2026-09-05 12:30:52.459 [trace] update#isLatestVersion() - checking update server {"url":"https://update.code.visualstudio.com/api/update/win32-x64/stable/a44adf7f53e00964ab890f9f8758a334f1fc15bc?u=none","headers":{"User-Agent":"Code/1.136.1 Electron/42.10.0 Windows NT 10.0"}}
+2026-09-05 12:30:52.460 [trace] resolveShellEnv(): skipped (Windows)
+2026-09-05 12:30:52.461 [trace] #1: https://update.code.visualstudio.com/api/update/win32-x64/stable/a44adf7f53e00964ab890f9f8758a334f1fc15bc?u=none - begin undefined {"User-Agent":"Code/1.136.1 Electron/42.10.0 Windows NT 10.0"}
+2026-09-05 12:30:52.565 [trace] #1: https://update.code.visualstudio.com/api/update/win32-x64/stable/a44adf7f53e00964ab890f9f8758a334f1fc15bc?u=none - end undefined 204 {"access-control-allow-origin":"*","date":"Sat, 05 Sep 2026 10:30:52 GMT","request-context":"appId=cid-v1:","strict-transport-security":"max-age=31536000; includeSubDomains","x-azure-ref":"20260905T103052Z-1755c7d6b6bg7fs8hC1PAR2vws00000002h0000000007abq","x-cache":"CONFIG_NOCACHE","x-content-type-options":"nosniff","x-powered-by":"Express","x-source-commit":"07b4ff1883f94da91f6d698744fc7c3638b59720"}
+2026-09-05 12:30:52.565 [trace] update#isLatestVersion() - response {"statusCode":204}
+2026-09-05 12:30:52.719 [debug] Terminal profile not validated bash (MSYS2) [{"path":"C:\\msys64\\usr\\bin\\bash.exe","isUnsafe":true}]
+2026-09-05 12:30:52.720 [debug] Terminal profile not validated Cygwin [{"path":"C:\\cygwin64\\bin\\bash.exe","isUnsafe":true},{"path":"C:\\cygwin\\bin\\bash.exe","isUnsafe":true}]
+2026-09-05 12:30:52.834 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:52.835 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.835 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:52.835 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.837 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:52.837 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.838 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:52.838 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.839 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:52.839 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.839 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:52.839 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.914 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.915 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:52.915 [debug] User data changed
+2026-09-05 12:30:53.056 [trace] [File Watcher (node.js)] [raw] ["change"] .obsolete
+2026-09-05 12:30:53.056 [trace] [File Watcher (node.js)] [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:30:53.082 [trace] [File Watcher (node.js)] [raw] ["change"] .obsolete
+2026-09-05 12:30:53.082 [trace] [File Watcher (node.js)] [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:30:53.085 [trace] [File Watcher (node.js)] [raw] ["change"] .obsolete
+2026-09-05 12:30:53.086 [trace] [File Watcher (node.js)] [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:30:53.134 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:30:53.289 [trace] [EncryptionMainService] Checking if encryption is available...
+2026-09-05 12:30:53.289 [trace] [EncryptionMainService] Encryption is available:  true
+2026-09-05 12:30:53.408 [trace] [File Watcher (node.js)] [raw] ["rename"] snippets
+2026-09-05 12:30:53.408 [trace] [File Watcher (node.js)] [raw] ["rename"] snippets
+2026-09-05 12:30:53.522 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\snippets
+2026-09-05 12:30:53.523 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\snippets
+2026-09-05 12:30:53.602 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\snippets
+2026-09-05 12:30:53.603 [debug] User data changed
+2026-09-05 12:30:53.603 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\snippets
+2026-09-05 12:30:53.887 [trace] [File Watcher (node.js)] Request to start watching: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\mcp.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:53.887 [trace] [File Watcher (node.js)] ignoring a path for watching who's stat info failed to resolve: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\mcp.json (error: Error: ENOENT: no such file or directory, stat 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\mcp.json')
+2026-09-05 12:30:53.888 [trace] [File Watcher (node.js)] starting fs.watchFile() on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\mcp.json (correlationId: undefined)
+2026-09-05 12:30:53.904 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.905 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.905 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.905 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.906 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.906 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.907 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.907 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.937 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.937 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.937 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.937 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.938 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.938 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.938 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.939 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.942 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.943 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.943 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:53.943 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.983 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:53.983 [debug] User data changed
+2026-09-05 12:30:53.983 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.565 [debug] Terminal profile not validated bash (MSYS2) [{"path":"C:\\msys64\\usr\\bin\\bash.exe","isUnsafe":true}]
+2026-09-05 12:30:54.565 [debug] Terminal profile not validated Cygwin [{"path":"C:\\cygwin64\\bin\\bash.exe","isUnsafe":true},{"path":"C:\\cygwin\\bin\\bash.exe","isUnsafe":true}]
+2026-09-05 12:30:54.572 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:54.572 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.572 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:54.572 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.653 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.654 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.654 [debug] User data changed
+2026-09-05 12:30:54.688 [trace] [File Watcher (node.js)] Request to stop watching: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\mcp.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:54.689 [trace] [File Watcher (node.js)] stopping file watcher (c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\mcp.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>))
+2026-09-05 12:30:54.889 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:54.889 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.890 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:54.890 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.890 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:54.890 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.891 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:54.891 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.969 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.970 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:54.970 [debug] User data changed
+2026-09-05 12:30:55.529 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:55.529 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.530 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:55.530 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.608 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.609 [debug] User data changed
+2026-09-05 12:30:55.609 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.969 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:55.969 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.970 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:55.970 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.970 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:55.971 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.971 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:55.971 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:55.994 [trace] Setting background throttling for window 1 to 'true'
+2026-09-05 12:30:56.055 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.055 [debug] User data changed
+2026-09-05 12:30:56.055 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.796 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:56.796 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.797 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:56.797 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.798 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:56.798 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.798 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:56.798 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.887 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:56.887 [debug] User data changed
+2026-09-05 12:30:56.888 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.171 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.171 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.172 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.172 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.183 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.183 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.183 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.184 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.224 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.224 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.224 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.224 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.227 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.227 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.227 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.228 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.234 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.234 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.234 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.234 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.247 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.247 [debug] User data changed
+2026-09-05 12:30:57.247 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.568 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.568 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.571 [trace] [File Watcher (node.js)] [raw] ["change"] settings.json.vsctmp
+2026-09-05 12:30:57.572 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.572 [trace] [File Watcher (node.js)] [raw] ["change"] settings.json.vsctmp
+2026-09-05 12:30:57.572 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.577 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.578 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json
+2026-09-05 12:30:57.578 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.579 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json
+2026-09-05 12:30:57.619 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.619 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.620 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.620 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.649 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.649 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.650 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.650 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.650 [debug] User data changed
+2026-09-05 12:30:57.680 [trace] [File Watcher (node.js)] [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.681 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.681 [trace] [File Watcher (node.js)] [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.681 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.758 [trace] [File Watcher (node.js)]  >> normalized [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.759 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.759 [trace] [File Watcher (node.js)]  >> normalized [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.759 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.760 [debug] User data changed
+2026-09-05 12:30:57.782 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.782 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.785 [trace] [File Watcher (node.js)] [raw] ["change"] settings.json.vsctmp
+2026-09-05 12:30:57.785 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.786 [trace] [File Watcher (node.js)] [raw] ["change"] settings.json.vsctmp
+2026-09-05 12:30:57.786 [trace] [File Watcher (node.js)] [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.789 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json
+2026-09-05 12:30:57.789 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json
+2026-09-05 12:30:57.790 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.791 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json
+2026-09-05 12:30:57.791 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json.vsctmp
+2026-09-05 12:30:57.792 [trace] [File Watcher (node.js)] [raw] ["rename"] settings.json
+2026-09-05 12:30:57.866 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.867 [debug] User data changed
+2026-09-05 12:30:57.867 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.897 [trace] [File Watcher (node.js)] [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.897 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.897 [trace] [File Watcher (node.js)] [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.897 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.965 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.965 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.965 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.965 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.967 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.967 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.968 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:57.968 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.974 [trace] [File Watcher (node.js)]  >> normalized [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.974 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.974 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.975 [trace] [File Watcher (node.js)]  >> normalized [DELETED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json.vsctmp
+2026-09-05 12:30:57.975 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:57.975 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:57.975 [debug] User data changed
+2026-09-05 12:30:58.042 [trace] [File Watcher (node.js)] [raw] ["change"] History
+2026-09-05 12:30:58.042 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\History
+2026-09-05 12:30:58.042 [trace] [File Watcher (node.js)] [raw] ["change"] History
+2026-09-05 12:30:58.042 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\History
+2026-09-05 12:30:58.086 [trace] [File Watcher (node.js)] detected c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json exists again, resuming watcher (correlationId: undefined)
+2026-09-05 12:30:58.087 [debug] User data changed
+2026-09-05 12:30:58.087 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:58.087 [trace] [File Watcher (node.js)] stopping fs.watchFile() on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (correlationId: undefined)
+2026-09-05 12:30:58.087 [trace] [File Watcher (node.js)] detected c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json exists again, resuming watcher (correlationId: undefined)
+2026-09-05 12:30:58.087 [trace] [File Watcher (node.js)]  >> normalized [ADDED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json
+2026-09-05 12:30:58.088 [trace] [File Watcher (node.js)] stopping fs.watchFile() on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (correlationId: undefined)
+2026-09-05 12:30:58.088 [trace] [File Watcher (node.js)] Request to start watching: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:58.089 [trace] [File Watcher (node.js)] Request to start watching: c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json (excludes: <none>, includes: <all>, filter: <none>, correlationId: <none>)
+2026-09-05 12:30:58.092 [trace] [File Watcher (node.js)] Started watching: 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json'
+2026-09-05 12:30:58.093 [trace] [File Watcher (node.js)] Started watching: 'c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\settings.json'
+2026-09-05 12:30:58.118 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\History
+2026-09-05 12:30:58.118 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\History
+2026-09-05 12:30:58.118 [debug] User data changed
+2026-09-05 12:30:58.294 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.294 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.294 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.294 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.295 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.295 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.296 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.296 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.370 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.370 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.370 [debug] User data changed
+2026-09-05 12:30:58.442 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.442 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.443 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.443 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.528 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.528 [debug] User data changed
+2026-09-05 12:30:58.528 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.696 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.697 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:30:58.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.781 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.781 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:30:58.782 [debug] User data changed
+2026-09-05 12:31:02.515 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:02.515 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:02.516 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:02.516 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:02.517 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:02.517 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:02.517 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:02.517 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:02.604 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:02.604 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:02.605 [debug] User data changed
+2026-09-05 12:31:19.991 [trace] update#checkForUpdates, state =  idle
+2026-09-05 12:31:19.992 [info] update#setState checking for updates
+2026-09-05 12:31:19.992 [trace] resolveShellEnv(): skipped (Windows)
+2026-09-05 12:31:19.993 [trace] #2: https://update.code.visualstudio.com/api/update/win32-x64/stable/a44adf7f53e00964ab890f9f8758a334f1fc15bc?bg=true&u=none - begin undefined {"User-Agent":"Code/1.136.1 Electron/42.10.0 Windows NT 10.0"}
+2026-09-05 12:31:20.018 [trace] #2: https://update.code.visualstudio.com/api/update/win32-x64/stable/a44adf7f53e00964ab890f9f8758a334f1fc15bc?bg=true&u=none - end undefined 204 {"access-control-allow-origin":"*","date":"Sat, 05 Sep 2026 10:31:20 GMT","request-context":"appId=cid-v1:","strict-transport-security":"max-age=31536000; includeSubDomains","x-azure-ref":"20260905T103120Z-1755c7d6b6bg7fs8hC1PAR2vws00000002h0000000007bpy","x-cache":"CONFIG_NOCACHE","x-content-type-options":"nosniff","x-powered-by":"Express","x-source-commit":"07b4ff1883f94da91f6d698744fc7c3638b59720"}
+2026-09-05 12:31:20.019 [info] update#setState idle
+2026-09-05 12:31:27.696 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:27.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:27.697 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:27.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:27.698 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:27.698 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:27.698 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:27.699 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:27.787 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:27.788 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:27.788 [debug] User data changed
+2026-09-05 12:31:57.704 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:57.704 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:57.704 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:57.704 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:57.705 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:57.705 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:57.706 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:31:57.706 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:57.794 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:57.794 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:31:57.794 [debug] User data changed
+2026-09-05 12:32:27.709 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:32:27.709 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:27.710 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:32:27.710 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:27.711 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:32:27.711 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:27.711 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:32:27.712 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:27.800 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:27.800 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:27.801 [debug] User data changed
+2026-09-05 12:32:49.078 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:32:49.079 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:49.079 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:32:49.079 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:49.166 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:32:49.166 [debug] User data changed
+2026-09-05 12:32:49.167 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:27.695 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:27.696 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:27.696 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:27.696 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:27.697 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:27.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:27.697 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:27.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:27.773 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:27.774 [debug] User data changed
+2026-09-05 12:33:27.774 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:57.696 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:57.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:57.697 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:57.697 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:57.698 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:57.698 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:57.698 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:33:57.698 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:57.772 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:33:57.772 [debug] User data changed
+2026-09-05 12:33:57.773 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:34:37.540 [trace] [File Watcher (node.js)] [raw] ["change"] .obsolete
+2026-09-05 12:34:37.540 [trace] [File Watcher (node.js)] [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:34:37.627 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:34:37.690 [trace] [File Watcher (node.js)] [raw] ["change"] .obsolete
+2026-09-05 12:34:37.691 [trace] [File Watcher (node.js)] [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:34:37.770 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\Users\Frank\.vscode\extensions\.obsolete
+2026-09-05 12:34:57.715 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:34:57.715 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:34:57.716 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:34:57.716 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:34:57.717 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:34:57.717 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:34:57.718 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:34:57.718 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:34:57.805 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:34:57.805 [debug] User data changed
+2026-09-05 12:34:57.805 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.727 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:35:27.727 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.728 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:35:27.728 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.728 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:35:27.729 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.729 [trace] [File Watcher (node.js)] [raw] ["change"] globalStorage
+2026-09-05 12:35:27.729 [trace] [File Watcher (node.js)] [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.817 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.817 [trace] [File Watcher (node.js)]  >> normalized [CHANGED] c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage
+2026-09-05 12:35:27.818 [debug] User data changed

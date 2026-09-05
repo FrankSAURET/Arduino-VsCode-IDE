@@ -11,6 +11,20 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.8.0.8 — Plantage 134 : cause trouvée, ressources non libérées à l'arrêt
+
+1. ✅ Corrélation établie sur cinq sessions de `main.log` : le code 134 tombe **à la fermeture** d'un hôte d'extensions, jamais pendant son fonctionnement. Les fermetures propres sortent en `code: 0`. Exemple net (session 15:50:52) : l'hôte 24072 sort en 0 et l'hôte 30524, démarré 1,2 s plus tôt, sort en 134 **à la même milliseconde**.
+2. ℹ️ **Correction des diagnostics précédents.** La v2026.8.0.7 concluait « cause : mémoire, l'hôte s'avorte faute de tas ». Faux : `abort()` sans le moindre vidage mémoire n'est pas une pénurie, c'est VS Code qui abat un hôte qui refuse de se terminer. Les ~1,2 s observées sont le délai d'arrêt accordé, pas un délai de démarrage.
+3. ✅ Trois ressources empêchaient la boucle d'événements de se vider : le serveur HTTP local (`localWebServer.ts`) **jamais fermé**, le `setInterval` de 5 s du panneau d'accueil, et les quatre `setTimeout` de démarrage différé de `extension.ts` (200 ms, 5 s, 8 s, 20 s). `deactivate()` n'appelait que `stopListening()`.
+4. ✅ `LocalWebServer.stop()` ajouté : `closeAllConnections()` puis `close()`. Sans la coupure des sockets maintenues ouvertes par les vues, `close()` attend indéfiniment.
+5. ✅ `ArduinoContentProvider.dispose()` ajouté : ferme le serveur, élimine l'émetteur d'événements.
+6. ✅ `ArduinoHomePanel.disposeCurrent()` ajouté : élimine le panneau resté ouvert, donc son minuteur.
+7. ✅ `extension.ts` : le fournisseur de contenu est remonté au niveau module (il était local à `activate()`, donc hors de portée de `deactivate()`), les minuteurs différés sont enregistrés et annulables, et `deactivate()` libère tout avec chaque étape isolée en `try/catch`.
+8. ✅ Trou réel bouché : `debuggerManager.ts` appelait `require("usb-detection")` **sans le garde-fou ABI** ajouté en v2026.8.0.7 dans `usbDetector.ts`. Or `activationEvents` contient `onDebug`, donc ce chemin s'exécute. Nouveau module `src/common/usbDetectionLoader.ts` : chargeur unique, garde-fou ABI, cache ; les deux appelants y passent désormais.
+9. ✅ `startListening()` était appelé sans `.catch()` dans un `setTimeout` — un rejet non géré. Corrigé.
+10. ✅ Construction et `tslint` propres.
+11. ⏳ À valider par Frank : plusieurs F5 d'affilée, en fermant chaque fenêtre de test, sans plantage.
+
 # v2026.8.0.7 — F5 : `--disable-extensions` enfin appliqué
 
 1. ✅ Journaux frais capturés sur deux plantages consécutifs (14:03:58 et 14:05:07) : signature identique aux précédents — 60 lignes de `renderer.log`, aucun `exthost.log`, `crashed with code 134`.

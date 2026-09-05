@@ -19,6 +19,17 @@ export class ArduinoHomePanel {
         return vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One;
     }
 
+    /**
+     * Elimine le panneau encore ouvert a la desactivation de l'extension.
+     * Son minuteur de scrutation (setInterval) maintiendrait sinon la boucle
+     * d'evenements de l'hote active apres l'arret demande par VS Code.
+     */
+    public static disposeCurrent() {
+        if (ArduinoHomePanel.currentPanel) {
+            ArduinoHomePanel.currentPanel.dispose();
+        }
+    }
+
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionUri: vscode.Uri;
     private _serverBaseUrl: string;

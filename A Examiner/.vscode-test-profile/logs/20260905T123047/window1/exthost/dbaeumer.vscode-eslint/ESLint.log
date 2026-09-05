@@ -1,0 +1,17 @@
+2026-09-05 12:30:58.369 [info] ESLint server is starting.
+2026-09-05 12:30:58.369 [trace] Sending request 'initialize - (0)'.
+2026-09-05 12:30:58.369 [trace] Received notification 'window/logMessage'.
+2026-09-05 12:30:58.369 [info] ESLint server running in node v24.18.1
+2026-09-05 12:30:58.369 [trace] Received notification '$/progress'.
+2026-09-05 12:30:58.369 [trace] Received notification '$/progress'.
+2026-09-05 12:30:58.369 [trace] Received response 'initialize - (0)' in 430ms.
+2026-09-05 12:30:58.369 [info] ESLint server is running.
+2026-09-05 12:30:58.369 [trace] Sending notification 'initialized'.
+2026-09-05 12:30:58.369 [trace] Received request 'client/registerCapability - (0)'.
+2026-09-05 12:30:58.369 [trace] Sending response 'client/registerCapability - (0)'. Processing request took 0ms
+2026-09-05 12:30:58.370 [trace] Received request 'client/registerCapability - (1)'.
+2026-09-05 12:30:58.370 [trace] Sending response 'client/registerCapability - (1)'. Processing request took 0ms
+2026-09-05 12:35:40.333 [info] ESLint server stopped.
+2026-09-05 12:35:40.334 [trace] Sending request 'shutdown - (1)'.
+2026-09-05 12:35:40.349 [trace] Received response 'shutdown - (1)' in 40ms.
+2026-09-05 12:35:40.349 [trace] Sending notification 'exit'.

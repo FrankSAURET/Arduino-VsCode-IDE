@@ -1,0 +1,2 @@
+This channel was created by the extension mcu-debug.debug-tracker-vscode for debugging the tracker. Default logging level is 0 (none)
+You can set the logging level using the Command Palette, look for "Debug Tracker: Set debug log level". There is also an extension setting

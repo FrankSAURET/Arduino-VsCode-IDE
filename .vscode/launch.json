@@ -1,20 +1,18 @@
 // A launch configuration that compiles the extension and then opens it inside a new window
+// Pas de "runtimeExecutable" ici : il fait relancer VS Code comme un simple
+// programme node, l'hote d'extensions demarre en pause ("STOPPED on first
+// line for debugging") et se fait tuer (code 134) quand l'attachement tarde.
+// VS Code sait deja quel executable lancer pour le type extensionHost.
 {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "configurations": [
         {
             "name": "Launch Extension",
             "type": "extensionHost",
             "request": "launch",
-            "runtimeExecutable": "${execPath}",
             "args": [
-                // Seule l'extension en cours de mise au point est chargee.
-                // Les ~40 autres saturaient la memoire de l'hote d'extensions,
-                // qui s'avortait alors au demarrage (code 134), par intermittence.
-                "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceRoot}"
             ],
-            "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
                 "${workspaceRoot}/out/src/**/*.js"
@@ -25,17 +23,11 @@
             "name": "Launch Tests",
             "type": "extensionHost",
             "request": "launch",
-            "runtimeExecutable": "${execPath}",
             "args": [
-                // Seule l'extension en cours de mise au point est chargee.
-                // Les ~40 autres saturaient la memoire de l'hote d'extensions,
-                // qui s'avortait alors au demarrage (code 134), par intermittence.
-                "--disable-extensions",
                 "${workspaceRoot}/test/resources/blink",
                 "--extensionDevelopmentPath=${workspaceRoot}",
                 "--extensionTestsPath=${workspaceRoot}/out/test"
             ],
-            "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
                 "${workspaceRoot}/out/test/**/*.js"
@@ -46,15 +38,9 @@
             "name": "Launch Extension in Development",
             "type": "extensionHost",
             "request": "launch",
-            "runtimeExecutable": "${execPath}",
             "args": [
-                // Seule l'extension en cours de mise au point est chargee.
-                // Les ~40 autres saturaient la memoire de l'hote d'extensions,
-                // qui s'avortait alors au demarrage (code 134), par intermittence.
-                "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceRoot}"
             ],
-            "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
                 "${workspaceRoot}/out/src/**/*.js"

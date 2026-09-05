@@ -267,6 +267,7 @@
   "{0} sketch '{1}': {2}": "{0} sketch « {1} » : {2}",
   "Please see the build logs in output path: {0}": "Voir les logs de build dans le dossier : {0}",
   "Output path is not specified. Unable to reuse previously compiled files. Build will be slower. See README.": "Dossier de sortie non spécifié. Impossible de réutiliser les fichiers compilés précédemment. Le build sera plus lent. Voir le README.",
+  "Invalid output path '{0}': it must not be the workspace folder itself. Falling back to '{1}'.": "Dossier de sortie invalide « {0} » : il ne doit pas être le dossier du projet lui-même. Repli sur « {1} ».",
 
   "IntelliSense auto-configuration disabled.": "Auto-configuration IntelliSense désactivée.",
   "IntelliSense configuration skipped (upload-only, no compilation).": "Configuration IntelliSense ignorée (téléversement seul, pas de compilation).",

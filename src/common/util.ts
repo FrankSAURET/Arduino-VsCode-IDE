@@ -194,6 +194,19 @@ export function isArduinoFile(filePath): boolean {
  * @param {any} [options={}] - options and flags for the arguments
  * @param {(string) => {}} - callback for stdout text
  */
+// La page de codes de la console ne change pas en cours de session : on ne
+// paie l'appel synchrone a chcp.com qu'une fois. Sans ce cache, chaque
+// verification/televersement fige la boucle d'evenements de l'hote d'extensions.
+let cachedConsoleCodepage: string | undefined;
+
+function getConsoleCodepage(): string {
+    if (cachedConsoleCodepage === undefined) {
+        const chcp = child_process.execSync("chcp.com", { timeout: 5000, windowsHide: true });
+        cachedConsoleCodepage = chcp.toString().split(":").pop().trim();
+    }
+    return cachedConsoleCodepage;
+}
+
 export function spawn(
     command: string,
     args: string[] = [],
@@ -211,8 +224,7 @@ export function spawn(
             codepage = getArduinoL4jCodepage(command.replace(/.exe$/i, ".l4j.ini"));
             if (!codepage) {
                 try {
-                    const chcp = child_process.execSync("chcp.com");
-                    codepage = chcp.toString().split(":").pop().trim();
+                    codepage = getConsoleCodepage();
                 } catch (error) {
                     arduinoChannel.warning(vscode.l10n.t("Defaulting to code page 850 because chcp.com failed. Ensure your path includes %SystemRoot%\\system32: {0}", error.message));
                     codepage = "850";

@@ -178,7 +178,7 @@ The following settings are as per sketch settings of the Arduino extension. You 
 sketch: example.ino
 port: COM5
 board: adafruit:samd:adafruit_feather_m0
-output: ../build
+output: .build
 debugger: jlink
 prebuild: ./prebuild.sh
 postbuild: ./postbuild.sh
@@ -187,7 +187,7 @@ intelliSenseGen: global
 - `sketch` - The main sketch file name of Arduino.
 - `port` - Name of the serial port connected to the device. Can be set by the `Arduino: Select Serial Port` command. For Mac users could be "/dev/cu.wchusbserial1420".
 - `board` - Currently selected Arduino board alias. Can be set by the `Arduino: Change Board Type` command. Also, you can find the board list there.
-- `output` - Arduino build output path. If not set, Arduino will create a new temporary output folder each time, which means it cannot reuse the intermediate result of the previous build leading to long verify/upload time, so it is recommended to set the field. Arduino requires that the output path should not be the workspace itself or in a subfolder of the workspace, otherwise, it may not work correctly. By default, this option is not set. It's worth noting that the contents of this file could be deleted during the build process, so pick (or create) a directory that will not store files you want to keep.
+- `output` - Arduino build output path, relative to the workspace. When this field is missing the extension falls back to `.build` inside the workspace, so intermediate build results are always reused and verify/upload stay fast. The path must not be the workspace folder itself. It's worth noting that the contents of this folder could be deleted during the build process, so pick (or create) a directory that will not store files you want to keep - and add it to your `.gitignore`.
 - `debugger` - The short name of the debugger that will be used when the board itself does not have a debugger and there is more than one debugger available. You can find the list of debuggers [here](https://github.com/Microsoft/vscode-arduino/blob/main/misc/debuggerUsbMapping.json). By default, this option is not set.
 - `prebuild` - External command which will be invoked before any sketch build (verify, upload, ...). For details see the [Pre- and Post-Build Commands](#Pre--and-Post-Build-Commands) section.
 - `postbuild` - External command to be run after the sketch has been built successfully. See the afore mentioned section for more details.

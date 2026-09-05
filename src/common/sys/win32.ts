@@ -3,7 +3,10 @@
 
 import * as childProcess from "child_process";
 import * as path from "path";
+import { promisify } from "util";
 import { fileExistsSync } from "../util";
+
+const execFileAsync = promisify(childProcess.execFile);
 
 // Arduino IDE 2 embarque son propre arduino-cli dans ses ressources internes, sans
 // l'exposer au PATH. Chemin relatif au dossier d'installation de l'IDE.
@@ -28,7 +31,14 @@ export async function resolveArduinoPath() {
     let pathString = "";
     try {
         // "where" peut renvoyer plusieurs résultats (un par ligne) : ne garder que le premier
-        const whereOutput = childProcess.execSync("where arduino-cli", { encoding: "utf8" });
+        // Jamais en execSync : un appel synchrone fige la boucle d'evenements de l'hote
+        // d'extensions ; si "where" traine (PATH long, disque charge, antivirus), l'hote
+        // ne repond plus au signal de vie et VS Code le tue (code 134).
+        const { stdout: whereOutput } = await execFileAsync("where", ["arduino-cli"], {
+            encoding: "utf8",
+            timeout: 5000,
+            windowsHide: true,
+        });
         const firstMatch = whereOutput.split(/\r?\n/).map((line) => line.trim()).find((line) => line.length > 0) || "";
         if (firstMatch && fileExistsSync(firstMatch)) {
             pathString = path.dirname(path.resolve(firstMatch));

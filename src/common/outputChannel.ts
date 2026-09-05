@@ -11,6 +11,9 @@ const MARK_DONE = "\u200C";       // antiliaison sans chasse
 const MARK_WARNING = "\u200D";    // liaison sans chasse
 const MARK_ERROR = "\u2060";      // mot insecable
 
+// Trait affiche apres chaque fin d'operation, independant de la langue
+const SEPARATOR = "—".repeat(60);
+
 function isCompact(): boolean {
     try {
         const config = vscode.workspace.getConfiguration();
@@ -33,6 +36,8 @@ export const arduinoChannel = {
 
     end(message: string) {
         this.channel.appendLine(`${vscode.l10n.t("[Done]")} ${message}${MARK_DONE}`);
+        // Trait de separation pour delimiter visuellement la fin d'une operation
+        this.channel.appendLine(SEPARATOR);
     },
 
     warning(message: string) {

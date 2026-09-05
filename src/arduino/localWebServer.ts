@@ -53,6 +53,26 @@ export default class LocalWebServer {
     }
 
     /**
+     * Ferme le serveur HTTP et libere le port.
+     * Sans cela l'hote d'extensions garde un `listen` actif : il ne se termine
+     * jamais de lui-meme, VS Code finit par l'abattre (abort(), code 134).
+     */
+    public async stop(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            if (!this.server || !this.server.listening) {
+                resolve();
+                return;
+            }
+            // closeAllConnections() coupe les sockets maintenues ouvertes
+            // (keep-alive des vues), sinon close() attend indefiniment.
+            if (typeof this.server.closeAllConnections === "function") {
+                this.server.closeAllConnections();
+            }
+            this.server.close(() => resolve());
+        });
+    }
+
+    /**
      * Start webserver.
      * If it fails to listen reject will report its error.
      */

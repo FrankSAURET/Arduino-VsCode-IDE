@@ -1,0 +1,24 @@
+2026-09-05 12:30:54.865 [info] [main] Log level: Trace
+2026-09-05 12:30:54.865 [info] [main] Validating found git in: "C:\Program Files\Git\cmd\git.exe"
+2026-09-05 12:30:54.871 [trace] [askpassManager] Content hash: 70789581cae28aa7
+2026-09-05 12:30:54.871 [info] [askpassManager] Creating content-addressed askpass scripts at c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7
+2026-09-05 12:30:54.928 [trace] [askpassManager] Set permissions on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7
+2026-09-05 12:30:54.991 [trace] [askpassManager] Set permissions on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7\askpass-empty.sh
+2026-09-05 12:30:55.013 [trace] [askpassManager] Set permissions on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7\ssh-askpass.sh
+2026-09-05 12:30:55.020 [trace] [askpassManager] Set permissions on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7\askpass-main.js
+2026-09-05 12:30:55.041 [trace] [askpassManager] Set permissions on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7\askpass.sh
+2026-09-05 12:30:55.044 [trace] [askpassManager] Set permissions on c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7\ssh-askpass-empty.sh
+2026-09-05 12:30:55.044 [info] [askpassManager] Successfully created content-addressed askpass scripts
+2026-09-05 12:30:55.045 [trace] [askpassManager] Updated mtime for c:\- VS Code\Extensions\Arduino-VsCode-IDE\.vscode-test-profile\User\globalStorage\vscode.git\askpass\70789581cae28aa7
+2026-09-05 12:30:55.175 [info] [main] Using git "2.49.0.windows.1" from "C:\Program Files\Git\cmd\git.exe"
+2026-09-05 12:30:55.175 [info] [Model][doInitialScan] Initial repository scan started
+2026-09-05 12:30:55.175 [trace] [Model][doInitialScan] Settings: autoRepositoryDetection=true, openRepositoryInParentFolders=prompt
+2026-09-05 12:30:55.175 [trace] [Model][onDidChangeWorkspaceFolders] Workspace folders: []
+2026-09-05 12:30:55.181 [info] [Model][doInitialScan] Initial repository scan completed - repositories (0), closed repositories (0), parent repositories (0), unsafe repositories (0)
+2026-09-05 12:30:56.923 [trace] [Model][onDidChangeConfiguration] Workspace folders: []
+2026-09-05 12:30:56.936 [trace] [Model][onDidChangeConfiguration] Workspace folders: []
+2026-09-05 12:30:56.950 [trace] [Model][onDidChangeConfiguration] Workspace folders: []
+2026-09-05 12:30:56.972 [trace] [Model][onDidChangeConfiguration] Workspace folders: []
+2026-09-05 12:30:56.989 [trace] [Model][onDidChangeConfiguration] Workspace folders: []
+2026-09-05 12:30:57.252 [trace] [Model][onDidChangeConfiguration] Workspace folders: []
+2026-09-05 12:30:58.134 [trace] [Model][onDidChangeConfiguration] Workspace folders: []

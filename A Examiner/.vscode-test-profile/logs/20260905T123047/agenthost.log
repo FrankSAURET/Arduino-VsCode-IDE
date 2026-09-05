@@ -1,0 +1,281 @@
+2026-09-05 12:30:50.705 [info] Agent Host process started successfully
+2026-09-05 12:30:50.717 [debug] [GitHubService] Initializing reusable GitHub service
+2026-09-05 12:30:50.718 [debug] [GitHubService] Reusable GitHub service initialized
+2026-09-05 12:30:50.718 [debug] [AgentMergeController] Initialized
+2026-09-05 12:30:50.754 [info] AgentService initialized
+2026-09-05 12:30:50.782 [trace] [AgentHostStateManager] Emitting envelope: seq=2, channel=ahp-root://, type=root/configChanged
+2026-09-05 12:30:50.798 [info] Registering agent provider: copilotcli
+2026-09-05 12:30:50.805 [trace] [AgentHostStateManager] Emitting envelope: seq=3, channel=ahp-root://, type=root/agentsChanged
+2026-09-05 12:30:50.812 [info] Registering agent provider: claude
+2026-09-05 12:30:50.813 [trace] [AgentHostStateManager] Emitting envelope: seq=4, channel=ahp-root://, type=root/agentsChanged
+2026-09-05 12:30:50.841 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-09-05 12:30:50.841 [trace] [Copilot] BYOK model publication enabled: false (root config: unset)
+2026-09-05 12:30:50.842 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-09-05 12:30:50.842 [trace] [Copilot] BYOK model publication enabled: false (root config: unset)
+2026-09-05 12:30:50.880 [trace] [AgentHostStateManager] Emitting envelope: seq=5, channel=ahp-root://, type=root/configChanged
+2026-09-05 12:30:50.881 [trace] [Copilot] BYOK model publication enabled: false (root config: unset)
+2026-09-05 12:30:50.882 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:50.882 [info] [Claude] Models refreshed (merged). Count: 0, 
+2026-09-05 12:30:50.901 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-09-05 12:30:50.901 [trace] [Copilot] BYOK model publication enabled: false (root config: unset)
+2026-09-05 12:30:50.920 [info] [CommandAutoApprover] Tree-sitter initialized (bash=available, powershell=available)
+2026-09-05 12:30:50.938 [info] [Copilot] Listing chats to migrate...
+2026-09-05 12:30:50.938 [info] [Copilot] Starting CopilotClient...
+2026-09-05 12:30:50.940 [info] [Copilot] Set CLI env: GITHUB_COPILOT_INTEGRATION_ID=vscode-chat
+2026-09-05 12:30:50.945 [info] [Copilot] Resolved CLI path: c:\Program Files\Microsoft VS Code\a44adf7f53\resources\app\node_modules.asar.unpacked\@github\copilot-win32-x64\index.js
+2026-09-05 12:30:50.988 [info] [Claude] SDK not downloaded yet; deferring the migratable chat list
+2026-09-05 12:30:51.013 [trace] [ProtocolServer] request: method=initialize id=1
+2026-09-05 12:30:51.014 [info] [ProtocolServer] Initialize: clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, protocolVersions=[1.0.0, 0.9.0, 0.8.0, 0.7.0, 0.6.0, 0.5.2, 0.5.1]
+2026-09-05 12:30:51.093 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.093 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.094 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=1 {"type":"root/configChanged","config":{"copilotCliVSCodeAssignmentContext":""}}
+2026-09-05 12:30:51.094 [trace] [AgentHostStateManager] Emitting envelope: seq=6, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:1
+2026-09-05 12:30:51.094 [trace] [Copilot] BYOK model publication enabled: false (root config: unset)
+2026-09-05 12:30:51.095 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.098 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.098 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.098 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"http.proxy":"","http.proxyKerberosServicePrincipal":"","http.noProxy":[],"agentMerge.enabled":false,"agentMerge.addressReviews":true,"agentMerge.fixCI":true,"agentMerge.resolveConflicts":true,"agentMerge.mergePullRequest":"never","agentMerge.mergeMethod":"auto","agentMerge.replyAttribution":true,"activeAgentTitleGeneration":false,"artifactTools":false,"markdownPlanRichLinksEnabled":false,"systemProxyEnabled":true,"githubMcpServerEnabled":true,"copilotMultiRootEnabled":false,"claudeMultiRootEnabled":false,"codexMultiRootEnabled":false,"byokModelsEnabled":false,"codexAgentEnabled":false,"migrateLegacyCopilotCliEnabled":false,"showExternalSessions":"recent","autoReplyEnabled":false,"globalAutoApproveEnabled":false,"sessionSyncEnabled":false,"editAutoApprovePatterns":{"**/*":true,"**/.git/**":false,"**/{package.json,server.xml,build.rs,web.config,.gitattributes,.env,Cargo.toml}":false,"**/{.npmrc,.yarnrc,.yarnrc.yml,.pnpmfile.js,.pnpmfile.cjs,.pnpmfile.mjs,pnpm-workspace.yaml}":false,"**/*.{code-workspace,csproj,fsproj,vbproj,vcxproj,proj,targets,props,gradle,gradle.kts}":false,"**/gradle.properties":false,"**/ruby_lsp/*/addon":false,"**/*.lock":false,"**/*-lock.{yaml,json}":false,"**/.mcp.json":false,"**/.npmrc":false,"**/.vscode/*.json":false,"**/.github/agents/**":false,"**/.github/hooks/**":false,"**/.claude/agents/**":false,"**/.claude/settings.json":false,"**/.claude/settings.local.json":false},"editTelemetryEnabled":true}}
+2026-09-05 12:30:51.098 [trace] [AgentHostStateManager] Emitting envelope: seq=7, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:0
+2026-09-05 12:30:51.099 [info] [AgentService] showExternalSessions changed 'none' -> 'recent'; queueing session list reconciliation
+2026-09-05 12:30:51.099 [trace] [Copilot] BYOK model publication enabled: false (root config: false)
+2026-09-05 12:30:51.099 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.101 [trace] [AgentService] listSessions computation started
+2026-09-05 12:30:51.102 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.102 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.102 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"telemetryLevel":"all"}}
+2026-09-05 12:30:51.103 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.103 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.103 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"terminalAutoApproveEnabled":true}}
+2026-09-05 12:30:51.104 [trace] [AgentHostStateManager] Emitting envelope: seq=8, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:0
+2026-09-05 12:30:51.104 [trace] [Copilot] BYOK model publication enabled: false (root config: false)
+2026-09-05 12:30:51.104 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.105 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.105 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.106 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"terminalAutoApproveRules":{"cd":true,"echo":true,"ls":true,"dir":true,"pwd":true,"cat":true,"head":true,"tail":true,"findstr":true,"wc":true,"tr":true,"cut":true,"cmp":true,"which":true,"basename":true,"dirname":true,"realpath":true,"readlink":true,"stat":true,"file":true,"od":true,"du":true,"df":true,"sleep":true,"nl":true,"grep":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+status\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+log\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+log\\b.*\\s--output(=|\\s|$)/":false,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+show\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+show\\b.*\\s--output(=|\\s|$)/":false,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+diff\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+ls-files\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+grep\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+branch\\b/":true,"/^git(\\s+(-C\\s+\\S+|--no-pager))*\\s+branch\\b.*\\s-(d|D|m|M|-delete|-force)\\b/":false,"/^docker\\s+(ps|images|info|version|inspect|logs|top|stats|port|diff|search|events)\\b/":true,"/^docker\\s+(container|image|network|volume|context|system)\\s+(ls|ps|inspect|history|show|df|info)\\b/":true,"/^docker\\s+compose\\s+(ps|ls|top|logs|images|config|version|port|events)\\b/":true,"Get-ChildItem":true,"Get-Content":true,"Get-Date":true,"Get-Random":true,"Get-Location":true,"Set-Location":true,"Write-Host":true,"Write-Output":true,"Out-String":true,"Split-Path":true,"Join-Path":true,"Start-Sleep":true,"Where-Object":true,"Select-Object":true,"Select-String":true,"Measure-Object":true,"Compare-Object":true,"Format-List":true,"Format-Table":true,"Sort-Object":true,"/^npm\\s+(ls|list|outdated|view|info|show|explain|why|root|prefix|bin|search|doctor|fund|repo|bugs|docs|home|help(-search)?)\\b/":true,"/^npm\\s+config\\s+(list|get)\\b/":true,"/^npm\\s+pkg\\s+get\\b/":true,"/^npm\\s+audit$/":true,"/^npm\\s+cache\\s+verify\\b/":true,"/^yarn\\s+(list|outdated|info|why|bin|help|versions)\\b/":true,"/^yarn\\s+licenses\\b/":true,"/^yarn\\s+audit\\b(?!.*\\bfix\\b)/":true,"/^yarn\\s+config\\s+(list|get)\\b/":true,"/^yarn\\s+cache\\s+dir\\b/":true,"/^pnpm\\s+(ls|list|outdated|why|root|bin|doctor)\\b/":true,"/^pnpm\\s+licenses\\b/":true,"/^pnpm\\s+audit\\b(?!.*\\bfix\\b)/":true,"/^pnpm\\s+config\\s+(list|get)\\b/":true,"npm ci":true,"/^yarn\\s+install\\s+--frozen-lockfile\\b/":true,"/^pnpm\\s+install\\s+--frozen-lockfile\\b/":true,"column":true,"/^column\\b.*\\s-c\\s+[0-9]{4,}/":false,"date":true,"/^date\\b.*\\s(-s|--set)\\b/":false,"find":true,"/^find\\b.*\\s-(delete|exec|execdir|fprint|fprintf|fls|ok|okdir)\\b/":false,"rg":true,"/^rg\\b.*\\s(--pre|--hostname-bin)\\b/":false,"sed":true,"/^sed\\b.*\\s(-[a-zA-Z]*(e|f)[a-zA-Z]*|--expression|--file)\\b/":false,"/^sed\\b.*s\\/.*\\/.*\\/[ew]/":false,"/^sed\\b(?:\\s+(?:(?:-l|--line-length)\\s+\\S+|--line-length=\\S+|-\\S+))*\\s+(['\"])\\s*(?:(?:\\d+|\\$|\\/(?:\\\\.|[^\\/])*\\/)(?:\\s*,\\s*(?:\\d+|\\$|\\/(?:\\\\.|[^\\/])*\\/))?)?\\s*!?\\s*[erRwW](?:\\s|\\1)/":false,"/^sed\\b(?:\\s+(?:(?:-l|--line-length)\\s+\\S+|--line-length=\\S+|-\\S+))*\\s+(['\"])(?:\\\\.|(?!\\1).)*[;{]\\s*(?:(?:\\d+|\\$|\\/(?:\\\\.|[^\\/])*\\/)(?:\\s*,\\s*(?:\\d+|\\$|\\/(?:\\\\.|[^\\/])*\\/))?)?\\s*!?\\s*[erRwW](?:\\s|\\1|[;}])/":false,"/^sed\\b(?:\\s+(?:(?:-l|--line-length)\\s+\\S+|--line-length=\\S+|-\\S+))*\\s+(?:(?:\\d+|\\$|\\/(?:\\\\.|[^\\/])*\\/)(?:\\s*,\\s*(?:\\d+|\\$|\\/(?:\\\\.|[^\\/])*\\/))?)?\\s*!?\\s*[erRwW](?:\\s|$)/":false,"/^sort\\b(?!-)/":true,"/^sort\\b.*\\s-(o|S)\\b/":false,"/^sort\\b.*\\s(?:\\$?['\"]|\\\\)*-(?:\\$?['\"]|\\\\)*-(?:\\$?['\"]|\\\\)*c(?:\\$?['\"]|\\\\)*o/":false,"tree":true,"/^tree\\b.*\\s-o\\b/":false,"/^xxd$/":true,"/^xxd\\b(\\s+-\\S+)*\\s+[^-\\s]\\S*$/":true,"rm":false,"rmdir":false,"del":false,"Remove-Item":false,"ri":false,"rd":false,"erase":false,"dd":false,"kill":false,"ps":false,"top":false,"Stop-Process":false,"spps":false,"taskkill":false,"taskkill.exe":false,"curl":false,"wget":false,"Invoke-RestMethod":false,"Invoke-WebRequest":false,"irm":false,"iwr":false,"chmod":false,"chown":false,"Set-ItemProperty":false,"sp":false,"Set-Acl":false,"jq":false,"xargs":false,"eval":false,"Invoke-Expression":false,"iex":false}}}
+2026-09-05 12:30:51.106 [trace] [AgentHostStateManager] Emitting envelope: seq=9, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:0
+2026-09-05 12:30:51.106 [trace] [Copilot] BYOK model publication enabled: false (root config: false)
+2026-09-05 12:30:51.107 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.108 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.108 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.108 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"autoApprovePolicyRestricted":false}}
+2026-09-05 12:30:51.109 [trace] [AgentHostStateManager] Emitting envelope: seq=10, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:0
+2026-09-05 12:30:51.109 [trace] [Copilot] BYOK model publication enabled: false (root config: false)
+2026-09-05 12:30:51.109 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.110 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.110 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.110 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"disableRepoInfoTelemetry":false}}
+2026-09-05 12:30:51.111 [trace] [AgentHostStateManager] Emitting envelope: seq=11, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:0
+2026-09-05 12:30:51.111 [trace] [Copilot] BYOK model publication enabled: false (root config: false)
+2026-09-05 12:30:51.111 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.112 [trace] [ProtocolServer] notification: method=setClientManagedSettingsPermissions
+2026-09-05 12:30:51.113 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.113 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.113 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=2 {"type":"root/configChanged","config":{"copilotCliVSCodeAssignmentContext":""}}
+2026-09-05 12:30:51.450 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.450 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.450 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=3 {"type":"root/configChanged","config":{"copilotCliVSCodeAssignmentContext":"vsliv368:30146709;pythonvspyt551cf:31249601;binariesv615:30325510;nativeloc1:31344060;dwcopilot:31170013;dwoutputs:31242946;copilot_t_ci:31333650;e5gg6876:31282496;pythonrdcb7:31342333;6518g693:31463988;aj953862:31281341;b6b4d950:31327385;envsactivate1:31551504;cloudbuttont:31379625;3efgi100_wstrepl:31403338;ddidtcf:31399634;ec5jj548:31422691;cp_cls_t_966_ss:31526232;4je02754:31466945;c3h7c220:31478652;cp_cls_c_1081:31454833;conptydll_true:31498968;e9c30283:31461165;46204921:31447328;ei9d7968:31496641;chat:31457767;ddid_c:31478207;hmra_i5g22:31518061;7df3h592:31512476;cp_cls_t_1082:31535311;logging_enabled_new:31498466;j0d79568:31499440;jb_cp_cls_t_632:31543129;56dj4588:31512888;32d76977:31512328;ha629193:31508444;jh5f2457_c:31540921;jbcp_cls_pctr_t:31531130;cp_intellij_t_nes:31548657;jf4hg949:31526829;ahp-both-windows:31556933;ihg5j128:31534457;9gg7f176:31542112;enable_editor_pane_layout:31569726;allow-none:31555437;ac562147:31564510;c7c27ce7:31554789;1h923230:31564177;1532g621_copy:31554320;treatment-23-1:31555779;unuse_dynamic_mcp:31555281;0d8dfbc3:31570291;a1hcc538:31559322;maidictation:31565333;0c1h4866:31566224;vrbsty_tr:31561058;session-mark-done:31558131;5b8j3302:31564601;mangle-name-control:31572633;39a5d156:31574986;2bfb8b39:31576696;"}}
+2026-09-05 12:30:51.450 [trace] [AgentHostStateManager] Emitting envelope: seq=12, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:3
+2026-09-05 12:30:51.450 [trace] [Copilot] BYOK model publication enabled: false (root config: false)
+2026-09-05 12:30:51.451 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.513 [info] [WebSocketProtocol] Server listening on socket \\.\pipe\vscode-agent-host-47db4059d660528de9b6591fd2fb2db6110060332c3ef1ac95b22af86c86df56-GbuqB2hDWXlxi8cocFeACQ
+2026-09-05 12:30:51.520 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:51.520 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:51.520 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=0 {"type":"root/configChanged","config":{"byokModelsEnabled":true}}
+2026-09-05 12:30:51.520 [trace] [AgentHostStateManager] Emitting envelope: seq=13, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:0
+2026-09-05 12:30:51.520 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:51.520 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:51.521 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.521 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:51.900 [debug] ProxyResolver#resolveProxy https://api.githubcopilot.com DIRECT 
+2026-09-05 12:30:52.828 [info] [Copilot] CopilotClient started successfully
+2026-09-05 12:30:52.832 [info] [Copilot] Listed 0 SDK session(s) for chats to migrate
+2026-09-05 12:30:52.833 [info] [Copilot] Found 0 legacy sessions
+2026-09-05 12:30:52.839 [info] [Copilot] Listing discoverable chats...
+2026-09-05 12:30:52.841 [info] [AgentService] listSessions computed 0 of 0 session(s) for mode 'last30Days' in 1740ms (0 state-manager fallback)
+2026-09-05 12:30:52.841 [info] [AgentService] External session reconciliation done in 1741ms (mode: 'recent', previous: 'none'): 0 published, 0 retracted, 0 visible
+2026-09-05 12:30:52.842 [info] [Copilot] Listed 0 SDK session(s) for discoverable chats
+2026-09-05 12:30:52.842 [info] [AgentService] pruned 0 stale external session row(s) older than 30 days
+2026-09-05 12:30:52.843 [info] [Copilot] Chat discovery: 0 SDK session(s) -> 0 external, 0 adoptable legacy extension-host, 0 suppressed adoptable legacy extension-host, 0 suppressed archived legacy extension-host, 0 already known to Agent Host, 0 without a working directory, 0 with unsupported or missing client name, 0 outside the import window, 0 without repository metadata, 0 failed to classify (adopt legacy extension-host chats: false)
+2026-09-05 12:30:52.843 [info] [Claude] SDK not downloaded yet; deferring chat discovery
+2026-09-05 12:30:52.893 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:52.894 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:52.894 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=4 {"type":"root/configChanged","config":{"copilotCliVSCodeAssignmentContext":"vsliv368:30146709;pythonvspyt551cf:31249601;binariesv615:30325510;nativeloc1:31344060;dwcopilot:31170013;dwoutputs:31242946;copilot_t_ci:31333650;e5gg6876:31282496;pythonrdcb7:31342333;6518g693:31463988;aj953862:31281341;b6b4d950:31327385;envsactivate1:31551504;cloudbuttont:31379625;3efgi100_wstrepl:31403338;ddidtcf:31399634;ec5jj548:31422691;cp_cls_t_966_ss:31526232;4je02754:31466945;c3h7c220:31478652;cp_cls_c_1081:31454833;conptydll_true:31498968;e9c30283:31461165;46204921:31447328;ei9d7968:31496641;chat:31457767;ddid_c:31478207;hmra_i5g22:31518061;7df3h592:31512476;cp_cls_t_1082:31535311;logging_enabled_new:31498466;j0d79568:31499440;jb_cp_cls_t_632:31543129;56dj4588:31512888;32d76977:31512328;ha629193:31508444;jh5f2457_c:31540921;jbcp_cls_pctr_t:31531130;cp_intellij_t_nes:31548657;jf4hg949:31526829;ahp-both-windows:31556933;ihg5j128:31534457;9gg7f176:31542112;enable_editor_pane_layout:31569726;allow-none:31555437;ac562147:31564510;c7c27ce7:31554789;1h923230:31564177;1532g621_copy:31554320;treatment-23-1:31555779;unuse_dynamic_mcp:31555281;0d8dfbc3:31570291;a1hcc538:31559322;maidictation:31565333;0c1h4866:31566224;vrbsty_tr:31561058;session-mark-done:31558131;5b8j3302:31564601;mangle-name-control:31572633;39a5d156:31574986;2bfb8b39:31576696;"}}
+2026-09-05 12:30:52.952 [debug] ProxyResolver#resolveProxy https://api.githubcopilot.com DIRECT 
+2026-09-05 12:30:53.073 [trace] #1: https://mobile.events.data.microsoft.com/OneCollector/1.0?cors=true&content-type=application/x-json-stream - begin POST {"Client-Id":"NO_AUTH","client-version":"1DS-Web-JS-3.2.13","apikey":"5bbf946d11a54f6783919c455abaddaf-fd62977b-c92d-4714-a45d-649d06980372-7168","upload-time":"1788604253071","time-delta-to-apply-millis":"use-collector-delta","cache-control":"no-cache, no-store","content-type":"application/x-json-stream","Content-Type":"application/json","Content-Length":"4399"}
+2026-09-05 12:30:54.143 [debug] ProxyResolver#resolveProxy https://mobile.events.data.microsoft.com/OneCollector/1.0?cors=true&content-type=application/x-json-stream DIRECT 
+2026-09-05 12:30:54.174 [debug] ProxyResolver#loadSystemCertificates from Node.js count (31ms) 242
+2026-09-05 12:30:54.199 [debug] ProxyResolver#filterExpiredCertificates count filtered 203
+2026-09-05 12:30:54.543 [trace] [ProtocolServer] request: method=listSessions id=2
+2026-09-05 12:30:54.543 [trace] [AgentService] listSessions computation started
+2026-09-05 12:30:54.544 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.544 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.545 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=5 {"type":"root/configChanged","config":{"enableCustomTerminalTool":false}}
+2026-09-05 12:30:54.545 [trace] [AgentHostStateManager] Emitting envelope: seq=14, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:5
+2026-09-05 12:30:54.545 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.545 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.545 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.545 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.546 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.546 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.546 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=6 {"type":"root/configChanged","config":{"githubEnterpriseUri":""}}
+2026-09-05 12:30:54.546 [trace] [AgentHostStateManager] Emitting envelope: seq=15, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:6
+2026-09-05 12:30:54.547 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.547 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.547 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.547 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.548 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.548 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.548 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=7 {"type":"root/configChanged","config":{"copilotSdkLogLevel":"info"}}
+2026-09-05 12:30:54.548 [trace] [AgentHostStateManager] Emitting envelope: seq=16, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:7
+2026-09-05 12:30:54.548 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.548 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.549 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.549 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.550 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.550 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.550 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=8 {"type":"root/configChanged","config":{"opus48Prompt":false}}
+2026-09-05 12:30:54.550 [trace] [AgentHostStateManager] Emitting envelope: seq=17, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:8
+2026-09-05 12:30:54.550 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.550 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.550 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.551 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.551 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.551 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.551 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=9 {"type":"root/configChanged","config":{"toolSearchEnabled":true}}
+2026-09-05 12:30:54.552 [trace] [AgentHostStateManager] Emitting envelope: seq=18, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:9
+2026-09-05 12:30:54.552 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.552 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.552 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.552 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.553 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.553 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.553 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=10 {"type":"root/configChanged","config":{"toolSearchDeferThreshold":1}}
+2026-09-05 12:30:54.553 [trace] [AgentHostStateManager] Emitting envelope: seq=19, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:10
+2026-09-05 12:30:54.553 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.553 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.554 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.554 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.555 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.555 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.555 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=11 {"type":"root/configChanged","config":{"reasoningSummary":false}}
+2026-09-05 12:30:54.555 [trace] [AgentHostStateManager] Emitting envelope: seq=20, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:11
+2026-09-05 12:30:54.555 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.555 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.555 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.556 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.557 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.557 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.557 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=12 {"type":"root/configChanged","config":{"multiTurnContextRouting":false}}
+2026-09-05 12:30:54.557 [trace] [AgentHostStateManager] Emitting envelope: seq=21, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:12
+2026-09-05 12:30:54.557 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.558 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.558 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.558 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.559 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.559 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.559 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=13 {"type":"root/configChanged","config":{"subagentModelGuidance":false}}
+2026-09-05 12:30:54.559 [trace] [AgentHostStateManager] Emitting envelope: seq=22, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:13
+2026-09-05 12:30:54.559 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.559 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.559 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.559 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.560 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.560 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.560 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=14 {"type":"root/configChanged","config":{"modelCapabilityOverrides":{}}}
+2026-09-05 12:30:54.560 [trace] [AgentHostStateManager] Emitting envelope: seq=23, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:14
+2026-09-05 12:30:54.560 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.560 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.561 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.561 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.562 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.562 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.562 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=15 {"type":"root/configChanged","config":{"allowSignedOutWhenUsable":false}}
+2026-09-05 12:30:54.562 [trace] [AgentHostStateManager] Emitting envelope: seq=24, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:15
+2026-09-05 12:30:54.562 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.562 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.562 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.563 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.563 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:54.563 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:54.563 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=16 {"type":"root/configChanged","config":{"defaultShell":"C:\\Program Files\\PowerShell\\7\\pwsh.exe"}}
+2026-09-05 12:30:54.563 [trace] [AgentHostStateManager] Emitting envelope: seq=25, channel=ahp-root://, type=root/configChanged, origin=e28404b8-30f4-46c8-804c-a3dea5003a06:16
+2026-09-05 12:30:54.564 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:30:54.564 [trace] [Copilot] Found 0 BYOK models
+2026-09-05 12:30:54.564 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.564 [trace] [ProtocolServer] Broadcasting action: root/configChanged
+2026-09-05 12:30:54.566 [info] [Claude] SDK not downloaded yet; deferring the migratable chat list
+2026-09-05 12:30:54.567 [trace] [AgentService] listSessions computed 0 of 0 session(s) for mode 'recent' in 23ms (0 state-manager fallback)
+2026-09-05 12:30:54.567 [trace] [ProtocolServer] Request 'listSessions' id=2 succeeded
+2026-09-05 12:30:54.812 [trace] [ProtocolServer] request: method=authenticate id=3
+2026-09-05 12:30:54.813 [trace] [AgentHostAuthenticationService] authenticate called: resource=https://api.github.com
+2026-09-05 12:30:54.813 [info] [Claude] Auth token unchanged
+2026-09-05 12:30:54.814 [debug] [AgentMergeController] Refreshing 0 active session(s) after authentication changed
+2026-09-05 12:30:54.814 [trace] [ProtocolServer] Request 'authenticate' id=3 succeeded
+2026-09-05 12:30:55.313 [trace] [ProtocolServer] request: method=authenticate id=4
+2026-09-05 12:30:55.313 [trace] [AgentHostAuthenticationService] authenticate called: resource=https://api.github.com/repos
+2026-09-05 12:30:55.314 [debug] [AgentMergeController] Refreshing 0 active session(s) after authentication changed
+2026-09-05 12:30:55.314 [trace] [ProtocolServer] Request 'authenticate' id=4 succeeded
+2026-09-05 12:30:55.524 [trace] [ProtocolServer] notification: method=dispatchAction
+2026-09-05 12:30:55.524 [trace] [ProtocolServer] dispatchAction: "root/configChanged"
+2026-09-05 12:30:55.524 [trace] [AgentService] dispatchAction: type=root/configChanged, clientId=e28404b8-30f4-46c8-804c-a3dea5003a06, clientSeq=17 {"type":"root/configChanged","config":{"copilotCliVSCodeAssignmentContext":"vsliv368:30146709;pythonvspyt551cf:31249601;binariesv615:30325510;nativeloc1:31344060;dwcopilot:31170013;dwoutputs:31242946;copilot_t_ci:31333650;e5gg6876:31282496;pythonrdcb7:31342333;6518g693:31463988;aj953862:31281341;b6b4d950:31327385;envsactivate1:31551504;cloudbuttont:31379625;3efgi100_wstrepl:31403338;ddidtcf:31399634;ec5jj548:31422691;cp_cls_t_966_ss:31526232;4je02754:31466945;c3h7c220:31478652;cp_cls_c_1081:31454833;conptydll_true:31498968;e9c30283:31461165;46204921:31447328;ei9d7968:31496641;chat:31457767;ddid_c:31478207;hmra_i5g22:31518061;7df3h592:31512476;cp_cls_t_1082:31535311;logging_enabled_new:31498466;j0d79568:31499440;jb_cp_cls_t_632:31543129;56dj4588:31512888;32d76977:31512328;ha629193:31508444;jh5f2457_c:31540921;jbcp_cls_pctr_t:31531130;cp_intellij_t_nes:31548657;jf4hg949:31526829;ahp-both-windows:31556933;ihg5j128:31534457;9gg7f176:31542112;enable_editor_pane_layout:31569726;allow-none:31555437;ac562147:31564510;c7c27ce7:31554789;1h923230:31564177;1532g621_copy:31554320;treatment-23-1:31555779;unuse_dynamic_mcp:31555281;0d8dfbc3:31570291;a1hcc538:31559322;maidictation:31565333;0c1h4866:31566224;vrbsty_tr:31561058;session-mark-done:31558131;5b8j3302:31564601;mangle-name-control:31572633;39a5d156:31574986;2bfb8b39:31576696;"}}
+2026-09-05 12:30:55.765 [trace] #1: https://mobile.events.data.microsoft.com/OneCollector/1.0?cors=true&content-type=application/x-json-stream - end POST 200 {"access-control-allow-credentials":"true","access-control-allow-headers":"Strict-Transport-Security,time-delta-millis,Content-Type,Content-Length","access-control-allow-methods":"POST","access-control-allow-origin":"*","access-control-expose-headers":"time-delta-millis","content-length":"9","content-type":"application/json","date":"Sat, 05 Sep 2026 10:30:54 GMT","server":"Microsoft-HTTPAPI/2.0","strict-transport-security":"max-age=31536000","time-delta-millis":"2593"}
+2026-09-05 12:31:00.374 [trace] [ProtocolServer] request: method=ping id=5
+2026-09-05 12:31:05.379 [trace] [ProtocolServer] request: method=ping id=6
+2026-09-05 12:31:10.393 [trace] [ProtocolServer] request: method=ping id=7
+2026-09-05 12:31:15.409 [trace] [ProtocolServer] request: method=ping id=8
+2026-09-05 12:31:20.426 [trace] [ProtocolServer] request: method=ping id=9
+2026-09-05 12:31:25.430 [trace] [ProtocolServer] request: method=ping id=10
+2026-09-05 12:31:30.445 [trace] [ProtocolServer] request: method=ping id=11
+2026-09-05 12:31:35.454 [trace] [ProtocolServer] request: method=ping id=12
+2026-09-05 12:31:40.462 [trace] [ProtocolServer] request: method=ping id=13
+2026-09-05 12:31:45.466 [trace] [ProtocolServer] request: method=ping id=14
+2026-09-05 12:31:50.479 [trace] [ProtocolServer] request: method=ping id=15
+2026-09-05 12:31:55.488 [trace] [ProtocolServer] request: method=ping id=16
+2026-09-05 12:32:00.491 [trace] [ProtocolServer] request: method=ping id=17
+2026-09-05 12:32:05.507 [trace] [ProtocolServer] request: method=ping id=18
+2026-09-05 12:32:10.521 [trace] [ProtocolServer] request: method=ping id=19
+2026-09-05 12:32:15.528 [trace] [ProtocolServer] request: method=ping id=20
+2026-09-05 12:32:20.545 [trace] [ProtocolServer] request: method=ping id=21
+2026-09-05 12:32:25.558 [trace] [ProtocolServer] request: method=ping id=22
+2026-09-05 12:32:30.569 [trace] [ProtocolServer] request: method=ping id=23
+2026-09-05 12:32:35.585 [trace] [ProtocolServer] request: method=ping id=24
+2026-09-05 12:32:40.589 [trace] [ProtocolServer] request: method=ping id=25
+2026-09-05 12:32:45.602 [trace] [ProtocolServer] request: method=ping id=26
+2026-09-05 12:32:50.605 [trace] [ProtocolServer] request: method=ping id=27
+2026-09-05 12:32:55.615 [trace] [ProtocolServer] request: method=ping id=28
+2026-09-05 12:33:00.626 [trace] [ProtocolServer] request: method=ping id=29
+2026-09-05 12:33:05.637 [trace] [ProtocolServer] request: method=ping id=30
+2026-09-05 12:33:10.647 [trace] [ProtocolServer] request: method=ping id=31
+2026-09-05 12:33:15.660 [trace] [ProtocolServer] request: method=ping id=32
+2026-09-05 12:33:20.677 [trace] [ProtocolServer] request: method=ping id=33
+2026-09-05 12:33:25.685 [trace] [ProtocolServer] request: method=ping id=34
+2026-09-05 12:33:30.692 [trace] [ProtocolServer] request: method=ping id=35
+2026-09-05 12:33:35.699 [trace] [ProtocolServer] request: method=ping id=36
+2026-09-05 12:33:40.715 [trace] [ProtocolServer] request: method=ping id=37
+2026-09-05 12:33:45.732 [trace] [ProtocolServer] request: method=ping id=38
+2026-09-05 12:33:50.741 [trace] [ProtocolServer] request: method=ping id=39
+2026-09-05 12:33:55.756 [trace] [ProtocolServer] request: method=ping id=40
+2026-09-05 12:34:00.772 [trace] [ProtocolServer] request: method=ping id=41
+2026-09-05 12:34:05.777 [trace] [ProtocolServer] request: method=ping id=42
+2026-09-05 12:34:10.780 [trace] [ProtocolServer] request: method=ping id=43
+2026-09-05 12:34:15.796 [trace] [ProtocolServer] request: method=ping id=44
+2026-09-05 12:34:20.801 [trace] [ProtocolServer] request: method=ping id=45
+2026-09-05 12:34:25.815 [trace] [ProtocolServer] request: method=ping id=46
+2026-09-05 12:34:30.826 [trace] [ProtocolServer] request: method=ping id=47
+2026-09-05 12:34:35.835 [trace] [ProtocolServer] request: method=ping id=48
+2026-09-05 12:34:40.850 [trace] [ProtocolServer] request: method=ping id=49
+2026-09-05 12:34:45.862 [trace] [ProtocolServer] request: method=ping id=50
+2026-09-05 12:34:50.869 [trace] [ProtocolServer] request: method=ping id=51
+2026-09-05 12:34:55.883 [trace] [ProtocolServer] request: method=ping id=52
+2026-09-05 12:35:00.900 [trace] [ProtocolServer] request: method=ping id=53
+2026-09-05 12:35:05.908 [trace] [ProtocolServer] request: method=ping id=54
+2026-09-05 12:35:10.923 [trace] [ProtocolServer] request: method=ping id=55
+2026-09-05 12:35:15.936 [trace] [ProtocolServer] request: method=ping id=56
+2026-09-05 12:35:20.948 [trace] [ProtocolServer] request: method=ping id=57
+2026-09-05 12:35:25.963 [trace] [ProtocolServer] request: method=ping id=58
+2026-09-05 12:35:30.970 [trace] [ProtocolServer] request: method=ping id=59
+2026-09-05 12:35:35.979 [trace] [ProtocolServer] request: method=ping id=60
+2026-09-05 12:35:40.222 [info] [ProtocolServer] Client disconnected: e28404b8-30f4-46c8-804c-a3dea5003a06, subscriptions=1
+2026-09-05 12:35:40.224 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-09-05 12:35:40.224 [trace] [Copilot] BYOK model publication enabled: true (root config: true)
+2026-09-05 12:35:40.224 [trace] [Copilot] Found 0 BYOK models
