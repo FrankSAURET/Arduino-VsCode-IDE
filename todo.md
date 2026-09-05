@@ -11,6 +11,16 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.8.0.5 — Arduino CLI mis a jour en 1.5.1
+
+1. ✅ Verification : le binaire embarque dans `arduino-cli/` etait en **1.4.1**, la derniere version publiee par Arduino est la **1.5.1** (5 juin 2026).
+2. ✅ Aucun changement de code necessaire : `src/arduino/cliDownloader.ts` n'ecrit aucun numero en dur, il interroge l'API GitHub « derniere version » a chaque fois. Le retard venait seulement du fichier livre avec le projet.
+3. ✅ Ancien binaire 1.4.1 conserve dans `A Examiner/arduino-cli-1.4.1/` (executable + VERSION + licence), rien d'efface.
+4. ✅ Binaire 1.5.1 installe dans `arduino-cli/`, fichier `VERSION` mis a jour.
+5. ✅ Nouveautes recuperees : le croquis ne se recompile plus quand rien n'a bouge (et le defaut inverse, « croquis cru a jour alors qu'il ne l'est pas », corrige en 1.5.1) ; les bibliotheques listees dans un profil mais non utilisees ne sont plus compilees ; une plateforme peut declarer ses bibliotheques requises ; messages parasites d'installation supprimes.
+6. ✅ Aucune rupture pour l'extension : les deux commandes dont la sortie est relue (`board list --format json` et `config dump --json`) rendent exactement la meme structure qu'avant.
+7. ✅ Verifie : construction (`npm run build:ext`) OK, **47 tests passent**, compilation reelle d'un croquis Blink pour Arduino UNO reussie avec le nouveau binaire.
+
 # v2026.8.0.4 — F5 : le profil de débogage sort du projet
 
 1. ✅ Symptôme revenu : la fenêtre « Extension Development Host » s'ouvrait puis se refermait aussitôt.
