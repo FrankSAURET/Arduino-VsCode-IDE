@@ -8,8 +8,16 @@
 6. ⬜ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
 7. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
-9. ⬜ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
+9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
+
+# v2026.8.0.1 — Panneau de sortie : plus d'ouverture pendant l'analyse IntelliSense
+
+1. ✅ Cause : `src/arduino/arduino.ts` appelait `arduinoChannel.show()` pour **tous** les modes de construction, y compris `BuildMode.Analyze` — la compilation de fond qui sert uniquement à générer la configuration IntelliSense. Le panneau « Arduino » s'ouvrait donc tout seul à chaque analyse (ouverture de croquis, changement de carte, enregistrement).
+2. ✅ `show()` désormais conditionné à `buildMode !== BuildMode.Analyze` : seules les vraies compilations (Vérifier, Téléverser, Téléverser via programmateur) affichent le panneau.
+3. ✅ `clearOutputOnBuild` (effacement du panneau) déplacé dans le même test : une analyse de fond n'efface plus le journal de la compilation précédente.
+4. ✅ Les messages de l'analyse continuent d'être écrits dans le panneau — ils sont simplement consultables sans être imposés.
+5. ✅ Vérification des types (`tsc --noEmit`) : aucune erreur.
 
 # v2026.8.0 — `ms-vscode.cpptools` : dépendance dure → recommandation
 

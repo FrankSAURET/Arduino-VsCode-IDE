@@ -634,10 +634,14 @@ export class ArduinoApp {
         await vscode.workspace.saveAll(false);
 
         // we prepare the channel here since all following code will
-        // or at leas can possibly output to it
-        arduinoChannel.show();
-        if (VscodeSettings.getInstance().clearOutputOnBuild) {
-            arduinoChannel.clear();
+        // or at leas can possibly output to it.
+        // Analyze est une compilation de fond pour IntelliSense : ne pas voler le focus
+        // en ouvrant le panneau, seules les vraies compilations (Verify/Upload) l'affichent.
+        if (buildMode !== BuildMode.Analyze) {
+            arduinoChannel.show();
+            if (VscodeSettings.getInstance().clearOutputOnBuild) {
+                arduinoChannel.clear();
+            }
         }
         arduinoChannel.start(vscode.l10n.t("{0} sketch '{1}'", translateBuildMode(buildMode), dc.sketch));
 
