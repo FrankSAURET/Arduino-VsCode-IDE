@@ -7,6 +7,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // Configuration de diagnostic : l'hote demarre SANS debogueur attache.
+            // Les hotes qui meurent en 134 le font a 1,20-1,25 s de leur
+            // demarrage, avec une regularite de metronome, alors que les hotes
+            // sains atteignent leur exthost.log a 1,80-1,93 s. Un delai fixe,
+            // pas une pénurie de ressources : le suspect est l'attachement du
+            // debogueur qui n'aboutit pas dans le temps imparti.
+            // Si cette configuration ne plante jamais, la cause est confirmee.
+            "name": "Launch Extension (sans debogueur)",
+            "type": "extensionHost",
+            "request": "launch",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceRoot}"
+            ],
+            "noDebug": true,
+            "preLaunchTask": "build"
+        },
+        {
             "name": "Launch Extension",
             "type": "extensionHost",
             "request": "launch",
@@ -17,6 +34,8 @@
             "outFiles": [
                 "${workspaceRoot}/out/src/**/*.js"
             ],
+            // Journal du debogueur, pour capturer l'echec d'attachement.
+            "trace": true,
             "preLaunchTask": "build"
         },
         {

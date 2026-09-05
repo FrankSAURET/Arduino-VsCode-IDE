@@ -1,6 +1,6 @@
 # Plantage de l'hôte d'extensions — code 134
 
-État au 5 septembre 2026. **Cause identifiée, correction appliquée — à valider par F5 répétés.**
+État au 5 septembre 2026. **Toujours non résolu.** Un délai fixe est enfin mesuré (ci-dessous) ; test discriminant en attente.
 
 ## Le défaut
 
@@ -126,6 +126,55 @@ demandé, et meurt dès qu'un F5 en ferme une pendant qu'une autre démarre.
 
 Le trou dans `debuggerManager.ts` était réel : `activationEvents` contient
 `onDebug`, donc ce chemin se déclenche hors de tout garde-fou.
+
+
+## Mesure décisive — un délai fixe, pas un aléa
+
+Comparaison sur 18 fenêtres d'une même session (`20260905T151647`) du temps écoulé
+entre `Started local extension host` (dans `renderer.log`) et, selon le cas, la
+première ligne de `exthost.log` ou la mort du processus :
+
+| Fenêtres | Événement | Délai |
+|---|---|---|
+| 11 vivantes | 1re ligne de `exthost.log` | **1,80 – 1,93 s** |
+| 7 mortes | `exited with code: 134` | **1,20 – 1,25 s** |
+
+Sept plantages dans une fourchette de 50 ms : ce n'est pas une pénurie de
+ressources, c'est un **délai d'attente qui expire**. L'hôte est abattu avant
+d'avoir ouvert son propre fichier de journal — donc avant tout code d'extension,
+`activate()` compris. Le dossier `exthost/` absent des fenêtres mortes le confirme.
+
+**Conséquence : le code de l'extension est hors de cause.** Toutes les hypothèses
+qui le visaient (`execSync`, ABI native, ressources non libérées) tombent.
+
+Suspect restant : l'**attachement du débogueur**. C'est le seul mécanisme qui
+impose un délai fixe à ce moment précis, et c'est cohérent avec le seul gain déjà
+obtenu (retrait de `runtimeExecutable`, qui faisait démarrer l'hôte en pause).
+
+### Test discriminant à faire
+
+`.vscode/launch.json` contient désormais **« Launch Extension (sans debogueur) »**
+(`noDebug: true`). Lancer celle-ci une dizaine de fois d'affilée :
+
+- **aucun plantage** → l'attachement du débogueur est la cause, chercher du côté
+  de js-debug et du délai d'attente ;
+- **plantages identiques** → le débogueur est hors de cause, il reste
+  l'initialisation de l'hôte lui-même (verrou de `workspaceStorage`, chargement
+  des ~40 extensions installées).
+
+La configuration « Launch Extension » normale a reçu `"trace": true` : elle écrit
+un journal js-debug complet, à récupérer après un plantage.
+
+## Correction appliquée en v2026.8.0.8 — sans effet sur le plantage
+
+Les ressources listées ci-dessous n'étaient effectivement pas libérées, et le
+diagnostic « le 134 tombe à la fermeture » semblait tenir sur cinq sessions.
+**Il était faux** : la mesure des délais ci-dessus montre que l'hôte meurt
+1,2 s après son *propre* démarrage. La coïncidence avec la fermeture de la
+fenêtre précédente venait de l'enchaînement rapide des F5.
+
+Les corrections restent justes en soi — ces ressources doivent être libérées —
+mais elles ne traitent pas le plantage. **À conserver, sans les créditer.**
 
 ## Corrections tentées avant l'analyse — sans effet
 

@@ -11,6 +11,18 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.8.0.9 — Plantage 134 : un délai fixe mesuré, le code de l'extension est hors de cause
+
+1. ℹ️ **Correction du diagnostic v2026.8.0.8.** « Le 134 tombe à la fermeture d'un hôte » était faux. La coïncidence avec la fermeture de la fenêtre précédente venait simplement de l'enchaînement rapide des F5.
+2. ✅ Mesure sur les 18 fenêtres de la session 15:16:47, entre `Started local extension host` et soit la 1re ligne de `exthost.log`, soit la mort : **11 vivantes à 1,80–1,93 s**, **7 mortes à 1,20–1,25 s**. Sept plantages dans 50 ms d'écart.
+3. ✅ Conclusion : un **délai d'attente qui expire**, pas une pénurie de ressources ni un aléa. L'hôte est abattu **avant d'ouvrir son propre `exthost.log`**, donc avant tout code d'extension, `activate()` compris — d'où l'absence systématique du dossier `exthost/` chez les fenêtres mortes.
+4. ℹ️ **Le code de l'extension est hors de cause.** Toutes les hypothèses qui le visaient tombent : `execSync` (v2026.8.0.x), ABI de `usb-detection`, ressources non libérées (v2026.8.0.8). Les correctifs de la .8 restent justes en soi et sont conservés, mais ils ne traitent pas le plantage.
+5. ℹ️ La v2026.8.0.7 concluait « cause : mémoire ». Écarté : une pénurie ne produit pas sept morts à 50 ms d'écart.
+6. ✅ Suspect restant : l'**attachement du débogueur** — seul mécanisme imposant un délai fixe à cet instant, et cohérent avec le seul gain déjà obtenu (retrait de `runtimeExecutable`).
+7. ✅ Configuration **« Launch Extension (sans debogueur) »** ajoutée (`noDebug: true`) et `"trace": true` posé sur la configuration normale pour capturer le journal js-debug.
+8. ⏳ **À faire par Frank — test discriminant** : lancer « Launch Extension (sans debogueur) » une dizaine de fois d'affilée. Aucun plantage → l'attachement du débogueur est la cause. Plantages identiques → chercher dans l'initialisation de l'hôte (verrou `workspaceStorage`, chargement des ~40 extensions installées).
+9. ℹ️ `--disable-extensions`, ajouté en v2026.8.0.7, ne figure plus dans `launch.json` ; les journaux montrent de toute façon cortex-debug et consorts toujours chargés.
+
 # v2026.8.0.8 — Plantage 134 : cause trouvée, ressources non libérées à l'arrêt
 
 1. ✅ Corrélation établie sur cinq sessions de `main.log` : le code 134 tombe **à la fermeture** d'un hôte d'extensions, jamais pendant son fonctionnement. Les fermetures propres sortent en `code: 0`. Exemple net (session 15:50:52) : l'hôte 24072 sort en 0 et l'hôte 30524, démarré 1,2 s plus tôt, sort en 134 **à la même milliseconde**.
