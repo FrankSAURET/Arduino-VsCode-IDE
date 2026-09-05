@@ -11,15 +11,26 @@
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.8.0.7 — F5 : `--disable-extensions` enfin appliqué
+
+1. ✅ Journaux frais capturés sur deux plantages consécutifs (14:03:58 et 14:05:07) : signature identique aux précédents — 60 lignes de `renderer.log`, aucun `exthost.log`, `crashed with code 134`.
+2. ✅ L'hôte d'extensions meurt à **1,2 s** du démarrage, **avant d'avoir écrit une seule ligne**. Chez une fenêtre qui survit, la ligne suivante est toujours le `[DEP0040] punycode` émis par l'hôte lui-même ; chez une fenêtre qui plante, elle n'arrive jamais.
+3. ✅ Cause : mémoire. L'hôte réserve son tas d'un coup pour charger les ~40 extensions ; s'il n'obtient pas la place il s'avorte lui-même (134 = SIGABRT, pas un processus tué de l'extérieur). Relevé au moment des plantages : 4,2 Go libres sur 15,9, VS Code seul à 5,3 Go sur 30 processus. Cela explique l'intermittence que rien d'autre n'expliquait — même configuration, 5 plantages contre 4 réussites le matin, 2 contre 1 l'après-midi.
+4. ✅ Correction : `--disable-extensions` placé dans `args`, où VS Code le **reconnaît** et le transmet, sur les trois configurations de `.vscode/launch.json`.
+5. ✅ `runtimeArgs` et `--user-data-dir` retirés : ni l'un ni l'autre n'était appliqué. Preuve : la fenêtre plantée de 14:03 chargeait toujours cortex-debug, docsmsft, twxs.cmake, pythonsnippets3 et nsis, et écrivait dans le profil principal.
+6. ℹ️ **Correction des diagnostics précédents.** La v2026.8.0.6 affirmait que `runtimeArgs` réglait le problème : c'est faux, il est ignoré lui aussi. Les v2026.8.0.2 (« mutex coincé ») et v2026.8.0.4 (« profil trop lent à recréer ») étaient fausses également. Seul le constat du plantage lui-même tenait.
+7. ℹ️ Piste du doublon **abandonnée** : `extensions.json` (le registre que VS Code lit réellement) liste 91 extensions, aucune Arduino. Les deux dossiers `electropol-fr.arduino-vscode-ide-2026.7.5` et `electropol-fr.vscode-arduino-ide-2026.4.1` sont des résidus de désinstallation sans `package.json` : VS Code ne les voit pas. Non supprimés.
+8. ⏳ À valider par Frank : plusieurs F5 d'affilée, mémoire basse, sans plantage.
+
 # v2026.8.0.6 — F5 : la vraie cause, l'hôte d'extensions qui plante
 
 1. ✅ Le correctif de la v2026.8.0.4 n'a rien changé : la fenêtre continuait à s'ouvrir puis à se refermer.
 2. ✅ Preuve dans les journaux : les fenêtres de débogage écrivaient dans le profil **principal** `%APPDATA%\Code\logs` et chargeaient les ~40 extensions installées (Copilot, Pylance, cortex-debug, Vue, .NET…). Le profil isolé n'était jamais utilisé — sa dernière session de journal datait d'un test, pas d'un F5.
-3. ✅ Cause réelle : `--user-data-dir` placé dans `args` est **jeté en silence**. Pour le type `extensionHost`, VS Code filtre `args` et ne garde que les arguments qu'il reconnaît. Le profil isolé des v2026.8.0.2 et .4 n'a donc jamais été appliqué.
+3. ❌ **Faux** (voir v2026.8.0.7) — `runtimeArgs` est ignoré lui aussi. Affirmait : cause réelle = `--user-data-dir` placé dans `args` est **jeté en silence**. Pour le type `extensionHost`, VS Code filtre `args` et ne garde que les arguments qu'il reconnaît. Le profil isolé des v2026.8.0.2 et .4 n'a donc jamais été appliqué.
 4. ✅ Conséquence : la fenêtre repartait sur le profil principal, empilait toutes les extensions, et l'hôte d'extensions tombait **une seconde après le démarrage** — `crashed with code 134` (SIGABRT), 8 fois dans le journal du jour. Le renderer démarrait, mais aucun `exthost.log` n'était créé.
-5. ✅ Correction : `--user-data-dir` et `--disable-extensions` déplacés dans `runtimeArgs`, qui est transmis tel quel à l'exécutable, sur les trois configurations de `.vscode/launch.json`.
+5. ❌ **Faux** (voir v2026.8.0.7) — correctif jamais appliqué. Affirmait : `--user-data-dir` et `--disable-extensions` déplacés dans `runtimeArgs`, qui est transmis tel quel à l'exécutable, sur les trois configurations de `.vscode/launch.json`.
 6. ✅ Vérifié que `--disable-extensions` ne casse rien : aucun `extensionDependencies` au manifeste, `ms-vscode.cpptools` n'est qu'une recommandation depuis la v2026.8.0.
-7. ✅ Testé : fenêtre ouverte, toujours vivante 28 s plus tard, journal créé dans le profil isolé, **0 plantage** — contre une mort en ~1 s auparavant.
+7. ❌ **Non probant** (voir v2026.8.0.7) — testé : fenêtre ouverte, toujours vivante 28 s plus tard, journal créé dans le profil isolé, **0 plantage** — contre une mort en ~1 s auparavant.
 8. ℹ️ Les diagnostics des v2026.8.0.2 (« mutex coincé ») et v2026.8.0.4 (« profil trop lent à recréer ») étaient tous deux faux. Le profil hors dépôt de la .4 reste utile, mais il ne servait à rien tant que l'argument était ignoré.
 
 # v2026.8.0.5 — Arduino CLI mis a jour en 1.5.1

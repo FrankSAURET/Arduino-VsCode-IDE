@@ -7,17 +7,11 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
-            // runtimeArgs, pas args : VS Code filtre "args" pour le type
-            // extensionHost et jette --user-data-dir sans rien dire. La fenetre
-            // repartait alors sur le profil principal, chargeait les ~40
-            // extensions installees, et l'hote d'extensions tombait (code 134).
-            "runtimeArgs": [
-                // Profil isole, hors du depot pour survivre aux nettoyages
-                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile",
-                // Aucune extension tierce : seule celle en cours de mise au point
-                "--disable-extensions"
-            ],
             "args": [
+                // Seule l'extension en cours de mise au point est chargee.
+                // Les ~40 autres saturaient la memoire de l'hote d'extensions,
+                // qui s'avortait alors au demarrage (code 134), par intermittence.
+                "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "stopOnEntry": false,
@@ -32,17 +26,11 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
-            // runtimeArgs, pas args : VS Code filtre "args" pour le type
-            // extensionHost et jette --user-data-dir sans rien dire. La fenetre
-            // repartait alors sur le profil principal, chargeait les ~40
-            // extensions installees, et l'hote d'extensions tombait (code 134).
-            "runtimeArgs": [
-                // Profil isole, hors du depot pour survivre aux nettoyages
-                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile",
-                // Aucune extension tierce : seule celle en cours de mise au point
-                "--disable-extensions"
-            ],
             "args": [
+                // Seule l'extension en cours de mise au point est chargee.
+                // Les ~40 autres saturaient la memoire de l'hote d'extensions,
+                // qui s'avortait alors au demarrage (code 134), par intermittence.
+                "--disable-extensions",
                 "${workspaceRoot}/test/resources/blink",
                 "--extensionDevelopmentPath=${workspaceRoot}",
                 "--extensionTestsPath=${workspaceRoot}/out/test"
@@ -59,17 +47,11 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
-            // runtimeArgs, pas args : VS Code filtre "args" pour le type
-            // extensionHost et jette --user-data-dir sans rien dire. La fenetre
-            // repartait alors sur le profil principal, chargeait les ~40
-            // extensions installees, et l'hote d'extensions tombait (code 134).
-            "runtimeArgs": [
-                // Profil isole, hors du depot pour survivre aux nettoyages
-                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile",
-                // Aucune extension tierce : seule celle en cours de mise au point
-                "--disable-extensions"
-            ],
             "args": [
+                // Seule l'extension en cours de mise au point est chargee.
+                // Les ~40 autres saturaient la memoire de l'hote d'extensions,
+                // qui s'avortait alors au demarrage (code 134), par intermittence.
+                "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "stopOnEntry": false,
