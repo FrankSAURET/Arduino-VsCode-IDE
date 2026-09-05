@@ -7,13 +7,18 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
+            // runtimeArgs, pas args : VS Code filtre "args" pour le type
+            // extensionHost et jette --user-data-dir sans rien dire. La fenetre
+            // repartait alors sur le profil principal, chargeait les ~40
+            // extensions installees, et l'hote d'extensions tombait (code 134).
+            "runtimeArgs": [
+                // Profil isole, hors du depot pour survivre aux nettoyages
+                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile",
+                // Aucune extension tierce : seule celle en cours de mise au point
+                "--disable-extensions"
+            ],
             "args": [
-                "--extensionDevelopmentPath=${workspaceRoot}",
-                // Profil isole, hors du projet : garde la fenetre de debogage
-                // separee de l'instance de travail. Hors du depot, il survit aux
-                // nettoyages (git clean) — sinon le premier F5 qui suit doit le
-                // recreer, ce qui prend ~40 s et fait echouer le lancement.
-                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile"
+                "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,
@@ -27,15 +32,20 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
+            // runtimeArgs, pas args : VS Code filtre "args" pour le type
+            // extensionHost et jette --user-data-dir sans rien dire. La fenetre
+            // repartait alors sur le profil principal, chargeait les ~40
+            // extensions installees, et l'hote d'extensions tombait (code 134).
+            "runtimeArgs": [
+                // Profil isole, hors du depot pour survivre aux nettoyages
+                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile",
+                // Aucune extension tierce : seule celle en cours de mise au point
+                "--disable-extensions"
+            ],
             "args": [
                 "${workspaceRoot}/test/resources/blink",
                 "--extensionDevelopmentPath=${workspaceRoot}",
-                "--extensionTestsPath=${workspaceRoot}/out/test",
-                // Profil isole, hors du projet : garde la fenetre de debogage
-                // separee de l'instance de travail. Hors du depot, il survit aux
-                // nettoyages (git clean) — sinon le premier F5 qui suit doit le
-                // recreer, ce qui prend ~40 s et fait echouer le lancement.
-                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile"
+                "--extensionTestsPath=${workspaceRoot}/out/test"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,
@@ -49,13 +59,18 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
+            // runtimeArgs, pas args : VS Code filtre "args" pour le type
+            // extensionHost et jette --user-data-dir sans rien dire. La fenetre
+            // repartait alors sur le profil principal, chargeait les ~40
+            // extensions installees, et l'hote d'extensions tombait (code 134).
+            "runtimeArgs": [
+                // Profil isole, hors du depot pour survivre aux nettoyages
+                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile",
+                // Aucune extension tierce : seule celle en cours de mise au point
+                "--disable-extensions"
+            ],
             "args": [
-                "--extensionDevelopmentPath=${workspaceRoot}",
-                // Profil isole, hors du projet : garde la fenetre de debogage
-                // separee de l'instance de travail. Hors du depot, il survit aux
-                // nettoyages (git clean) — sinon le premier F5 qui suit doit le
-                // recreer, ce qui prend ~40 s et fait echouer le lancement.
-                "--user-data-dir=${env:LOCALAPPDATA}/Arduino-VsCode-IDE-debug-profile"
+                "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,

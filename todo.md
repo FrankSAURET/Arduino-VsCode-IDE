@@ -5,11 +5,22 @@
 3. ✅ Ajouter `package.nls.fr.json` (traduction française des titres de commandes/réglages du Marketplace) — v2026.7.4
 4. ✅ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation — v2026.7.4
 5. ✅ Fichiers supprimables du repo (aucun supprimé, cf. liste v2026.7.0 ci-dessous)
-6. ⬜ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
+6. ✅ Vérifier l'affichage français des commandes/réglages (palette + UI des réglages) sur une instance VS Code en français
 7. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
+
+# v2026.8.0.6 — F5 : la vraie cause, l'hôte d'extensions qui plante
+
+1. ✅ Le correctif de la v2026.8.0.4 n'a rien changé : la fenêtre continuait à s'ouvrir puis à se refermer.
+2. ✅ Preuve dans les journaux : les fenêtres de débogage écrivaient dans le profil **principal** `%APPDATA%\Code\logs` et chargeaient les ~40 extensions installées (Copilot, Pylance, cortex-debug, Vue, .NET…). Le profil isolé n'était jamais utilisé — sa dernière session de journal datait d'un test, pas d'un F5.
+3. ✅ Cause réelle : `--user-data-dir` placé dans `args` est **jeté en silence**. Pour le type `extensionHost`, VS Code filtre `args` et ne garde que les arguments qu'il reconnaît. Le profil isolé des v2026.8.0.2 et .4 n'a donc jamais été appliqué.
+4. ✅ Conséquence : la fenêtre repartait sur le profil principal, empilait toutes les extensions, et l'hôte d'extensions tombait **une seconde après le démarrage** — `crashed with code 134` (SIGABRT), 8 fois dans le journal du jour. Le renderer démarrait, mais aucun `exthost.log` n'était créé.
+5. ✅ Correction : `--user-data-dir` et `--disable-extensions` déplacés dans `runtimeArgs`, qui est transmis tel quel à l'exécutable, sur les trois configurations de `.vscode/launch.json`.
+6. ✅ Vérifié que `--disable-extensions` ne casse rien : aucun `extensionDependencies` au manifeste, `ms-vscode.cpptools` n'est qu'une recommandation depuis la v2026.8.0.
+7. ✅ Testé : fenêtre ouverte, toujours vivante 28 s plus tard, journal créé dans le profil isolé, **0 plantage** — contre une mort en ~1 s auparavant.
+8. ℹ️ Les diagnostics des v2026.8.0.2 (« mutex coincé ») et v2026.8.0.4 (« profil trop lent à recréer ») étaient tous deux faux. Le profil hors dépôt de la .4 reste utile, mais il ne servait à rien tant que l'argument était ignoré.
 
 # v2026.8.0.5 — Arduino CLI mis a jour en 1.5.1
 
