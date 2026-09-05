@@ -1,6 +1,6 @@
 # À faire
 
-1. ⬜ Tester sur machine réelle : installation d'une bibliothèque depuis le Library Manager (doit apparaître « installée » — correctif v2026.7.0)
+1. ✅ Tester sur machine réelle : installation d'une bibliothèque depuis le Library Manager (doit apparaître « installée » — correctif v2026.7.0)
 2. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 3. ✅ Ajouter `package.nls.fr.json` (traduction française des titres de commandes/réglages du Marketplace) — v2026.7.4
 4. ✅ Disposer proprement `_sketchStatusBar` (deviceContext.ts) et le watcher du CompletionProvider à la désactivation — v2026.7.4
@@ -10,6 +10,16 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 9. ✅ Valider l'installation sur VSCodium / Open VSX maintenant que `ms-vscode.cpptools` n'est plus une dépendance dure (v2026.8.0)
 10. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
+
+# v2026.8.0.2 — F5 : la fenêtre de débogage ne se referme plus toute seule
+
+1. ✅ Symptôme : à chaque F5, la fenêtre « Extension Development Host » s'ouvrait puis disparaissait aussitôt.
+2. ✅ Cause (hors code de l'extension) : VS Code pose un jeton unique (« mutex ») pour signaler qu'une instance tourne. Ce jeton restait coincé (`Error: Error mutex already exists` dans le journal, plus de 40 processus `Code` résiduels). La nouvelle fenêtre était alors renvoyée vers l'instance existante et fermée immédiatement.
+3. ✅ Vérifié : une fenêtre lancée **sans** `--extensionDevelopmentPath` mourait pareil — l'extension était hors de cause. Avec un profil isolé (`--user-data-dir`), la fenêtre survit.
+4. ✅ `.vscode/launch.json` : `--user-data-dir=${workspaceRoot}/.vscode-test-profile` ajouté aux trois configurations (Launch Extension, Launch Tests, Launch Extension in Development). Le débogage utilise désormais son propre profil, séparé de l'instance de travail.
+5. ✅ `.gitignore` : `.vscode-test-profile` ajouté. Le paquet publié n'est pas concerné, `.vscode/**` étant déjà exclu par `.vscodeignore`.
+6. ✅ Testé en conditions réelles : la fenêtre de développement reste ouverte. Suite de tests **47 passing**.
+7. ℹ️ Effet de bord voulu : ce profil démarre vierge (pas les extensions ni les réglages de l'instance principale) — c'est l'environnement propre recommandé pour mettre au point une extension.
 
 # v2026.8.0.1 — Panneau de sortie : plus d'ouverture pendant l'analyse IntelliSense
 
