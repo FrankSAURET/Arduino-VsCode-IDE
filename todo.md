@@ -5,6 +5,17 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 9. ⬜ Vérifier l'affichage réel de la notification C/C++ (VS Code sans cpptools installé, IntelliSense activé)
 
+# v2026.9.0.11 — F5 : retour au fonctionnement d'origine
+
+1. ✅ **Extensions réactivées au F5.** `--disable-extensions` retiré des trois configurations de `.vscode/launch.json` : la fenêtre de mise au point recharge les extensions de Frank comme avant la séance de diagnostic.
+2. ✅ Configuration de diagnostic `Launch Extension (sans debogueur)` (`noDebug: true`) retirée. `Launch Extension` redevient la première, donc celle lancée par défaut au F5.
+3. ✅ `"trace": true` retiré : journal de l'adaptateur de mise au point, posé pour capturer un échec d'attachement qui n'a jamais été démontré.
+4. ✅ Reliquats de diagnostic vérifiés absents : `--sync=off`, `--verbose`, `--log=trace`, `--user-data-dir`, `env`/`NODE_OPTIONS`, `runtimeArgs`. `launch.json` revenu à **3 configurations**, JSON validé.
+5. ✅ **Seul acquis conservé** : `runtimeExecutable: "${execPath}"` et `stopOnEntry` restés retirés. Le champ faisait relancer VS Code comme un simple programme node, l'hôte démarrait en pause (`STOPPED on first line for debugging`). Kablix, sans ce champ, ne plante pas.
+6. ℹ️ **Le plantage 134 se reproduit avec une autre extension que celles de Frank** : la cause est extérieure au code du projet. Recherche mise en pause à sa demande.
+7. ℹ️ Modifications système de la séance toutes annulées : `argv.json` (créé puis supprimé, n'existait pas), clé de registre `LocalDumps\Code.exe` (créée puis retirée avec son parent vide).
+8. ⏳ À faire par Frank : **réactiver la synchronisation des réglages** (palette → « Synchronisation des paramètres : activer »), coupée par lui pour une contre-épreuve.
+
 # v2026.9.0.10 — Plantage 134 : trois hypothèses infirmées, corrections conservées ; préparation de la publication
 
 1. ℹ️ **Le plantage 134 n'est toujours pas expliqué.** Trois hypothèses successives ont été formulées puis **infirmées par contre-épreuve**. Aucune correction du jour ne le traite. À dire tel quel : ne pas créditer ces changements du correctif.
