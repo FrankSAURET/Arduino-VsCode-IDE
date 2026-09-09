@@ -1,6 +1,30 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.9.1
+
+- Release date: September 2026
+
+### Added
+
+- **Guided setup of the Arduino environment**: on a machine with no Arduino IDE, downloading `arduino-cli` was not enough — the CLI ships no compiler, so the board list stayed empty, *Verify* failed and IntelliSense had no header paths, with nothing offering to fix it. A single notification now offers to install everything, and one progress bar runs the whole sequence: `arduino-cli` (downloaded when missing), package index update, `arduino:avr` core (avr-gcc and avrdude), library index update, C/C++ extension. Every step already satisfied is skipped. The `arduino:avr` core is the one behind the Uno, Nano and Mega; other cores go through the Board Manager as before
+- **"Arduino: Install the Arduino Environment" command** to run that setup again by hand at any time
+- **"Arduino: Rename a Serial Port" command**: boards using a generic USB-to-serial bridge carry the bridge maker's USB identifiers, shared by thousands of different products, so no tool can name the board itself. A name given here is remembered per port in the `arduino.portNames` setting; clearing it returns to automatic detection
+- **MiniCore added to the default board URLs**, so ATmega328PB-based boards can be selected without configuring anything first. Existing custom URL lists keep their entries and simply gain the missing defaults
+- **Version number at the bottom of the welcome page**
+
+### Fixed
+
+- **Unrecognised serial ports are no longer labelled "Unknown"**: the port name now falls back through user-given name, board recognised by the CLI, USB product name, USB manufacturer, a built-in table of common USB-to-serial bridges (CH340/CH341/CH9102, CP2102/CP2105/CP2108, FTDI, PL2303, native Espressif and Raspberry Pi USB), and finally the port itself
+- **Motherboard serial ports are told apart from boards**: a port with no USB identifiers at all (COM1 and the like) now reads "Serial port" instead of "Unknown", which made it indistinguishable from an unrecognised board
+- **The board selector refreshes immediately after a rename**, instead of waiting for the next scan
+- **Only one setup notification is shown**: the C/C++ recommendation no longer stacks on top of the environment prompt — it appears only once the environment is complete
+- **IntelliSense configuration is rebuilt after a core is installed**: the `c_cpp_properties.json` generated without a core could not contain valid header paths
+
+### Changed
+
+- **French translation completed** for the environment setup, the CLI download prompt, the serial monitor messages and the remaining interface strings
+
 ## Version 2026.9.0
 
 - Release date: September 2026

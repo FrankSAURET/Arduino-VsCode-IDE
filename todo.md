@@ -4,6 +4,16 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
 
+# v2026.9.1.18 — Préparation de la publication 2026.9.1
+
+1. ✅ **Version publique 2026.9.0 → 2026.9.1** (2026.9.0 déjà publiée, même mois donc incrément +1). `buildNumber` : `2026.9.1.18`, compteur jamais remis à zéro.
+2. ✅ **Traductions françaises complétées** — 24 chaînes `vscode.l10n.t` manquaient dans `l10n/bundle.l10n.fr.json` : tout `environmentSetup.ts` (installation guidée), « Voir les versions » du téléchargement du CLI, trois messages du moniteur série, le chemin de sortie invalide d'`arduino.yaml`, l'ouverture de l'accueil. Vérification par script : 264 chaînes du code, 264 traduites, 0 manquante.
+3. ✅ **Manifeste déjà complet** : 51 clefs dans `package.nls.json`, 51 dans `package.nls.fr.json`, aucun écart.
+4. ✅ **CHANGELOG.md** : section `Version 2026.9.1` rédigée (Added / Fixed / Changed) couvrant les lots .12 à .17. Le lot .11 (configuration de mise au point F5) est interne, volontairement absent.
+5. ✅ Libellés de commandes cités dans le CHANGELOG vérifiés contre `package.nls.json` : « Arduino: Install the Arduino Environment » et « Arduino: Rename a Serial Port ».
+6. ✅ Construction, `tslint` et validation JSON des quatre manifestes/paquets : propres.
+7. ⏳ **Publication non faite** : attend l'accord explicite de Frank. Paquet `.vsix` non construit non plus.
+
 # v2026.9.0.17 — Ligne de version invisible en extension installee
 
 1. ✅ **Cause trouvee** : la chaine passait par `vscode.l10n.t("Version {0}", …)`, mais la clef n'existait pas dans `l10n/bundle.l10n.fr.json`. En F5, VS Code retombe sur la chaine anglaise du code et la ligne s'affiche ; avec le paquet `l10n` charge (extension installee, interface en francais), la clef absente sort vide — paragraphe vide, donc invisible. Rien a voir avec le mode production.
@@ -25,7 +35,7 @@
 2. ✅ **Deux numéros selon le mode** : en production, la version publique du manifeste (`2026.9.0`) ; hors production, le numéro interne à 4 segments (`buildNumber`, `2026.9.0.15`). Conforme à la règle « l'utilisateur ne voit jamais le 4e segment ».
 3. ✅ Nouveau `src/extensionInfo.ts` : le mode d'exécution n'était mémorisé nulle part. `setExtensionMode(context.extensionMode)` est appelé en tête d'`activate`, `isProductionMode()` et `getExtensionPackageJSON()` servent de point d'accès unique. Sans information de mode, on suppose la production — un doute ne doit rien divulguer d'interne.
 4. ✅ Chaîne « Version {0} » passée par `vscode.l10n.t`, langue de base seulement.
-5. ⏳ Traduction de la chaîne « Version {0} » à faire avant publication.
+5. ✅ Sans objet : le libellé est sorti du catalogue au lot v2026.9.0.17.
 6. ✅ Compilation TypeScript propre.
 
 # v2026.9.0.14 — Installation guidée de l'environnement Arduino (machine sans Arduino IDE)
@@ -40,7 +50,7 @@
 8. ✅ Après installation d'un cœur, `arduino.rebuildIntelliSenseConfig` est relancé : le `c_cpp_properties.json` généré sans cœur ne pouvait pas contenir de chemins d'en-têtes valides.
 9. ✅ Un seul cœur installé d'office (`arduino:avr`), choix assumé : c'est celui des Uno/Nano/Mega. Les autres passent par le gestionnaire de cartes.
 10. ⏳ À valider sur une machine réellement vierge (sans Arduino IDE ni arduino-cli) : affichage de la notification et déroulé complet du parcours.
-11. ⏳ Traductions : chaînes anglaises et françaises du manifeste faites ; les chaînes `vscode.l10n.t` de `environmentSetup.ts` restent à traduire dans `l10n/` avant publication.
+11. ✅ Traductions : manifeste et chaînes `vscode.l10n.t` de `environmentSetup.ts` faites (lot v2026.9.1.18).
 12. ✅ Compilation TypeScript et tslint propres. Détection vérifiée à l'exécution sur code compilé (CLI présent → cœurs vus ; CLI absent + disque → repli ; rien → environnement incomplet).
 
 # v2026.9.0.13 — MiniCore ajouté aux URLs de cartes par défaut
@@ -60,7 +70,7 @@
 6. ✅ `ArduinoHomePanel.refreshConnectedBoards()` ajouté : le sélecteur se rafraîchit aussitôt après un renommage, sans attendre la scrutation suivante.
 7. ✅ Résolution vérifiée sur les trois ports réels de la machine plus quatre cas de repli : les six rangs sortent le libellé attendu. Construction et `tslint` propres.
 8. ℹ️ **La signature de la puce ne peut pas servir à remplir la liste** : la lire impose d'ouvrir le port et de réinitialiser la carte, ce qui couperait un croquis en cours ou un moniteur série ouvert. Elle identifie de plus le microcontrôleur, jamais le modèle de carte.
-9. ⏳ Traduction : seul le français est à jour (langue de base anglaise incluse). Autres langues à faire avant publication.
+9. ✅ Traduction : français completé au lot v2026.9.1.18. Aucune autre langue n'est fournie par le projet.
 
 # v2026.9.0.11 — F5 : retour au fonctionnement d'origine
 
