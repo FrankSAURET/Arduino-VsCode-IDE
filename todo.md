@@ -4,6 +4,15 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
 
+# v2026.9.1.19 — Fausse alerte « environnement Arduino manquant » au demarrage
+
+1. ✅ **Cause** : la notification part d'un minuteur de 12 s dans [extension.ts:754](src/extension.ts#L754) qui lit `arduinoApp.settings`. Or `ArduinoActivator.activate()` n'est appele qu'a la premiere commande ou a l'ouverture d'un panneau : au lancement de VS Code sans croquis, `initialized` est faux, `commandPath` vaut `""`, donc `hasCli` est faux et l'alerte s'affiche alors que l'environnement est complet.
+2. ✅ **`findUsableCli()` ajoute** dans [environmentSetup.ts](src/arduino/environmentSetup.ts) : quand le chemin fourni est vide ou muet, le CLI est recherche seul — reglages `arduino.commandPath`/`arduino.path`, CLI telecharge par l'extension, puis resolution systeme (PATH, Arduino IDE 2). `getEnvironmentStatus` prend un `extensionPath` optionnel pour cela.
+3. ✅ **Detection des coeurs** : repli sur le dossier de donnees par defaut (`%LOCALAPPDATA%\Arduino15`, `~/Library/Arduino15`, `~/.arduino15`) quand `packagePath` est vide pour la meme raison.
+4. ✅ **`setupEnvironment` utilise le meme reperage** : un CLI deja present (Arduino IDE 2, PATH) n'est plus retelecharge inutilement.
+5. ✅ **Verifie sur la machine de Frank** : CLI resolu dans `C:\Program Files\Arduino IDE\...`, `version` repond, 2 coeurs detectes (`arduino:avr`, `MiniCore:avr`) — plus d'alerte.
+6. ✅ Compilation et `tslint` propres.
+
 # v2026.9.1.18 — Préparation de la publication 2026.9.1
 
 1. ✅ **Version publique 2026.9.0 → 2026.9.1** (2026.9.0 déjà publiée, même mois donc incrément +1). `buildNumber` : `2026.9.1.18`, compteur jamais remis à zéro.

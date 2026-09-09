@@ -7,7 +7,7 @@ import * as path from "path";
 import { promisify } from "util";
 import * as vscode from "vscode";
 import { arduinoChannel } from "../common/outputChannel";
-import { getExecutableFileName } from "../common/platform";
+import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
 import { downloadArduinoCli, getDownloadedCliExecutable } from "./cliDownloader";
 import { CPPTOOLS_EXTENSION_ID } from "./extensionRecommendation";
 
@@ -110,20 +110,90 @@ function hasCoreOnDisk(packagePath: string): boolean {
  * @param commandPath chemin de l'exécutable arduino-cli résolu par les réglages
  * @param packagePath dossier de données du CLI (pour le repli hors CLI)
  */
-export async function getEnvironmentStatus(commandPath: string, packagePath: string): Promise<IEnvironmentStatus> {
-    const hasCli = !!commandPath && await cliResponds(commandPath);
+export async function getEnvironmentStatus(
+    commandPath: string,
+    packagePath: string,
+    extensionPath?: string,
+): Promise<IEnvironmentStatus> {
+    let resolvedCli = (commandPath && await cliResponds(commandPath)) ? commandPath : "";
+    if (!resolvedCli) {
+        // Le chemin fourni peut manquer : l'application Arduino n'est initialisée qu'à la
+        // première commande, donc au démarrage les réglages ne sont pas encore résolus.
+        // Refaire la résolution ici évite d'annoncer un environnement absent alors qu'il
+        // est complet.
+        resolvedCli = await findUsableCli(extensionPath);
+    }
+    const hasCli = !!resolvedCli;
     let hasCore = false;
     if (hasCli) {
-        const cores = await listInstalledCores(commandPath);
-        hasCore = cores === null ? hasCoreOnDisk(packagePath) : cores.length > 0;
+        const cores = await listInstalledCores(resolvedCli);
+        hasCore = cores === null
+            ? (hasCoreOnDisk(packagePath) || hasCoreOnDisk(defaultDataDirectory()))
+            : cores.length > 0;
     } else {
-        hasCore = hasCoreOnDisk(packagePath);
+        hasCore = hasCoreOnDisk(packagePath) || hasCoreOnDisk(defaultDataDirectory());
     }
     return {
         hasCli,
         hasCore,
         hasCppTools: !!vscode.extensions.getExtension(CPPTOOLS_EXTENSION_ID),
     };
+}
+
+/**
+ * Dossier de données par défaut du CLI, utilisé quand les réglages n'ont pas encore
+ * été résolus (packagePath vide).
+ */
+function defaultDataDirectory(): string {
+    if (process.platform === "win32") {
+        return process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, "Arduino15") : "";
+    }
+    if (process.platform === "darwin") {
+        return process.env.HOME ? path.join(process.env.HOME, "Library", "Arduino15") : "";
+    }
+    return process.env.HOME ? path.join(process.env.HOME, ".arduino15") : "";
+}
+
+/**
+ * Cherche un arduino-cli réellement invocable, indépendamment des réglages :
+ * réglage explicite, CLI téléchargé par l'extension, puis résolution système
+ * (PATH, Arduino IDE 2).
+ */
+async function findUsableCli(extensionPath?: string): Promise<string> {
+    const candidates: string[] = [];
+
+    const configured = vscode.workspace.getConfiguration("arduino").get<string>("commandPath");
+    const configuredRoot = vscode.workspace.getConfiguration("arduino").get<string>("path");
+    if (configured) {
+        candidates.push(path.isAbsolute(configured) || !configuredRoot
+            ? configured
+            : path.join(configuredRoot, configured));
+    } else if (configuredRoot) {
+        candidates.push(path.join(configuredRoot, getExecutableFileName("arduino-cli")));
+    }
+
+    if (extensionPath) {
+        const downloaded = getDownloadedCliExecutable(extensionPath);
+        if (downloaded) {
+            candidates.push(downloaded);
+        }
+    }
+
+    try {
+        const resolvedRoot = await Promise.resolve<string>(resolveArduinoPath() as any);
+        if (resolvedRoot) {
+            candidates.push(path.join(resolvedRoot, getExecutableFileName("arduino-cli")));
+        }
+    } catch {
+        // Résolution système indisponible : les autres pistes restent valables
+    }
+
+    for (const candidate of candidates) {
+        if (candidate && await cliResponds(candidate)) {
+            return candidate;
+        }
+    }
+    return "";
 }
 
 /**
@@ -180,9 +250,11 @@ export async function setupEnvironment(
     // Étape 1 : arduino-cli
     let commandPath = resolveCommandPath();
     if (!commandPath || !await cliResponds(commandPath)) {
-        const downloaded = getDownloadedCliExecutable(extensionPath);
-        if (downloaded && await cliResponds(downloaded)) {
-            commandPath = downloaded;
+        // Même recherche que le diagnostic : un CLI déjà présent (Arduino IDE 2, PATH,
+        // téléchargement précédent) ne doit pas être retéléchargé.
+        const found = await findUsableCli(extensionPath);
+        if (found) {
+            commandPath = found;
         } else {
             arduinoChannel.info(vscode.l10n.t("Arduino CLI not found: downloading it."));
             await downloadArduinoCli(extensionPath);

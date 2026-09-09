@@ -759,6 +759,7 @@ export async function activate(context: vscode.ExtensionContext) {
             const status = await getEnvironmentStatus(
                 settings ? settings.commandPath : "",
                 settings ? settings.packagePath : "",
+                context.extensionPath,
             );
             if (await promptSetupEnvironment(context, status)) {
                 await runEnvironmentSetup();
