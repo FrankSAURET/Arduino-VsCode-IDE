@@ -105,6 +105,22 @@ if ($Vsix) {
    if (-not (Test-Path $Vsix)) { throw "Paquet introuvable : $Vsix" }
    Write-Host "`nInstallation de l'extension dans le profil neuf..."
    & code --user-data-dir $Prof --extensions-dir $Ext --install-extension $Vsix
+
+   # `--install-extension` rend la main avant que le dossier soit reellement pose
+   # sur le disque. Ouvrir la fenetre tout de suite donne un hote d'extensions qui
+   # echoue sur « ENOENT ... access <dossier de l'extension> » : la vue de la barre
+   # laterale tourne alors dans le vide, sans fournisseur de donnees.
+   $attendu = Get-ChildItem $Ext -Directory -Filter "*arduino-vscode-ide*" -ErrorAction SilentlyContinue
+   $essais = 0
+   while (-not ($attendu -and (Test-Path (Join-Path $attendu[0].FullName "package.json"))) -and $essais -lt 30) {
+      Start-Sleep -Milliseconds 500
+      $essais++
+      $attendu = Get-ChildItem $Ext -Directory -Filter "*arduino-vscode-ide*" -ErrorAction SilentlyContinue
+   }
+   if (-not $attendu) { throw "Extension absente de $Ext apres installation." }
+
+   $manif = Get-Content (Join-Path $attendu[0].FullName "package.json") -Raw | ConvertFrom-Json
+   Write-Host "Installee : $($attendu[0].Name)  (buildNumber $($manif.buildNumber))" -ForegroundColor Green
 }
 
 Write-Host "`nOuverture de VS Code (profil neuf)..." -ForegroundColor Cyan
