@@ -6,12 +6,13 @@
 #
 # Usage :
 #   .\misc\test-machine-neuve.ps1                  # environnement vierge
+#   .\misc\test-machine-neuve.ps1 -Scenario Nu     # poste sans aucun outil Arduino
 #   .\misc\test-machine-neuve.ps1 -Scenario Deux   # deux versions du coeur avr
 #   .\misc\test-machine-neuve.ps1 -Scenario Index  # index illisible
 #   .\misc\test-machine-neuve.ps1 -Nettoyer        # tout effacer
 
 param(
-   [ValidateSet("Vierge", "Deux", "Index")]
+   [ValidateSet("Vierge", "Nu", "Deux", "Index")]
    [string] $Scenario = "Vierge",
    [string] $Base = "V:\Temp\arduino-lycee",
    [string] $Vsix = "",
@@ -57,16 +58,78 @@ $env:ARDUINO_DIRECTORIES_DATA = $Data
 $env:ARDUINO_DIRECTORIES_USER = $User
 
 $Cli = Join-Path $Projet "arduino-cli\arduino-cli.exe"
-if (-not (Test-Path $Cli)) { throw "arduino-cli introuvable : $Cli" }
+if (-not (Test-Path $Cli) -and $Scenario -ne "Nu") { throw "arduino-cli introuvable : $Cli" }
 
 Write-Host "Banc d'essai : $Base" -ForegroundColor Cyan
 Write-Host "Scenario     : $Scenario" -ForegroundColor Cyan
+
+# Scenario « Nu » : le poste ne doit contenir AUCUN outil Arduino trouvable.
+# L'extension cherche un CLI dans cet ordre (findUsableCli, environmentSetup.ts) :
+#   1. reglages arduino.commandPath / arduino.path  -> profil neuf, donc vides
+#   2. <dossier de l'extension>\arduino-cli\        -> $Ext est neuf, donc vide
+#                                                      (arduino-cli/** est dans
+#                                                      .vscodeignore : le paquet
+#                                                      ne l'embarque pas)
+#   3. resolveArduinoPath()                         -> « where arduino-cli » puis
+#                                                      Arduino IDE 2
+# Les candidats sont CUMULES, pas exclusifs : il ne suffit pas d'en fournir un
+# mauvais, il faut que tous echouent. D'ou les verifications ci-dessous.
+$EnvNu = @{}
+if ($Scenario -eq "Nu") {
+   $Leurre = Join-Path $Base "vide"
+   New-Item -ItemType Directory -Force $Leurre | Out-Null
+
+   # Piste 3a — PATH : toute entree exposant arduino-cli.exe est retiree.
+   $EnvNu["PATH"] = ($env:PATH -split ';' |
+      Where-Object { $_ -and -not (Test-Path (Join-Path $_ 'arduino-cli.exe')) }) -join ';'
+
+   # hasCoreOnDisk() lit LOCALAPPDATA en direct pour chercher un coeur dans
+   # Arduino15 : on l'envoie sur un dossier vide. Cette variable-la, contrairement
+   # a ProgramFiles, se laisse bien reecrire pour un processus fils.
+   $EnvNu["LOCALAPPDATA"] = $Leurre
+
+   # Piste 3b — Arduino IDE 2. Mesure faite le 11/09/2026 : Windows REINJECTE
+   # ProgramFiles dans tout processus fils, meme avec un bloc d'environnement
+   # explicite (teste en PowerShell et en node). Cette variable n'est pas
+   # masquable : si Arduino IDE 2 est installe, son CLI embarque sera trouve et
+   # le scenario ne testerait plus rien. On refuse alors de lancer un test faux.
+   $IdeCli = @(
+      (Join-Path $env:ProgramFiles "Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe"),
+      (Join-Path ${env:ProgramFiles(x86)} "Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe"),
+      (Join-Path $env:LOCALAPPDATA "Programs\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe")
+   ) | Where-Object { Test-Path $_ }
+   if ($IdeCli) {
+      Write-Host "`nArduino IDE 2 est installe :" -ForegroundColor Red
+      $IdeCli | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+      Write-Host @"
+
+Son arduino-cli serait trouve par resolveArduinoPath(), et le scenario « poste nu »
+ne testerait pas ce qu'il pretend tester. ProgramFiles n'est pas masquable : Windows
+le reinjecte dans tout processus fils.
+
+Desinstalle Arduino IDE 2 (il ne touche ni Arduino15 ni tes croquis) :
+  & "`$env:ProgramFiles\Arduino IDE\Uninstall Arduino IDE.exe" /allusers
+
+Ou lance ce scenario sur une machine qui ne l'a pas.
+"@ -ForegroundColor Yellow
+      throw "Scenario Nu impossible : Arduino IDE 2 present."
+   }
+
+   Write-Host "`nPoste nu : aucun CLI, aucun coeur, aucun Arduino IDE trouvable."
+   Write-Host "  PATH        : $(($env:PATH -split ';').Count) entrees -> $(($EnvNu['PATH'] -split ';').Count)"
+   Write-Host "  LOCALAPPDATA -> $Leurre"
+   Write-Host "  Arduino IDE 2 : absent"
+   Write-Host "L'extension doit proposer l'installation complete (CLI + coeur)."
+}
 
 switch ($Scenario) {
    "Vierge" {
       # Rien d'installe : on verifie que l'extension propose et reussit
       # l'installation guidee sur une machine nue.
       Write-Host "`nAucun coeur installe. L'extension doit proposer l'installation."
+   }
+   "Nu" {
+      # Tout est fait ci-dessus : il n'y a justement rien a installer.
    }
    "Deux" {
       # Le cas du lycee : deux versions du coeur cote a cote.
@@ -142,11 +205,37 @@ void loop() {
 '@
 }
 
-& code --user-data-dir $Prof --extensions-dir $Ext --new-window $croquis
+if ($EnvNu.Count -gt 0) {
+   # Les variables assainies ne valent que pour ce processus-ci. On sauvegarde,
+   # on lance, on restaure aussitot : la session PowerShell courante ressort intacte.
+   $sauve = @{}
+   foreach ($k in $EnvNu.Keys) {
+      $sauve[$k] = [Environment]::GetEnvironmentVariable($k)
+      [Environment]::SetEnvironmentVariable($k, $EnvNu[$k])
+   }
+   try {
+      & code --user-data-dir $Prof --extensions-dir $Ext --new-window $croquis
+   } finally {
+      foreach ($k in $sauve.Keys) {
+         [Environment]::SetEnvironmentVariable($k, $sauve[$k])
+      }
+   }
+} else {
+   & code --user-data-dir $Prof --extensions-dir $Ext --new-window $croquis
+}
 
 Write-Host "`nA verifier dans la fenetre ouverte :" -ForegroundColor Green
-Write-Host "  1. La barre d'etat propose-t-elle une carte ?"
-Write-Host "  2. « Arduino: Board Manager » liste-t-il arduino:avr comme installe ?"
-Write-Host "  3. La version affichee est-elle bien la plus recente ?"
-Write-Host "  4. « Arduino: Verify » compile-t-il le croquis ?"
+if ($Scenario -eq "Nu") {
+   Write-Host "  1. Un message annonce-t-il l'environnement Arduino manquant ?"
+   Write-Host "     (« Arduino CLI et un coeur de carte sont necessaires... »)"
+   Write-Host "  2. En acceptant : le CLI se telecharge-t-il, puis arduino:avr s'installe-t-il ?"
+   Write-Host "  3. Apres installation, la barre d'etat propose-t-elle une carte ?"
+   Write-Host "  4. « Arduino: Verify » compile-t-il le croquis ?"
+   Write-Host "  5. En refusant : l'extension reste-t-elle utilisable, sans plantage ni vue vide ?"
+} else {
+   Write-Host "  1. La barre d'etat propose-t-elle une carte ?"
+   Write-Host "  2. « Arduino: Board Manager » liste-t-il arduino:avr comme installe ?"
+   Write-Host "  3. La version affichee est-elle bien la plus recente ?"
+   Write-Host "  4. « Arduino: Verify » compile-t-il le croquis ?"
+}
 Write-Host "`nPour tout effacer :  .\misc\test-machine-neuve.ps1 -Nettoyer"

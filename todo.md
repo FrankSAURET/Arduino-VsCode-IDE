@@ -1,8 +1,20 @@
 # À faire
+1. crée un scripte "package" lançable par "npm run package" qui crée le vsix avec le numéro de version + n° de build
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
+
+# v2026.9.1.21 — Banc d'essai « poste nu » : aucun outil Arduino installe
+
+1. ✅ **Scenario `Nu`** ajoute a [test-machine-neuve.ps1](misc/test-machine-neuve.ps1) : demarre comme un poste ou ni arduino-cli ni aucun coeur n'existe. Verifie le parcours d'installation guidee de bout en bout, que les autres scenarios ne couvraient pas (ils partent tous d'un CLI disponible).
+2. ✅ **Chaine de resolution du CLI cartographiee** (`findUsableCli`, [environmentSetup.ts:162](src/arduino/environmentSetup.ts#L162)) : les candidats sont **cumules, pas exclusifs** — fournir un mauvais chemin ne suffit pas, il faut que tous echouent. Quatre pistes : reglages `arduino.commandPath`/`arduino.path`, CLI telecharge dans le dossier de l'extension, `where arduino-cli`, Arduino IDE 2.
+3. ✅ **Neutralisation**. Reglages et CLI telecharge : le profil et le dossier d'extensions neufs sont vides par construction. PATH : toute entree exposant `arduino-cli.exe` est retiree. `LOCALAPPDATA` : redirige vers un dossier vide, sinon `hasCoreOnDisk()` trouverait le vrai `Arduino15`.
+4. ✅ **Mesure : `ProgramFiles` n'est pas masquable.** Windows la reinjecte dans tout processus fils, y compris avec un bloc d'environnement explicite (verifie en PowerShell et en node). Un Arduino IDE 2 installe est donc toujours trouve par `resolveArduinoPath()`.
+5. ✅ **Consequence : le script refuse de mentir.** Si Arduino IDE 2 est present, le scenario `Nu` s'arrete avec la marche a suivre pour le desinstaller, au lieu de lancer un test qui ne teste rien. Constat verifie : un CLI d'Arduino IDE avait bien rempli le dossier de donnees du banc d'essai lors du premier essai.
+6. ✅ **Isolation confirmee** : le vrai `%LOCALAPPDATA%\Arduino15` n'a pas ete touche (horodatage inchange), VS Code ayant ecrit ses caches dans le dossier leurre.
+7. ✅ **Verifie que le `.vsix` n'embarque pas de CLI** (`arduino-cli/**` est dans `.vscodeignore`) : seul `NOTICE-ARDUINO-CLI.md` y figure. Le scenario force donc un vrai telechargement.
+8. ⬜ **Execution complete du scenario** : en attente de la desinstallation d'Arduino IDE 2 sur le poste de Frank.
 
 # v2026.9.1.20 — Coeur installe ignore : mauvaise version choisie, index illisible abandonne
 
