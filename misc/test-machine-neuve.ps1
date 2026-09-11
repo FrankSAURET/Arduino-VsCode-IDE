@@ -10,17 +10,95 @@
 #   .\misc\test-machine-neuve.ps1 -Scenario Deux   # deux versions du coeur avr
 #   .\misc\test-machine-neuve.ps1 -Scenario Index  # index illisible
 #   .\misc\test-machine-neuve.ps1 -Nettoyer        # tout effacer
+#
+# Pour rejouer la proposition d'installation apres l'avoir acceptee, sans
+# retelecharger les ~50 Mo de chaine de compilation :
+#   .\misc\test-machine-neuve.ps1 -OublierReponses # redevient nu, telechargements gardes
+#   .\misc\test-machine-neuve.ps1 -Restaurer       # rend CLI et coeurs
 
 param(
    [ValidateSet("Vierge", "Nu", "Deux", "Index")]
    [string] $Scenario = "Vierge",
    [string] $Base = "V:\Temp\arduino-lycee",
    [string] $Vsix = "",
-   [switch] $Nettoyer
+   [switch] $Nettoyer,
+   [switch] $OublierReponses,
+   [switch] $Restaurer
 )
 
 $ErrorActionPreference = "Stop"
 $Projet = Split-Path -Parent $PSScriptRoot
+
+# Rejouer la proposition d'installation sans retelecharger les ~50 Mo de chaine de
+# compilation : c'est ce qu'il faut pour essayer les reponses « Plus tard » et « Ne
+# plus afficher » apres avoir deja accepte une fois.
+#
+# La proposition ne s'affiche que si l'environnement est INCOMPLET. Il ne suffit donc
+# pas d'oublier la reponse (globalState, dans le profil) : il faut aussi redevenir un
+# poste nu. CLI et dossier de donnees sont mis de cote plutot qu'effacees, et
+# -Restaurer les remet en place.
+if ($OublierReponses) {
+   $p = Join-Path $Base "vscode"
+   if (-not (Test-Path $p)) { throw "Pas de profil a reinitialiser : $p" }
+
+   $Remise = Join-Path $Base "remise"
+   New-Item -ItemType Directory -Force $Remise | Out-Null
+
+   try {
+      Remove-Item -Recurse -Force $p -ErrorAction Stop
+   } catch {
+      Write-Host "Ferme la fenetre VS Code du banc d'essai, puis relance." -ForegroundColor Yellow
+      throw
+   }
+
+   # Le CLI telecharge par l'extension : sans lui, hasCli redevient faux.
+   $extDir = Get-ChildItem (Join-Path $Base "ext") -Directory -Filter "*arduino-vscode-ide*" -ErrorAction SilentlyContinue
+   if ($extDir) {
+      $cliDir = Join-Path $extDir[0].FullName "arduino-cli"
+      if (Test-Path $cliDir) {
+         Move-Item $cliDir (Join-Path $Remise "arduino-cli") -Force
+         Write-Host "CLI mis de cote (conserve)." -ForegroundColor Green
+      }
+   }
+
+   # Les coeurs : sans eux, hasCore redevient faux.
+   $pkg = Join-Path $Base "data\packages"
+   if (Test-Path $pkg) {
+      Move-Item $pkg (Join-Path $Remise "packages") -Force
+      Write-Host "Coeurs mis de cote (conserves)." -ForegroundColor Green
+   }
+
+   Write-Host "`nEnvironnement redevenu nu, telechargements conserves." -ForegroundColor Green
+   Write-Host "Relance le scenario SANS -Vsix (l'extension est deja installee) :"
+   Write-Host "  .\misc\test-machine-neuve.ps1 -Scenario Nu"
+   Write-Host "Puis essaie « Plus tard » ou « Ne plus afficher »."
+   Write-Host "`nPour rendre CLI et coeurs sans rien retelecharger :"
+   Write-Host "  .\misc\test-machine-neuve.ps1 -Restaurer"
+   return
+}
+
+# Remet en place ce que -OublierReponses avait mis de cote.
+if ($Restaurer) {
+   $Remise = Join-Path $Base "remise"
+   if (-not (Test-Path $Remise)) { throw "Rien a restaurer : $Remise absent." }
+
+   $extDir = Get-ChildItem (Join-Path $Base "ext") -Directory -Filter "*arduino-vscode-ide*" -ErrorAction SilentlyContinue
+   $cliRemise = Join-Path $Remise "arduino-cli"
+   if ((Test-Path $cliRemise) -and $extDir) {
+      Move-Item $cliRemise (Join-Path $extDir[0].FullName "arduino-cli") -Force
+      Write-Host "CLI restaure." -ForegroundColor Green
+   }
+
+   $pkgRemise = Join-Path $Remise "packages"
+   if (Test-Path $pkgRemise) {
+      Move-Item $pkgRemise (Join-Path $Base "data\packages") -Force
+      Write-Host "Coeurs restaures." -ForegroundColor Green
+   }
+
+   Remove-Item -Recurse -Force $Remise -ErrorAction SilentlyContinue
+   Write-Host "Environnement complet a nouveau." -ForegroundColor Green
+   return
+}
 
 if ($Nettoyer) {
    if (Test-Path $Base) {

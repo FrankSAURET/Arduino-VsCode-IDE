@@ -5,6 +5,16 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
 
+# v2026.9.1.22 — Message d'erreur casse, et IntelliSense jamais configuree
+
+1. ✅ **Defaut n°1 — `[Error] Exit with code={0}`**, marqueur affiche en clair. Les quatre `catch` de [arduino.ts](src/arduino/arduino.ts) formataient `error.code`, or un `spawn` qui n'a pas pu **demarrer** (executable absent) n'a pas de code de sortie : `error.code` vaut `"ENOENT"` ou rien, et `l10n.t` laissait `{0}` tel quel. Observe sur poste nu, avant tout telechargement du CLI.
+2. ✅ **Correctif** : `describeCliFailure()` distingue les cas et nomme la cause — CLI introuvable (avec le reglage a verifier), droits refuses, code de sortie numerique, sinon le message de l'erreur.
+3. ✅ **Defaut n°2 — « Failed to generate IntelliSense configuration » a chaque compilation.** `cocopa` analyse la sortie pour y lire les lignes `avr-g++`. Or arduino-cli ne les emet que s'il compile reellement : avec un dossier de construction deja chaud il reutilise le cache et n'ecrit rien, **meme avec `--verbose`**. Mesure du 11/09/2026 sur arduino-cli 1.5.1 : cache froid 20 lignes, cache chaud 0. Le mode `Analyze` forcait bien `--verbose` mais reutilisait le meme `.build` : il ne pouvait jamais aboutir.
+4. ✅ **Correctif** : `--clean` ajoute en mode `Analyze` **uniquement quand aucun `c_cpp_properties.json` n'existe encore**. Le surcout (~2 s mesurees) ne se paie qu'une fois ; les compilations suivantes gardent le cache.
+5. ✅ **Banc d'essai — `-OublierReponses` / `-Restaurer`** : rejoue la proposition d'installation apres l'avoir acceptee, pour essayer « Plus tard » et « Ne plus afficher », sans retelecharger les ~50 Mo de chaine de compilation. La proposition n'apparaissant que si l'environnement est incomplet, oublier la reponse ne suffit pas : CLI et coeurs sont mis de cote, puis rendus. Aller-retour verifie.
+6. ✅ Construction et `tslint` propres.
+7. ⏳ **Traduction FR** des trois chaines de `describeCliFailure()` — avec le lot de traductions d'avant publication.
+
 # v2026.9.1.21 — Banc d'essai « poste nu » : aucun outil Arduino installe
 
 1. ✅ **Scenario `Nu`** ajoute a [test-machine-neuve.ps1](misc/test-machine-neuve.ps1) : demarre comme un poste ou ni arduino-cli ni aucun coeur n'existe. Verifie le parcours d'installation guidee de bout en bout, que les autres scenarios ne couvraient pas (ils partent tous d'un CLI disponible).
@@ -14,7 +24,7 @@
 5. ✅ **Consequence : le script refuse de mentir.** Si Arduino IDE 2 est present, le scenario `Nu` s'arrete avec la marche a suivre pour le desinstaller, au lieu de lancer un test qui ne teste rien. Constat verifie : un CLI d'Arduino IDE avait bien rempli le dossier de donnees du banc d'essai lors du premier essai.
 6. ✅ **Isolation confirmee** : le vrai `%LOCALAPPDATA%\Arduino15` n'a pas ete touche (horodatage inchange), VS Code ayant ecrit ses caches dans le dossier leurre.
 7. ✅ **Verifie que le `.vsix` n'embarque pas de CLI** (`arduino-cli/**` est dans `.vscodeignore`) : seul `NOTICE-ARDUINO-CLI.md` y figure. Le scenario force donc un vrai telechargement.
-8. ⬜ **Execution complete du scenario** : en attente de la desinstallation d'Arduino IDE 2 sur le poste de Frank.
+8. ✅ **Execution complete du scenario**, apres desinstallation d'Arduino IDE 2 : CLI v1.5.1 telecharge, outils integres et `arduino:avr@1.8.8` installes, carte Uno selectionnable, croquis compile. Deux defauts reels mis au jour au passage, corriges en `.22`.
 
 # v2026.9.1.20 — Coeur installe ignore : mauvaise version choisie, index illisible abandonne
 

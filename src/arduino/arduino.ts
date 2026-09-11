@@ -53,6 +53,31 @@ function translateBuildMode(buildMode: BuildMode): string {
 }
 
 /**
+ * Décrit l'échec d'un appel au CLI.
+ *
+ * Un `spawn` qui n'a pas pu démarrer (exécutable absent, droits refusés) n'a pas
+ * de code de sortie : `error.code` vaut alors "ENOENT"/"EACCES" ou rien du tout,
+ * et l'ancien message affichait « Exit with code={0} » avec le marqueur en clair.
+ */
+function describeCliFailure(error: any): string {
+    if (!error) {
+        return vscode.l10n.t("Arduino CLI failed for an unknown reason.");
+    }
+    if (error.code === "ENOENT") {
+        return vscode.l10n.t("Arduino CLI not found: check the arduino.commandPath setting.");
+    }
+    if (error.code === "EACCES" || error.code === "EPERM") {
+        return vscode.l10n.t("Arduino CLI could not be run: permission denied.");
+    }
+    if (typeof error.code === "number") {
+        return vscode.l10n.t("Exit with code={0}", error.code);
+    }
+    return error.message
+        ? vscode.l10n.t("Arduino CLI failed: {0}", error.message)
+        : vscode.l10n.t("Arduino CLI failed for an unknown reason.");
+}
+
+/**
  * Represent an Arduino application powered by Arduino CLI.
  */
 export class ArduinoApp {
@@ -258,7 +283,7 @@ export class ArduinoApp {
                 await this.updateIndex("core", showOutput);
                 arduinoChannel.end(vscode.l10n.t("Updated package index files."));
             } catch (error) {
-                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+                arduinoChannel.error(describeCliFailure(error));
                 throw error;
             }
             return;
@@ -276,7 +301,7 @@ export class ArduinoApp {
             arduinoChannel.end(vscode.l10n.t("Installed board package - {0}", packageName));
         } catch (error) {
             // Le CLI moderne sort 0 si le package est déjà installé : tout code non nul est une vraie erreur
-            arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+            arduinoChannel.error(describeCliFailure(error));
             throw error;
         }
     }
@@ -304,7 +329,7 @@ export class ArduinoApp {
                 await this.updateIndex("lib", showOutput);
                 arduinoChannel.end(vscode.l10n.t("Updated library index files."));
             } catch (error) {
-                arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+                arduinoChannel.error(describeCliFailure(error));
                 throw error;
             }
             return;
@@ -319,7 +344,7 @@ export class ArduinoApp {
             arduinoChannel.end(vscode.l10n.t("Installed library - {0}", libName));
         } catch (error) {
             // Le CLI moderne sort 0 si la bibliothèque est déjà installée : tout code non nul est une vraie erreur
-            arduinoChannel.error(vscode.l10n.t("Exit with code={0}", error.code));
+            arduinoChannel.error(describeCliFailure(error));
             throw error;
         }
     }
@@ -629,6 +654,20 @@ export class ArduinoApp {
         // Analyze always needs verbose to capture GCC commands for cocopa/IntelliSense
         if (verbose || buildMode === BuildMode.Analyze) {
             args.push("--verbose");
+        }
+
+        // `--verbose` ne suffit pas : quand le dossier de construction est deja chaud,
+        // arduino-cli reutilise le cache et n'emet AUCUNE ligne de compilateur, donc
+        // cocopa n'a rien a analyser et l'utilisateur voit « Failed to generate
+        // IntelliSense configuration » a chaque compilation. Mesure du 11/09/2026 sur
+        // arduino-cli 1.5.1 : cache froid 20 lignes avr-g++, cache chaud 0.
+        // On ne force une compilation propre que lorsqu'aucune configuration n'existe
+        // encore — le surcout (~2 s) ne se paie donc qu'une fois.
+        const needsCleanForIntelliSense = buildMode === BuildMode.Analyze
+            && isCompilerParserEnabled(dc)
+            && !fs.existsSync(path.join(ArduinoWorkspace.rootPath ?? "", constants.CPP_CONFIG_FILE));
+        if (needsCleanForIntelliSense) {
+            args.push("--clean");
         }
 
         await vscode.workspace.saveAll(false);
