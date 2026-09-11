@@ -4,6 +4,18 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
 
+# v2026.9.1.20 — Coeur installe ignore : mauvaise version choisie, index illisible abandonne
+
+1. ✅ **Defaut n°1 — version choisie par ordre alphabetique.** `getManuallyInstalledPlatforms()` et `updateInstalledPlatforms()` dans [boardManager.ts](src/arduino/boardManager.ts) prenaient `allVersion[0]`, c'est-a-dire le premier dossier rendu par le systeme de fichiers, qui trie par nom. Avec `avr/1.8.7` et `avr/1.8.8` cote a cote, « 1.8.7 » passe avant « 1.8.8 » : l'extension pointait sur 1.8.7 pendant que le CLI compilait avec 1.8.8. Chemins d'outils divergents, rien ne fonctionne. Explique le lycee : installer 1.8.7 puis reinstaller 1.8.8 laissait les deux dossiers en place.
+2. ✅ **Correctif** : `BoardManager.latestVersion()` trie avec `versionCompare` (comparaison numerique segment par segment) et retient la plus recente. Couvre aussi `1.8.10` vs `1.8.9` et `1.10.0` vs `1.9.0`, que l'ordre alphabetique inversait egalement.
+3. ✅ **Defaut n°2 — index inexploitable abandonne en silence.** Un `package_index.json` present mais vide, tronque, ou remplace par la page d'un portail captif etait rejete par un `catch` sans consequence : `_platforms` restait vide et plus aucune carte n'etait proposee. [arduino.ts:100](src/arduino/arduino.ts#L100) ne reconstruit l'index que s'il est **totalement absent** — un fichier present mais illisible n'etait jamais retelecharge.
+4. ✅ **Correctif** : `loadPackageContent()` renvoie desormais un booleen ; `loadPackages()` force une reconstruction unique (`indexRebuilt`) quand un index est refuse, puis recharge. Un index sain ne declenche aucun telechargement.
+5. ✅ **Coeur present mais absent de l'index** : la branche de repli de `loadInstalledPlatforms()` completait `installedVersion` seul, laissant `name`/`versions`/`boards` indefinis. Champs desormais renseignes — le coeur reste utilisable, ses cartes se lisent dans `boards.txt` meme sans index.
+6. ✅ **Recherche de plateforme robuste** : `BoardManager.platformPackageName()` accepte `package.name` (venu de l'index) comme `packageName` (disque seul), au lieu de dereferencer `_plat.package.name` sans garde.
+7. ✅ **Verifie sur banc d'essai** (fixture deux versions + bouchon `vscode`, hors machine de Frank) : ancien code → 1.8.7 retenue, code corrige → 1.8.8. Matrice d'index (sain / vide / page HTML / tronque / absent) : cartes detectees dans les cinq cas, 0 reconstruction sur index sain, 1 au plus sinon, aucun plantage.
+8. ✅ Construction et `tslint` propres.
+9. ⏳ **Traduction FR** de la chaine `Unusable package index "{0}": downloading it again.` — a faire avec le lot de traductions d'avant publication.
+
 # v2026.9.1.19 — Fausse alerte « environnement Arduino manquant » au demarrage
 
 1. ✅ **Cause** : la notification part d'un minuteur de 12 s dans [extension.ts:754](src/extension.ts#L754) qui lit `arduinoApp.settings`. Or `ArduinoActivator.activate()` n'est appele qu'a la premiere commande ou a l'ouverture d'un panneau : au lancement de VS Code sans croquis, `initialized` est faux, `commandPath` vaut `""`, donc `hasCli` est faux et l'alerte s'affiche alors que l'environnement est complet.

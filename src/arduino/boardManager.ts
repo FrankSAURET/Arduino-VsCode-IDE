@@ -20,6 +20,24 @@ import { VscodeSettings } from "./vscodeSettings";
 
 export class BoardManager {
 
+    /**
+     * Version la plus récente d'une liste de dossiers de versions.
+     * Le système de fichiers trie par nom : "1.10.0" y précède "1.9.0" et "1.8.7"
+     * précède "1.8.8". Seule une comparaison numérique segment par segment donne
+     * la version réellement active.
+     */
+    private static latestVersion(versions: string[]): string {
+        return versions.slice().sort(versionCompare)[versions.length - 1];
+    }
+
+    /**
+     * Nom de paquet d'une plateforme, qu'elle vienne de l'index (`package.name`)
+     * ou du disque seul (`packageName`, quand l'index est absent ou illisible).
+     */
+    private static platformPackageName(plat: IPlatform): string {
+        return (plat.package && plat.package.name) ? plat.package.name : plat.packageName;
+    }
+
     private _packages: IPackage[];
 
     private _platforms: IPlatform[];
@@ -59,15 +77,28 @@ export class BoardManager {
         // Parse package index files.
         const indexFiles = ["package_index.json"].concat(additionalUrls);
         const rootPackageFolder = this._settings.packagePath;
+        // Un index refusé n'est retéléchargé qu'une fois par chargement : inutile de
+        // relancer le CLI pour chaque URL additionnelle, une seule mise à jour les couvre toutes.
+        let indexRebuilt = update;
         for (const indexFile of indexFiles) {
             const indexFileName = this.getIndexFileName(indexFile);
             if (!indexFileName) {
                 continue;
             }
-            if (!update && !util.fileExistsSync(path.join(rootPackageFolder, indexFileName))) {
+            if (!indexRebuilt && !util.fileExistsSync(path.join(rootPackageFolder, indexFileName))) {
                 await this._arduinoApp.initialize(true);
+                indexRebuilt = true;
             }
-            this.loadPackageContent(indexFileName);
+            if (!this.loadPackageContent(indexFileName) && !indexRebuilt) {
+                // Index présent mais inexploitable (vide, tronqué, page d'un portail
+                // captif au lieu du JSON). Le test d'existence seul ne le voit pas :
+                // on force une reconstruction avant d'abandonner les cartes.
+                arduinoChannel.warning(vscode.l10n.t(
+                    "Unusable package index \"{0}\": downloading it again.", indexFileName));
+                await this._arduinoApp.initialize(true);
+                indexRebuilt = true;
+                this.loadPackageContent(indexFileName);
+            }
         }
 
         // Load default platforms from arduino installation directory and user manually installed platforms.
@@ -202,14 +233,19 @@ export class BoardManager {
         return installedPlatforms;
     }
 
-    public loadPackageContent(indexFile: string): void {
+    /**
+     * Charge un fichier d'index de paquets.
+     * @returns false si l'index est absent, vide ou illisible — il doit alors être
+     * retéléchargé, sans quoi aucune carte ne sera proposée.
+     */
+    public loadPackageContent(indexFile: string): boolean {
         const indexFileName = this.getIndexFileName(indexFile);
         if (!util.fileExistsSync(path.join(this._settings.packagePath, indexFileName))) {
-            return;
+            return false;
         }
         const packageContent = fs.readFileSync(path.join(this._settings.packagePath, indexFileName), "utf8");
         if (!packageContent) {
-            return;
+            return false;
         }
 
         let rawModel = null;
@@ -219,11 +255,11 @@ export class BoardManager {
             const errMsg = vscode.l10n.t("Invalid json file \"{0}\". Suggest to remove it manually and allow boardmanager to re-download it.",
                 path.join(this._settings.packagePath, indexFileName));
             arduinoChannel.error(errMsg);
-            return;
+            return false;
         }
 
         if (!rawModel || !rawModel.packages || !rawModel.packages.length) {
-            return;
+            return false;
         }
 
         this._packages = this._packages.concat(rawModel.packages);
@@ -232,7 +268,8 @@ export class BoardManager {
             pkg.platforms.forEach((plat) => {
                 plat.package = pkg;
                 const addedPlatform = this._platforms
-                    .find((_plat) => _plat.architecture === plat.architecture && _plat.package.name === plat.package.name);
+                    .find((_plat) => _plat.architecture === plat.architecture
+                        && BoardManager.platformPackageName(_plat) === pkg.name);
                 if (addedPlatform) {
                     // union boards from all versions.
                     // We should not union boards: https://github.com/Microsoft/vscode-arduino/issues/414
@@ -255,6 +292,7 @@ export class BoardManager {
                 }
             });
         });
+        return true;
     }
 
     public updateInstalledPlatforms(pkgName: string, arch: string) {
@@ -262,16 +300,17 @@ export class BoardManager {
 
         const allVersion = util.filterJunk(util.readdirSync(archPath, true));
         if (allVersion && allVersion.length) {
+            const latest = BoardManager.latestVersion(allVersion);
             const newPlatform = {
                 packageName: pkgName,
                 architecture: arch,
-                version: allVersion[0],
-                rootBoardPath: path.join(archPath, allVersion[0]),
+                version: latest,
+                rootBoardPath: path.join(archPath, latest),
                 defaultPlatform: false,
             };
 
             const existingPlatform = this._platforms.find((_plat) => {
-                return _plat.package.name === pkgName && _plat.architecture === arch;
+                return BoardManager.platformPackageName(_plat) === pkgName && _plat.architecture === arch;
             });
             if (existingPlatform) {
                 existingPlatform.defaultPlatform = newPlatform.defaultPlatform;
@@ -375,7 +414,8 @@ export class BoardManager {
         const installed = this.getInstalledPlatforms();
         installed.forEach((platform) => {
             const existingPlatform = this._platforms.find((_plat) => {
-                return _plat.package.name === platform.packageName && _plat.architecture === platform.architecture;
+                return BoardManager.platformPackageName(_plat) === platform.packageName
+                    && _plat.architecture === platform.architecture;
             });
             if (existingPlatform) {
                 existingPlatform.defaultPlatform = platform.defaultPlatform;
@@ -385,7 +425,14 @@ export class BoardManager {
                     this._installedPlatforms.push(existingPlatform);
                 }
             } else {
+                // Cœur présent sur le disque mais absent de l'index (index non téléchargé,
+                // tronqué ou filtré par le réseau). Il reste parfaitement utilisable : ses
+                // cartes se lisent dans boards.txt. On complète les champs que l'index
+                // aurait fournis pour que la plateforme soit affichable comme les autres.
                 platform.installedVersion = platform.version;
+                platform.name = platform.name || `${platform.packageName}:${platform.architecture}`;
+                platform.versions = platform.versions || [platform.version];
+                platform.boards = platform.boards || [];
                 this._installedPlatforms.push(platform);
             }
         });
@@ -470,11 +517,15 @@ export class BoardManager {
             architectures.forEach((architecture) => {
                 const allVersion = util.filterJunk(util.readdirSync(path.join(archPath, architecture), true));
                 if (allVersion && allVersion.length) {
+                    // Plusieurs versions d'un même cœur peuvent cohabiter (1.8.7 et 1.8.8) :
+                    // c'est la plus récente qui est active, pas la première rendue par le
+                    // système de fichiers — celui-ci trie par nom, et "1.8.7" y précède "1.8.8".
+                    const latest = BoardManager.latestVersion(allVersion);
                     manuallyInstalled.push({
                         packageName,
                         architecture,
-                        version: allVersion[0],
-                        rootBoardPath: path.join(archPath, architecture, allVersion[0]),
+                        version: latest,
+                        rootBoardPath: path.join(archPath, architecture, latest),
                         defaultPlatform: false,
                     });
                 }
