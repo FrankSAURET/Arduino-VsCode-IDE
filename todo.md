@@ -5,6 +5,14 @@
 8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
 
+# v2026.9.1.23 — Sans CLI, les parametres s'ouvraient au lieu de proposer l'installation
+
+1. ✅ **Defaut** : sur un poste ou l'environnement est refuse ou incomplet, cliquer sur « Verifier » (ou toute autre commande Arduino) ouvrait d'office les parametres de VS Code avec « Cannot find Arduino CLI ». L'utilisateur se retrouvait devant un champ a remplir sans savoir quoi y mettre, et le parcours d'installation automatique n'etait plus atteignable — seul le redemarrage de VS Code le reproposait.
+2. ✅ **Correctif** dans `registerArduinoCommand` ([extension.ts:275](src/extension.ts#L275)) : une notification propose d'abord **Installer** (parcours complet : CLI, index, coeur, extension C/C++), sinon **Configurer manuellement** qui ouvre les parametres comme avant. Ne rien choisir ne fait rien — plus d'ouverture imposee.
+3. ✅ **Enchainement** : apres une installation reussie, la commande demandee est rejouee automatiquement. Cliquer « Verifier » sur un poste nu compile donc vraiment, sans avoir a recliquer.
+4. ✅ `Logger.notifyUserError` remplace par `Logger.traceError` sur ce chemin : la trace reste, mais la notification d'erreur ne double plus la question posee.
+5. ⏳ **Traduction FR** de la chaine `Arduino CLI not found: it is needed to compile and upload. Install everything now?` — avec le lot de traductions d'avant publication.
+
 # v2026.9.1.22 — Message d'erreur casse, et IntelliSense jamais configuree
 
 1. ✅ **Defaut n°1 — `[Error] Exit with code={0}`**, marqueur affiche en clair. Les quatre `catch` de [arduino.ts](src/arduino/arduino.ts) formataient `error.code`, or un `spawn` qui n'a pas pu **demarrer** (executable absent) n'a pas de code de sortie : `error.code` vaut `"ENOENT"` ou rien, et `l10n.t` laissait `{0}` tel quel. Observe sur poste nu, avant tout telechargement du CLI.

@@ -271,10 +271,29 @@ export async function activate(context: vscode.ExtensionContext) {
 
             const arduinoPath = arduinoContextModule.default.arduinoApp.settings.arduinoPath;
             const commandPath = arduinoContextModule.default.arduinoApp.settings.commandPath;
-            // Pop up vscode User Settings page when cannot resolve arduino path.
+            // Sans CLI utilisable, l'ancien code ouvrait d'office les paramètres : l'utilisateur
+            // se retrouvait devant un champ à remplir sans savoir quoi y mettre. On propose
+            // d'abord l'installation automatique, le réglage manuel restant accessible.
             if (!arduinoPath || !validateArduinoPath(arduinoPath)) {
-                Logger.notifyUserError("InvalidArduinoPath", new Error(constants.messages.INVALID_ARDUINO_PATH));
-                vscode.commands.executeCommand("workbench.action.openGlobalSettings");
+                Logger.traceError("InvalidArduinoPath", new Error(constants.messages.INVALID_ARDUINO_PATH));
+                const installAction = vscode.l10n.t("Install");
+                const settingsAction = vscode.l10n.t("Configure manually");
+                const choice = await vscode.window.showWarningMessage(
+                    vscode.l10n.t("Arduino CLI not found: it is needed to compile and upload. Install everything now?"),
+                    installAction,
+                    settingsAction,
+                );
+                if (choice === installAction) {
+                    await runEnvironmentSetup();
+                    // Le parcours d'installation recharge les réglages : réessayer la commande
+                    // évite d'obliger l'utilisateur à recliquer sur « Vérifier ».
+                    const newPath = arduinoContextModule.default.arduinoApp.settings.arduinoPath;
+                    if (newPath && validateArduinoPath(newPath)) {
+                        await commandExecution(command, commandBody, args, getUserData);
+                    }
+                } else if (choice === settingsAction) {
+                    vscode.commands.executeCommand("workbench.action.openGlobalSettings");
+                }
             } else if (!commandPath || !util.fileExistsSync(commandPath)) {
                 Logger.notifyUserError("InvalidCommandPath", new Error(constants.messages.INVALID_COMMAND_PATH + commandPath));
             } else {
