@@ -3,7 +3,7 @@
   "displayName": "Arduino VsCode IDE",
   "description": "Arduino IDE integration for VS Code — CLI-based, fork of Microsoft's extension",
   "version": "2026.9.1",
-  "buildNumber": "2026.9.1.23",
+  "buildNumber": "2026.9.1.24",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {
@@ -610,6 +610,21 @@
           "default": false,
           "description": "%arduino.configuration.disableIntelliSenseAutoGen.description%"
         },
+        "arduino.intelliSenseEngine": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "cpptools",
+            "clangd"
+          ],
+          "enumDescriptions": [
+            "%arduino.configuration.intelliSenseEngine.auto%",
+            "%arduino.configuration.intelliSenseEngine.cpptools%",
+            "%arduino.configuration.intelliSenseEngine.clangd%"
+          ],
+          "default": "auto",
+          "markdownDescription": "%arduino.configuration.intelliSenseEngine.description%"
+        },
         "arduino.analyzeOnOpen": {
           "type": "boolean",
           "default": true,
@@ -693,7 +708,8 @@
     "postinstall": "cd ./src/views && npm install",
     "test": "gulp test",
     "lint": "gulp --no-color tslint",
-    "build:ext": "gulp --no-color build_without_view"
+    "build:ext": "gulp --no-color build_without_view",
+    "package": "node scripts/package.mjs"
   },
   "devDependencies": {
     "@types/compare-versions": "^3.0.0",

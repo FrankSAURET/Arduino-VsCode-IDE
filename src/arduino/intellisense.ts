@@ -11,6 +11,8 @@ import * as constants from "../common/constants";
 import { arduinoChannel } from "../common/outputChannel";
 import { ArduinoWorkspace } from "../common/workspace";
 import { DeviceContext } from "../deviceContext";
+import { CppEngine, getCppEngine, readCompilerFromDatabase, syncCompilationDatabase,
+         writeClangdConfig } from "./cppSupport";
 import { VscodeSettings } from "./vscodeSettings";
 
 export interface ICoCoPaContext {
@@ -75,6 +77,50 @@ export function isCompilerParserEnabled(dc?: DeviceContext) {
 }
 
 /**
+ * Met en place la configuration IntelliSense de clangd : recopie de la base de
+ * compilation produite par arduino-cli à la racine du projet, puis écriture du
+ * `.clangd` qui neutralise les options gcc inconnues de clang.
+ *
+ * @param buildDir dossier de construction où arduino-cli a déposé la base
+ * @param arduinoHeader chemin d'Arduino.h, inclus d'office comme le fait cpptools
+ * @returns vrai si une base de compilation exploitable est en place
+ */
+function concludeClangd(dc: DeviceContext, buildDir: string | undefined, arduinoHeader: string | undefined): boolean {
+    const rootPath = ArduinoWorkspace.rootPath;
+    if (!rootPath) {
+        return false;
+    }
+
+    // La base d'abord : c'est elle qui révèle le compilateur, donc la cible à
+    // inscrire dans le `.clangd`.
+    const sketchDir = dc.sketch
+        ? path.dirname(path.resolve(rootPath, dc.sketch))
+        : rootPath;
+    const synced = buildDir ? syncCompilationDatabase(rootPath, buildDir, sketchDir) : false;
+    const hasDatabase = synced || fs.existsSync(path.join(rootPath, constants.COMPILE_COMMANDS_FILE));
+
+    if (hasDatabase) {
+        writeClangdConfig(rootPath, arduinoHeader, readCompilerFromDatabase(rootPath));
+    }
+
+    if (synced) {
+        arduinoChannel.info(vscode.l10n.t("IntelliSense configuration updated for clangd ({0}).",
+            constants.COMPILE_COMMANDS_FILE));
+        return true;
+    }
+
+    // La base manque : soit la construction a été servie par le cache, soit le CLI
+    // est trop ancien pour `--only-compilation-database`. Une base déjà en place
+    // reste valable, sinon on le signale sans faire échouer la construction.
+    if (hasDatabase) {
+        arduinoChannel.info(vscode.l10n.t("No new IntelliSense data captured (build cache reused). Existing configuration kept."));
+        return true;
+    }
+    arduinoChannel.warning(vscode.l10n.t("Failed to generate IntelliSense configuration."));
+    return false;
+}
+
+/**
  * Creates a context which is used for compiler command parsing
  * during building (verify, upload, ...).
  *
@@ -90,7 +136,7 @@ export function isCompilerParserEnabled(dc?: DeviceContext) {
  *     as at least for the forcedIncludes IntelliSense seems to take the
  *     order into account.
  */
-export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string): ICoCoPaContext {
+export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string, buildDir?: string): ICoCoPaContext {
 
     if (!isCompilerParserEnabled(dc)) {
         return {
@@ -106,7 +152,14 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string)
 
     // Set up the callback to be called after parsing
     const _conclude = async () => {
+        const engine = getCppEngine();
+
         if (!runner.result) {
+            // clangd ne dépend pas de la capture des commandes de compilation : la base
+            // produite par arduino-cli suffit. On tente donc la recopie avant d'abandonner.
+            if (engine === CppEngine.Clangd && concludeClangd(dc, buildDir, undefined)) {
+                return;
+            }
             // Determine whether this build mode is upload-only (no compilation)
             const isUploadOnly = buildMode === "Uploading using Arduino CLI"
                               || buildMode === "Uploading (programmer) using Arduino CLI";
@@ -163,6 +216,13 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string)
             : undefined;
         if (!forcedIncludes) {
             arduinoChannel.warning(vscode.l10n.t("Unable to locate \"Arduino.h\" within IntelliSense include paths."));
+        }
+
+        // clangd se nourrit de la base de compilation, pas d'un c_cpp_properties.json :
+        // le chemin d'Arduino.h trouvé ci-dessus lui sert de « -include ».
+        if (engine === CppEngine.Clangd) {
+            concludeClangd(dc, buildDir, forcedIncludes && forcedIncludes[0]);
+            return;
         }
 
         // Add USB Connected macro to defines
@@ -336,11 +396,15 @@ export class AnalysisManager {
         if (!ArduinoWorkspace.rootPath) {
             return false;
         }
-        const configPath = path.join(ArduinoWorkspace.rootPath, constants.CPP_CONFIG_FILE);
+        // Chaque moteur a son fichier : c_cpp_properties.json pour cpptools,
+        // compile_commands.json pour clangd.
+        const isClangd = getCppEngine() === CppEngine.Clangd;
+        const configPath = path.join(ArduinoWorkspace.rootPath,
+            isClangd ? constants.COMPILE_COMMANDS_FILE : constants.CPP_CONFIG_FILE);
         if (!fs.existsSync(configPath)) {
             return false;
         }
-        if (!hasArduinoForcedInclude(configPath)) {
+        if (!isClangd && !hasArduinoForcedInclude(configPath)) {
             return false;
         }
         const configMtime = fs.statSync(configPath).mtimeMs;

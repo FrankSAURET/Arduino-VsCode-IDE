@@ -10,6 +10,12 @@ export const CPP_CONFIG_FILE = path.join(".vscode", "c_cpp_properties.json");
 /** The name of the intellisense configuration managed by vscode-arduino. */
 export const C_CPP_PROPERTIES_CONFIG_NAME = "Arduino";
 
+// Fichiers consommes par clangd, le moteur IntelliSense utilise hors VS Code
+// officiel (VSCodium et derives, ou l'extension C/C++ de Microsoft est interdite).
+// Ils vivent a la racine du projet : clangd ne les cherche pas ailleurs.
+export const COMPILE_COMMANDS_FILE = "compile_commands.json";
+export const CLANGD_CONFIG_FILE = ".clangd";
+
 // Dossier de sortie de compilation par defaut, applique a tout projet qui n'en
 // definit pas dans arduino.yaml. Sans lui arduino-cli compile dans un dossier
 // temporaire jete apres coup : aucune reutilisation possible, builds lents.

@@ -2,8 +2,22 @@
 1. crée un scripte "package" lançable par "npm run package" qui crée le vsix avec le numéro de version + n° de build
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
-8. ⬜ Vérifier l'affichage réel de la notification Kablix (premier lancement + après mise à jour) sur une instance VS Code
 
+
+# v2026.9.1.24 — IntelliSense sur VSCodium : bascule automatique vers clangd
+
+1. ✅ **Defaut** : sur VSCodium (et toute construction non officielle), l'extension C/C++ de Microsoft `ms-vscode.cpptools` est **inutilisable** — absente d'Open VSX car sa licence en interdit la redistribution, et son serveur refuse de demarrer meme installee a la main. Les utilisateurs installant l'extension depuis Open VSX se retrouvaient donc **sans IntelliSense du tout**, avec une proposition d'installation qui ne pouvait pas aboutir.
+2. ✅ **Nouveau module** [cppSupport.ts](src/arduino/cppSupport.ts) : detecte l'hote via `vscode.env.uriScheme` (seul discriminant fiable, `appName` etant personnalisable par le distributeur) et choisit le moteur — cpptools sur VS Code officiel, **clangd** partout ailleurs. Reglage `arduino.intelliSenseEngine` (`auto` / `cpptools` / `clangd`) pour forcer l'un ou l'autre.
+3. ✅ **Generation de la configuration clangd** : `compile_commands.json` produit par arduino-cli (`--only-compilation-database`, ajoute au seul mode `Analyze` — ce drapeau arrete la construction avant l'edition de liens, un Verify n'aurait plus produit de binaire) puis recopie a la racine du projet, ou clangd le cherche.
+4. ✅ **Defaut trouve au banc d'essai n°1** : arduino-cli ne compile jamais le `.ino` mais sa recopie `<build>/sketch/<nom>.ino.cpp`. La base ne contenait donc **aucune entree pour le fichier ouvert par l'utilisateur**, et clangd le laissait sans IntelliSense. `addSketchEntries()` duplique l'entree vers chaque `.ino` du croquis.
+5. ✅ **Defaut trouve au banc d'essai n°2** : clang ne reconnait pas l'extension `.ino`, il la prend pour un fichier objet destine a l'editeur de liens — clangd abandonnait sur `expected exactly one compiler job`. `-x c++` insere **avant** le nom du fichier dans chaque entree ajoutee.
+6. ✅ **Defaut trouve au banc d'essai n°3** : la premiere version du `.clangd` retirait `-mmcu`, ce qui etait l'inverse de ce qu'il fallait faire. Sans cible AVR, clang analyse pour x86 et rejette tout l'assembleur en ligne d'avr-libc (`invalid output constraint '=w' in asm` des `<util/delay.h>`). `-mmcu` est **conserve** et `--target=avr` ajoute, deduit du compilateur lu dans la base (avr / arm-none-eabi / riscv32).
+7. ✅ **Defaut trouve au banc d'essai n°4** : avr-gcc connait implicitement ses en-tetes (`<avr/pgmspace.h>`), clang non — erreur fatale des la premiere ligne d'`Arduino.h`. `toolchainIncludePaths()` reconstitue `<racine>/<cible>/include` et `<racine>/lib/gcc/<cible>/<ver>/include` a partir du chemin du compilateur, ajoutes en `-isystem`.
+8. ✅ **`.clangd`** genere aussi : `-Wno-unknown-attributes` (PROGMEM se resout en `__attribute__((__progmem__))`, propre a avr-gcc) et `-include<Arduino.h>`, equivalent du `forcedInclude` de cpptools sans lequel un `.ino` n'a aucun symbole Arduino.
+9. ✅ **Banc d'essai reel** (arduino-cli 1.5.1, arduino:avr 1.8.8, clangd 22, croquis Uno) : `clangd --check` → **0 erreur** sur le `.ino` principal et sur un `.ino` secondaire ; croquis fautif → **exactement les 2 erreurs introduites** detectees, `Serial.methodeInexistante()` comprise (donc le type de `Serial` est bien resolu, pas seulement l'AST construit).
+10. ✅ **Recommandation et parcours d'installation** adaptes : [extensionRecommendation.ts](src/arduino/extensionRecommendation.ts) et [environmentSetup.ts](src/arduino/environmentSetup.ts) proposent l'extension du moteur retenu, avec un etat memorise distinct par moteur. `isConfigUpToDate()` et le `--clean` d'`Analyze` regardent desormais le bon fichier temoin selon le moteur.
+11. ⏳ **Debogage sur VSCodium** : `cpptools` fournit aussi le debogueur. `cortex-debug` (Open VSX, MIT) couvre l'ARM — Pico, SAMD, ESP32 via openocd. Rien d'equivalent pour l'AVR. Hors perimetre de ce lot.
+12. ⏳ **Traduction FR** des chaines nouvelles (`arduino.configuration.intelliSenseEngine.*`, messages clangd) — avec le lot de traductions d'avant publication.
 
 # v2026.9.1.23 — Sans CLI, les parametres s'ouvraient au lieu de proposer l'installation
 

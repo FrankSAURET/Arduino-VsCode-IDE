@@ -9,7 +9,7 @@ import * as vscode from "vscode";
 import { arduinoChannel } from "../common/outputChannel";
 import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
 import { downloadArduinoCli, getDownloadedCliExecutable } from "./cliDownloader";
-import { CPPTOOLS_EXTENSION_ID } from "./extensionRecommendation";
+import { getCppExtensionId, getCppExtensionName, isCppExtensionInstalled } from "./cppSupport";
 
 const execFileAsync = promisify(child_process.execFile);
 
@@ -24,7 +24,7 @@ export interface IEnvironmentStatus {
     hasCli: boolean;
     /** Au moins un cœur (plateforme) est installé : sans cela, aucune compilation possible. */
     hasCore: boolean;
-    /** L'extension C/C++ est installée (IntelliSense). */
+    /** L'extension IntelliSense de l'hôte est installée (C/C++ ou clangd). */
     hasCppTools: boolean;
 }
 
@@ -136,7 +136,7 @@ export async function getEnvironmentStatus(
     return {
         hasCli,
         hasCore,
-        hasCppTools: !!vscode.extensions.getExtension(CPPTOOLS_EXTENSION_ID),
+        hasCppTools: isCppExtensionInstalled(),
     };
 }
 
@@ -306,8 +306,9 @@ export async function setupEnvironment(
         }
     });
 
-    // Étape 5 : extension C/C++ pour l'IntelliSense (facultative, jamais bloquante)
-    if (!vscode.extensions.getExtension(CPPTOOLS_EXTENSION_ID)) {
+    // Étape 5 : extension IntelliSense (facultative, jamais bloquante). Selon l'hôte,
+    // C/C++ de Microsoft ou clangd — voir cppSupport.
+    if (!isCppExtensionInstalled()) {
         await installCppTools();
     }
 
@@ -317,14 +318,20 @@ export async function setupEnvironment(
 }
 
 /**
- * Installe l'extension C/C++, avec repli sur la recherche du Marketplace
- * (elle est absente d'Open VSX : licence Microsoft non redistribuable).
+ * Installe l'extension qui fournit l'IntelliSense, avec repli sur la recherche
+ * du registre d'extensions si l'installation directe échoue.
+ *
+ * L'extension proposée dépend de l'hôte : « C/C++ » de Microsoft sur VS Code
+ * officiel, clangd sur VSCodium et dérivés (cpptools y est absent d'Open VSX,
+ * sa licence en interdisant la redistribution).
  */
 async function installCppTools(): Promise<void> {
-    const install = vscode.l10n.t("Install C/C++");
+    const extensionId = getCppExtensionId();
+    const name = getCppExtensionName();
+    const install = vscode.l10n.t("Install {0}", name);
     const skip = vscode.l10n.t("Skip");
     const choice = await vscode.window.showInformationMessage(
-        vscode.l10n.t("Install the \"C/C++\" extension to get IntelliSense (completion, navigation, error checking) in your sketches."),
+        vscode.l10n.t("Install the \"{0}\" extension to get IntelliSense (completion, navigation, error checking) in your sketches.", name),
         install,
         skip,
     );
@@ -332,11 +339,11 @@ async function installCppTools(): Promise<void> {
         return;
     }
     try {
-        await vscode.commands.executeCommand("workbench.extensions.installExtension", CPPTOOLS_EXTENSION_ID);
-        arduinoChannel.info(vscode.l10n.t("C/C++ extension installed."));
+        await vscode.commands.executeCommand("workbench.extensions.installExtension", extensionId);
+        arduinoChannel.info(vscode.l10n.t("\"{0}\" extension installed.", name));
     } catch (error) {
-        void vscode.window.showWarningMessage(vscode.l10n.t("Unable to install the \"C/C++\" extension automatically."));
-        await vscode.commands.executeCommand("workbench.extensions.search", `@id:${CPPTOOLS_EXTENSION_ID}`);
+        void vscode.window.showWarningMessage(vscode.l10n.t("Unable to install the \"{0}\" extension automatically.", name));
+        await vscode.commands.executeCommand("workbench.extensions.search", `@id:${extensionId}`);
     }
 }
 

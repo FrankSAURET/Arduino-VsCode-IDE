@@ -3,13 +3,16 @@
 
 import * as vscode from "vscode";
 import * as Logger from "../logger/logger";
+import { CLANGD_EXTENSION_ID, CppEngine, CPPTOOLS_EXTENSION_ID, getCppEngine, getCppExtensionId,
+         getCppExtensionName, isCppExtensionInstalled } from "./cppSupport";
 import { isCompilerParserEnabled } from "./intellisense";
 
 export const KABLIX_EXTENSION_ID = "electropol-fr.kablix";
-export const CPPTOOLS_EXTENSION_ID = "ms-vscode.cpptools";
+export { CLANGD_EXTENSION_ID, CPPTOOLS_EXTENSION_ID };
 
 const KABLIX_STATE_KEY = "arduino.kablixRecommendation";
 const CPPTOOLS_STATE_KEY = "arduino.cppToolsRecommendation";
+const CLANGD_STATE_KEY = "arduino.clangdRecommendation";
 
 export interface IRecommendationState {
     // Version de l'extension lors du dernier affichage : permet de reproposer
@@ -118,27 +121,35 @@ export async function recommendKablix(context: vscode.ExtensionContext): Promise
 }
 
 /**
- * C/C++ (ms-vscode.cpptools) n'est plus une dépendance dure : l'extension
- * fonctionne sans (compilation, téléversement, moniteur série). Il ne sert
- * qu'à exploiter le `c_cpp_properties.json` généré, donc on ne le propose que
- * si la génération IntelliSense est active.
+ * L'extension fournissant l'IntelliSense n'est pas une dépendance dure :
+ * compilation, téléversement et moniteur série fonctionnent sans elle. Elle ne
+ * sert qu'à exploiter la configuration générée, donc on ne la propose que si la
+ * génération IntelliSense est active.
+ *
+ * Laquelle proposer dépend de l'hôte : « C/C++ » de Microsoft sur VS Code
+ * officiel, clangd partout ailleurs (VSCodium et dérivés), où cpptools est
+ * absent d'Open VSX et refuse de démarrer même installé à la main.
  */
 export async function recommendCppTools(context: vscode.ExtensionContext): Promise<void> {
-    const currentVersion = <string>context.extension?.packageJSON?.version || "";
-    const state = context.globalState.get<IRecommendationState>(CPPTOOLS_STATE_KEY);
-    const isInstalled = !!vscode.extensions.getExtension(CPPTOOLS_EXTENSION_ID);
+    const engine = getCppEngine();
+    const isClangd = engine === CppEngine.Clangd;
+    const stateKey = isClangd ? CLANGD_STATE_KEY : CPPTOOLS_STATE_KEY;
 
-    if (!shouldRecommend(isInstalled, currentVersion, state) || !isCompilerParserEnabled()) {
+    const currentVersion = <string>context.extension?.packageJSON?.version || "";
+    const state = context.globalState.get<IRecommendationState>(stateKey);
+
+    if (!shouldRecommend(isCppExtensionInstalled(engine), currentVersion, state) || !isCompilerParserEnabled()) {
         return;
     }
 
+    const name = getCppExtensionName(engine);
     await promptRecommendation(
         context,
-        CPPTOOLS_STATE_KEY,
-        CPPTOOLS_EXTENSION_ID,
-        vscode.l10n.t("Install the \"C/C++\" extension to get IntelliSense (completion, navigation, error checking) in your sketches. Everything else works without it."),
-        vscode.l10n.t("Install C/C++"),
-        vscode.l10n.t("Unable to install the \"C/C++\" extension automatically."),
-        "installCppToolsError",
+        stateKey,
+        getCppExtensionId(engine),
+        vscode.l10n.t("Install the \"{0}\" extension to get IntelliSense (completion, navigation, error checking) in your sketches. Everything else works without it.", name),
+        vscode.l10n.t("Install {0}", name),
+        vscode.l10n.t("Unable to install the \"{0}\" extension automatically.", name),
+        isClangd ? "installClangdError" : "installCppToolsError",
     );
 }

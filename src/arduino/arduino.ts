@@ -14,6 +14,7 @@ import * as logger from "../logger/logger";
 import { DeviceContext } from "../deviceContext";
 import { IArduinoSettings } from "./arduinoSettings";
 import { BoardManager } from "./boardManager";
+import { CppEngine, getCppEngine } from "./cppSupport";
 import { ExampleManager } from "./exampleManager";
 import { AnalysisManager,
          isCompilerParserEnabled,
@@ -663,11 +664,25 @@ export class ArduinoApp {
         // arduino-cli 1.5.1 : cache froid 20 lignes avr-g++, cache chaud 0.
         // On ne force une compilation propre que lorsqu'aucune configuration n'existe
         // encore — le surcout (~2 s) ne se paie donc qu'une fois.
+        // Le fichier temoin depend du moteur IntelliSense : c_cpp_properties.json pour
+        // l'extension C/C++, compile_commands.json pour clangd (VSCodium et derives).
+        const intelliSenseConfigFile = getCppEngine() === CppEngine.Clangd
+            ? constants.COMPILE_COMMANDS_FILE
+            : constants.CPP_CONFIG_FILE;
         const needsCleanForIntelliSense = buildMode === BuildMode.Analyze
             && isCompilerParserEnabled(dc)
-            && !fs.existsSync(path.join(ArduinoWorkspace.rootPath ?? "", constants.CPP_CONFIG_FILE));
+            && !fs.existsSync(path.join(ArduinoWorkspace.rootPath ?? "", intelliSenseConfigFile));
         if (needsCleanForIntelliSense) {
             args.push("--clean");
+        }
+
+        // clangd ne se nourrit que de la base de compilation : il faut la demander
+        // explicitement au CLI, qui la depose dans le dossier de construction.
+        // Reserve au mode Analyze : le drapeau arrete la construction avant l'edition
+        // de liens, donc un Verify ou un Upload ne produirait plus de binaire.
+        if (buildMode === BuildMode.Analyze && getCppEngine() === CppEngine.Clangd
+            && isCompilerParserEnabled(dc)) {
+            args.push("--only-compilation-database");
         }
 
         await vscode.workspace.saveAll(false);
@@ -741,7 +756,7 @@ export class ArduinoApp {
         // Push sketch as last argument
         args.push(path.join(ArduinoWorkspace.rootPath, dc.sketch));
 
-        const cocopa = makeCompilerParserContext(dc, buildMode);
+        const cocopa = makeCompilerParserContext(dc, buildMode, buildDir);
 
         const cleanup = async (result: "ok" | "error") => {
             let ret = true;
