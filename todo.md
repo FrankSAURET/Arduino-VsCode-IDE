@@ -1,5 +1,5 @@
 # À faire
-1. crée un scripte "package" lançable par "npm run package" qui crée le vsix avec le numéro de version + n° de build
+
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 

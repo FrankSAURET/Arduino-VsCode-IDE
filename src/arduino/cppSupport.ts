@@ -276,7 +276,7 @@ function toolchainIncludePaths(compilerPath: string): string[] {
  * correspondant. Les `.ino` secondaires du croquis, concaténés dans le même
  * `.ino.cpp` par le CLI, reçoivent la même ligne de commande.
  */
-export function addSketchEntries(entries: ICompileCommand[], rootPath: string, sketchDir: string): ICompileCommand[] {
+export function addSketchEntries(entries: ICompileCommand[], _rootPath: string, sketchDir: string): ICompileCommand[] {
     const result = [...entries];
     const known = new Set(entries.map((entry) => path.resolve(entry.file).toLowerCase()));
 
@@ -320,7 +320,6 @@ export function addSketchEntries(entries: ICompileCommand[], rootPath: string, s
 
     // Les en-têtes du croquis profitent de la même configuration via clangd lui-même,
     // qui retombe sur l'entrée du fichier source le plus proche.
-    void rootPath;
     return result;
 }
 
