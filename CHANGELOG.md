@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.9.2
+
+- Date de publication : 12 septembre 2026
+
+### Nouveauté
+
+- **IntelliSense sur VSCodium et les autres éditeurs** : l'extension C/C++ de Microsoft ne peut pas y être installée (sa licence en interdit la redistribution sur Open VSX, et son serveur refuse de démarrer même posée à la main). L'extension bascule maintenant toute seule sur **clangd**, qui remplit le même rôle : complétion, navigation dans le code et signalement des erreurs dans les croquis. Sur Visual Studio Code officiel, rien ne change. Le nouveau réglage `arduino.intelliSenseEngine` permet de forcer l'un ou l'autre moteur
+- **Le parcours d'installation propose l'extension correspondant au moteur retenu** : C/C++ sur Visual Studio Code, clangd ailleurs
+
+### Correction
+
+- **Plus de fausse alerte « environnement Arduino manquant » au démarrage** : au lancement de l'éditeur sans croquis ouvert, l'extension annonçait un environnement incomplet alors que tout était en place. L'arduino-cli est désormais recherché pour de bon (réglages, copie téléchargée, PATH, Arduino IDE 2), et les cœurs installés sont détectés dans le dossier de données par défaut
+- **Le bon cœur est enfin choisi quand plusieurs versions cohabitent** : avec `avr/1.8.7` et `avr/1.8.8` côte à côte, l'extension retenait 1.8.7 (ordre alphabétique) pendant que l'arduino-cli compilait avec 1.8.8 — chemins d'outils incohérents, plus rien ne fonctionnait. La version la plus récente est maintenant comparée nombre par nombre
+- **Index des cartes illisible : il est retéléchargé** au lieu d'être abandonné en silence. Un `package_index.json` vide, tronqué ou remplacé par la page d'un portail d'accès wifi vidait la liste des cartes sans aucun message. Un cœur installé mais absent de l'index reste également utilisable, ses cartes étant lues dans ses propres fichiers
+- **Sans arduino-cli, l'installation est proposée** : cliquer sur *Vérifier* ouvrait d'office les réglages de l'éditeur sur un champ à remplir, sans indiquer quoi y mettre, et le parcours d'installation automatique devenait inatteignable. Une notification propose désormais **Installer** ou **Configurer manuellement** ; l'installation terminée, la commande demandée s'exécute toute seule
+- **Message d'erreur incompréhensible** : un `[Error] Exit with code={0}` s'affichait tel quel quand l'arduino-cli était introuvable. La cause est maintenant nommée — exécutable absent, droits refusés, ou vrai code de sortie
+- **« Échec de la génération de la configuration IntelliSense » à chaque compilation** : l'analyse avait besoin d'une compilation complète pour lire les chemins d'en-têtes, or l'arduino-cli réutilisait son cache et n'écrivait rien. Le dossier est désormais reconstruit une seule fois, tant qu'aucune configuration n'existe ; les compilations suivantes gardent le cache
+- **IntelliSense dans les croquis avec clangd** : le fichier `.ino` lui-même n'était pas couvert, et le code destiné aux microcontrôleurs AVR était analysé comme du code pour ordinateur de bureau, ce qui produisait des erreurs en cascade dans les bibliothèques Arduino. Corrigé
+
 ## Version 2026.9.1
 
 - Release date: September 2026

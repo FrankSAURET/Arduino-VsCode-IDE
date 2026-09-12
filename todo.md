@@ -4,6 +4,19 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.2.25 — Préparation de la publication 2026.9.2
+
+1. ✅ **Version publique 2026.9.1 → 2026.9.2**. 2026.9.1 publiée le 09/09/2026, même mois donc incrément +1. `buildNumber` : `2026.9.2.25`, compteur jamais remis à zéro.
+2. ✅ **CHANGELOG : section `2026.9.1` laissée intacte** — elle est datée, donc publiée. Nouvelle section `2026.9.2` ouverte pour les lots `.19` à `.24`, qui n'étaient couverts nulle part.
+3. ✅ **CHANGELOG en français** à partir de cette section (les précédentes restent en anglais, on ne réécrit pas l'historique), structure imposée Nouveauté / Modification / Correction — la partie *Modification*, vide, est omise.
+4. ✅ **Lot de traductions FR d'avant publication** : 14 chaînes `vscode.l10n.t` manquantes traduites — les quatre messages de `describeCliFailure()`, l'index de paquets inexploitable, les deux échecs d'écriture/recopie de `cppSupport.ts`, la configuration clangd, la proposition d'installation sans CLI.
+5. ✅ **Trois chaînes devenues paramétrées** (`{0}` au lieu de « C/C++ » écrit en dur, le moteur pouvant être clangd) : clefs renommées dans `bundle.l10n.fr.json`, traductions reprises. Plus aucune orpheline correspondante.
+6. ✅ Au passage, « sketches » remplacé par « croquis » dans la recommandation d'extension — le reste du catalogue dit déjà « croquis ».
+7. ✅ **Manifeste** : 4 clefs `arduino.configuration.intelliSenseEngine.*` traduites. Vérification : 55 clefs dans `package.nls.json`, 55 dans `package.nls.fr.json`, 0 écart.
+8. ✅ **Vérification par script** : 273 chaînes du code, 273 traduites, 0 manquante. Les 30 orphelines restantes du catalogue viennent des gabarits de la page d'accueil et du manifeste, pas du code — hors périmètre.
+9. ✅ Construction, `tslint` et validation des quatre JSON : propres.
+10. ⏳ **Publication non faite** : attend l'accord explicite de Frank. Paquet `.vsix` non construit non plus.
+
 # v2026.9.1.24 — IntelliSense sur VSCodium : bascule automatique vers clangd
 
 1. ✅ **Defaut** : sur VSCodium (et toute construction non officielle), l'extension C/C++ de Microsoft `ms-vscode.cpptools` est **inutilisable** — absente d'Open VSX car sa licence en interdit la redistribution, et son serveur refuse de demarrer meme installee a la main. Les utilisateurs installant l'extension depuis Open VSX se retrouvaient donc **sans IntelliSense du tout**, avec une proposition d'installation qui ne pouvait pas aboutir.

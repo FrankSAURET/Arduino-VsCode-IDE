@@ -51,5 +51,9 @@
   "arduino.configuration.teleplotOpenMode.newTab.description": "Ouvrir Teleplot dans un nouvel onglet de la fenêtre courante.",
   "arduino.configuration.teleplotOpenMode.newPanel.description": "Ouvrir Teleplot dans un nouveau groupe d'éditeurs sous l'éditeur courant.",
   "arduino.configuration.teleplotOpenMode.splitRight.description": "Ouvrir Teleplot dans un groupe d'éditeurs partagé à droite de l'éditeur courant.",
-  "arduino.configuration.outputVerbosity.description": "Contrôle le niveau de détail du panneau de sortie Arduino. compact : uniquement les messages d'état clés ([Starting], [Done], [Warning], [Error]). normal : sortie standard sans les détails de débogage du CLI. verbose : toute la sortie, y compris les détails complets d'Arduino CLI."
+  "arduino.configuration.outputVerbosity.description": "Contrôle le niveau de détail du panneau de sortie Arduino. compact : uniquement les messages d'état clés ([Starting], [Done], [Warning], [Error]). normal : sortie standard sans les détails de débogage du CLI. verbose : toute la sortie, y compris les détails complets d'Arduino CLI.",
+  "arduino.configuration.intelliSenseEngine.description": "Moteur de langage C/C++ qui fournit IntelliSense. `auto` choisit celui que votre éditeur autorise : l'extension C/C++ de Microsoft sur Visual Studio Code officiel, clangd ailleurs (VSCodium et autres constructions, où l'extension C/C++ n'est pas disponible).",
+  "arduino.configuration.intelliSenseEngine.auto": "Choisir automatiquement selon l'éditeur et les extensions installées.",
+  "arduino.configuration.intelliSenseEngine.cpptools": "Extension C/C++ de Microsoft (c_cpp_properties.json). Visual Studio Code officiel uniquement.",
+  "arduino.configuration.intelliSenseEngine.clangd": "clangd (compile_commands.json). Fonctionne dans tous les éditeurs, y compris VSCodium."
 }
