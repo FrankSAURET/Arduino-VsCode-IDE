@@ -529,6 +529,44 @@ export async function activate(context: vscode.ExtensionContext) {
     };
     registerNonArduinoCommand("arduino.setupEnvironment", runEnvironmentSetup);
 
+    // Relance la résolution des chemins sans rien installer. Utile quand l'arduino-cli a bougé
+    // hors de l'extension (installation manuelle, déplacement, réglage corrigé) : les chemins
+    // sont résolus à l'activation, donc seul un rechargement de fenêtre les rafraîchissait.
+    registerNonArduinoCommand("arduino.reloadEnvironment", async () => {
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: vscode.l10n.t("Arduino environment"),
+            cancellable: false,
+        }, async (progress) => {
+            progress.report({ message: vscode.l10n.t("Detecting the Arduino CLI again...") });
+            if (!arduinoContextModule.default.initialized) {
+                // Activation jamais aboutie (CLI absent au démarrage) : la refaire est la seule
+                // façon de reconstruire les réglages, reloadAfterEnvironmentChange n'ayant alors
+                // aucun objet à recharger.
+                await arduinoActivatorModule.default.activate();
+            } else {
+                await arduinoActivatorModule.default.reloadAfterEnvironmentChange();
+            }
+        });
+
+        const settings = arduinoContextModule.default.initialized
+            ? arduinoContextModule.default.arduinoApp.settings
+            : undefined;
+        const commandPath = settings ? settings.commandPath : "";
+        if (commandPath && util.fileExistsSync(commandPath)) {
+            vscode.window.showInformationMessage(vscode.l10n.t("Arduino CLI found: {0}", commandPath));
+        } else {
+            const installAction = vscode.l10n.t("Install");
+            const choice = await vscode.window.showWarningMessage(
+                vscode.l10n.t("Arduino CLI still not found. Install it now?"),
+                installAction,
+            );
+            if (choice === installAction) {
+                await runEnvironmentSetup();
+            }
+        }
+    });
+
     context.subscriptions.push(vscode.commands.registerCommand("arduino.openSerialTracer", openSerialTracer));
     context.subscriptions.push(vscode.commands.registerCommand("arduino.openSerialMonitor", async () => {
         try {

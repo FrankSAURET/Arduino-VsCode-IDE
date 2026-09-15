@@ -4,6 +4,15 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.2.27 — Commande de redétection du CLI
+
+1. ✅ **Manque** : aucune commande ne forçait une redétection. `arduino.setupEnvironment` refait la recherche mais ne recharge les réglages que si elle installe quelque chose ([extension.ts:517](src/extension.ts#L517)) — CLI déjà présent, donc aucun effet. Seul un *Developer: Reload Window* marchait.
+2. ✅ **Nouvelle commande `arduino.reloadEnvironment`** — *Arduino : Redétecter l'arduino-cli* ([extension.ts:532](src/extension.ts#L532)) : appelle `reloadAfterEnvironmentChange()` sans condition, sous une barre de progression.
+3. ✅ **Cas activation jamais aboutie** (CLI absent au démarrage) : `_arduinoSettings` est alors indéfini et `reloadAfterEnvironmentChange()` ne ferait rien. La commande appelle `activate()` à la place quand le contexte n'est pas initialisé.
+4. ✅ **Retour visible** : chemin trouvé annoncé, sinon proposition d'installer — une commande qui ne dit rien passe pour cassée.
+5. ✅ Manifeste + `package.nls.json` / `package.nls.fr.json` (56 clefs chacun, 0 écart). Deux chaînes ajoutées au catalogue `bundle.l10n.fr.json` pour ne pas rouvrir d'écart FR.
+6. ✅ Quatre JSON valides, `tsc --noEmit` et `tslint` : propres.
+
 # v2026.9.2.26 — Chemin du CLI non réécrit après installation
 
 1. ✅ **Défaut** : après un téléchargement de l'arduino-cli par l'extension, le chemin n'était pas repris si `arduino.path` était déjà renseigné. Le repli sur le CLI téléchargé était enfermé dans la branche `if (!configValue)` de `tryResolveArduinoPath()` — un réglage périmé, un dossier supprimé ou un Arduino IDE 1.x (pas d'arduino-cli dedans) court-circuitait donc définitivement la copie installée.

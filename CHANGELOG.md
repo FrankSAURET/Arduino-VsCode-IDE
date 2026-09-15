@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2026.9.3 (prochaine publication)
 
+### Nouveauté
+
+- **Nouvelle commande *Arduino : Redétecter l'arduino-cli*** : relance la recherche du CLI sans rien installer. Jusqu'ici, un arduino-cli installé ou déplacé après le démarrage de l'éditeur n'était vu qu'après un rechargement complet de la fenêtre. Si la recherche échoue encore, l'installation est proposée dans la foulée
+
 ### Correction
 
 - **L'arduino-cli installé par l'extension est enfin retrouvé après coup** : si le réglage *Arduino : Path* (ou *Command Path*) contenait déjà un chemin — resté d'une installation précédente, d'un dossier depuis supprimé, ou d'un Arduino IDE 1.x qui ne fournit pas d'arduino-cli — l'extension s'y tenait et ignorait la copie qu'elle venait elle-même d'installer. Tout continuait à échouer comme si rien n'avait été installé. Un chemin configuré qui ne mène à aucun arduino-cli utilisable laisse désormais la place à la copie téléchargée

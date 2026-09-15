@@ -273,6 +273,8 @@
   "Arduino CLI not found: downloading it.": "Arduino CLI introuvable : téléchargement en cours.",
   "Arduino CLI found: {0}": "Arduino CLI trouvé : {0}",
   "Arduino CLI is still unusable: {0}": "Arduino CLI reste inutilisable : {0}",
+  "Arduino CLI still not found. Install it now?": "L'arduino-cli reste introuvable. L'installer maintenant ?",
+  "Detecting the Arduino CLI again...": "Nouvelle détection de l'arduino-cli...",
   "Arduino environment": "Environnement Arduino",
   "Updating package index...": "Mise à jour de l'index des paquets…",
   "Package index update failed: {0}": "Échec de la mise à jour de l'index des paquets : {0}",
