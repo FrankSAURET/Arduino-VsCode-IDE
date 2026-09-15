@@ -4,6 +4,14 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.2.26 — Chemin du CLI non réécrit après installation
+
+1. ✅ **Défaut** : après un téléchargement de l'arduino-cli par l'extension, le chemin n'était pas repris si `arduino.path` était déjà renseigné. Le repli sur le CLI téléchargé était enfermé dans la branche `if (!configValue)` de `tryResolveArduinoPath()` — un réglage périmé, un dossier supprimé ou un Arduino IDE 1.x (pas d'arduino-cli dedans) court-circuitait donc définitivement la copie installée.
+2. ✅ **Correction 1** — [arduinoSettings.ts:253](src/arduino/arduinoSettings.ts#L253) : le repli `getDownloadedCliPath()` est sorti de la branche. Il s'applique maintenant à tout `_arduinoPath`, réglage explicite compris, dès qu'aucun `arduino-cli` n'y existe. La condition de validité était déjà écrite (`fileExistsSync`), elle n'était simplement jamais atteinte dans ce cas.
+3. ✅ **Correction 2** — [arduinoSettings.ts:50](src/arduino/arduinoSettings.ts#L50) : un `arduino.commandPath` **absolu** et mort masquait aussi la copie téléchargée, la correction 1 ne pouvant rien pour lui (`commandPath` absolu ne passe pas par `_arduinoPath`). Il est neutralisé avant résolution, ce qui rebascule sur le nom relatif par défaut et donc sur le CLI trouvé.
+4. ℹ️ Aucun réglage n'est écrit dans `settings.json` : la résolution se fait à chaque `initialize()`, et `reloadAfterEnvironmentChange()` la rappelle déjà après installation. Écrire le chemin en dur figerait le réglage et rendrait le même défaut possible au prochain déplacement de l'extension.
+5. ✅ Types (`tsc --noEmit`) et `tslint` : propres.
+
 # v2026.9.2.25 — Préparation de la publication 2026.9.2
 
 1. ✅ **Version publique 2026.9.1 → 2026.9.2**. 2026.9.1 publiée le 09/09/2026, même mois donc incrément +1. `buildNumber` : `2026.9.2.25`, compteur jamais remis à zéro.

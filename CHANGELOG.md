@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.9.3 (prochaine publication)
+
+### Correction
+
+- **L'arduino-cli installé par l'extension est enfin retrouvé après coup** : si le réglage *Arduino : Path* (ou *Command Path*) contenait déjà un chemin — resté d'une installation précédente, d'un dossier depuis supprimé, ou d'un Arduino IDE 1.x qui ne fournit pas d'arduino-cli — l'extension s'y tenait et ignorait la copie qu'elle venait elle-même d'installer. Tout continuait à échouer comme si rien n'avait été installé. Un chemin configuré qui ne mène à aucun arduino-cli utilisable laisse désormais la place à la copie téléchargée
+
 ## Version 2026.9.2
 
 - Date de publication : 12 septembre 2026

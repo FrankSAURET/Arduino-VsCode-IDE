@@ -48,6 +48,12 @@ export class ArduinoSettings implements IArduinoSettings {
         this._extensionPath = extensionPath || "";
         const platform = os.platform();
         this._commandPath = VscodeSettings.getInstance().commandPath || "";
+        // Un commandPath absolu et mort (réglage périmé, exécutable supprimé) masquerait le CLI
+        // téléchargé : on le neutralise pour que la résolution reparte du chemin Arduino.
+        if (this._commandPath !== "" && path.isAbsolute(this._commandPath)
+            && !util.fileExistsSync(path.normalize(this._commandPath))) {
+            this._commandPath = "";
+        }
         await this.tryResolveArduinoPath();
         if (this._commandPath === "") {
             this._commandPath = getExecutableFileName("arduino-cli");
@@ -258,17 +264,19 @@ export class ArduinoSettings implements IArduinoSettings {
         if (!configValue || !configValue.trim()) {
             // 2 & 3. Resolve arduino path from system environment variables and usual software installation directory.
             this._arduinoPath = await Promise.resolve(resolveArduinoPath()) || "";
-            // 4. Un arduino-cli téléchargé par l'extension prime sur un IDE Arduino 1.x résolu
-            // en 2/3 (celui-ci ne fournit pas d'arduino-cli, donc commandPath y serait absent).
-            if (this._extensionPath) {
-                const downloadedPath = getDownloadedCliPath(this._extensionPath);
-                if (downloadedPath && (!this._arduinoPath || !this._arduinoPath.trim()
-                    || !util.fileExistsSync(path.join(this._arduinoPath, getExecutableFileName("arduino-cli"))))) {
-                    this._arduinoPath = downloadedPath;
-                }
-            }
         } else {
             this._arduinoPath = configValue;
+        }
+
+        // 4. Un arduino-cli téléchargé par l'extension prime sur tout chemin — réglage compris —
+        // qui ne fournit pas d'arduino-cli : réglage périmé, dossier supprimé, ou IDE Arduino 1.x
+        // résolu en 2/3. Sans ce repli, un arduino.path mort rendait invisible le CLI installé.
+        if (this._extensionPath) {
+            const downloadedPath = getDownloadedCliPath(this._extensionPath);
+            if (downloadedPath && (!this._arduinoPath || !this._arduinoPath.trim()
+                || !util.fileExistsSync(path.join(this._arduinoPath, getExecutableFileName("arduino-cli"))))) {
+                this._arduinoPath = downloadedPath;
+            }
         }
     }
 
