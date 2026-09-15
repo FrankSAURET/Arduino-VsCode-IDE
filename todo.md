@@ -4,6 +4,18 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.2.29 — CLI téléchargé rangé dans le stockage global
+
+1. ✅ **Défaut** : le CLI était installé dans `<extension>/arduino-cli`, dossier recréé à chaque mise à jour de l'extension. Il disparaissait donc à chaque nouvelle version — exactement ce qui est arrivé à Frank en réinstallant le `.vsix` au lot `.27`.
+2. ✅ **`getGlobalStoragePath()`** ajouté à [extensionInfo.ts](src/extensionInfo.ts) : mémorise `context.globalStorageUri.fsPath` à l'activation, comme le mode et le manifeste. Pas de nouveau passage de paramètre à travers toute la chaîne d'appel.
+3. ✅ **[cliDownloader.ts](src/arduino/cliDownloader.ts) : `cliSearchDirs()` / `cliInstallDir()`**. La recherche essaie le stockage global **puis** le dossier de l'extension — une installation existante reste utilisée là où elle est, aucune réinstallation forcée. L'installation, elle, vise toujours le stockage global : un retéléchargement vaut donc migration.
+4. ✅ **`checkForCliUpdate()`** suit le dossier réellement utilisé (`getDownloadedCliPath()`), au lieu de supposer celui de l'extension — sinon le fichier `VERSION` d'une installation migrée n'était plus trouvé et la mise à jour ne se proposait jamais.
+5. ✅ **[environmentSetup.ts:261](src/arduino/environmentSetup.ts#L261)** : le chemin de repli était construit en dur sur `extensionPath`. Il utilise maintenant le dossier renvoyé par `downloadArduinoCli()`.
+6. ℹ️ **Portée du stockage global** : propre à l'utilisateur **et** à l'éditeur (VS Code ≠ VSCodium). Pas de partage entre comptes — un emplacement machine (`%PROGRAMDATA%`) exigerait les droits administrateur, qu'une extension n'a pas. Pour un poste partagé, la bonne réponse reste une installation système détectée via le PATH, déjà gérée.
+7. ℹ️ `.vscodeignore` (`arduino-cli/**`) et `.gitignore` laissés tels quels : encore utiles tant que d'anciennes installations vivent dans le dossier de l'extension.
+8. ✅ `tsc --noEmit` et `tslint` : propres.
+9. ⏳ **Non vérifié à l'exécution** : migration réelle d'une installation existante, et comportement sur machine sans stockage global accessible. À valider au prochain essai de Frank.
+
 # v2026.9.2.28 — « Raison inconnue » masquait un ENOENT
 
 1. ✅ **Défaut d'emballage** — [arduino.ts:63](src/arduino/arduino.ts#L63) : `util.spawn` rejette **enveloppé** (`{ error }` si le processus n'a pas démarré, `{ code }` pour une sortie non nulle), or `describeCliFailure()` lisait `rejection.code` directement. Un ENOENT arrivait donc en `{ error: { code: "ENOENT" } }` : `error.code` valait `undefined`, aucune branche ne correspondait, et le message tombait sur « raison inconnue ». La branche ENOENT écrite au lot `.22` n'a donc **jamais** pu se déclencher. Déballage `rejection.error || rejection`.

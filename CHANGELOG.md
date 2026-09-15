@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 
 - **Nouvelle commande *Arduino : Redétecter l'arduino-cli*** : relance la recherche du CLI sans rien installer. Jusqu'ici, un arduino-cli installé ou déplacé après le démarrage de l'éditeur n'était vu qu'après un rechargement complet de la fenêtre. Si la recherche échoue encore, l'installation est proposée dans la foulée
 
+### Modification
+
+- **L'arduino-cli installé par l'extension n'est plus perdu à chaque mise à jour.** Il était rangé dans le dossier de l'extension, recréé à chaque nouvelle version : l'environnement paraissait alors cassé sans raison, et il fallait tout réinstaller. Il est désormais rangé dans le dossier de données de l'extension, qui survit aux mises à jour. Une installation existante continue d'être utilisée là où elle est, et migre d'elle-même à sa prochaine mise à jour. À noter : cet emplacement reste propre à chaque compte d'utilisateur et à chaque éditeur — sur un poste partagé, une installation système de l'arduino-cli, détectée automatiquement, reste préférable
+
 ### Correction
 
 - **« Échec de l'Arduino CLI pour une raison inconnue » : la vraie cause est enfin nommée.** Quand l'arduino-cli était introuvable, ce message opaque s'affichait à la place de « Arduino CLI introuvable », parce que l'erreur système était examinée à travers son emballage. Tous les échecs de lancement du CLI sont concernés, pas seulement la mise à jour des index

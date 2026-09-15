@@ -257,9 +257,11 @@ export async function setupEnvironment(
             commandPath = found;
         } else {
             arduinoChannel.info(vscode.l10n.t("Arduino CLI not found: downloading it."));
-            await downloadArduinoCli(extensionPath);
+            // Le dossier d'installation depend du contexte (stockage global ou dossier de
+            // l'extension) : on prend celui que le telechargement renvoie, sans le deviner.
+            const installedDir = await downloadArduinoCli(extensionPath);
             commandPath = getDownloadedCliExecutable(extensionPath)
-                || path.join(extensionPath, "arduino-cli", getExecutableFileName("arduino-cli"));
+                || path.join(installedDir, getExecutableFileName("arduino-cli"));
             result.cliInstalled = true;
         }
     } else {

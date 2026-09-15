@@ -16,6 +16,7 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { arduinoChannel } from "../common/outputChannel";
+import { getGlobalStoragePath } from "../extensionInfo";
 
 const GITHUB_API_LATEST = "https://api.github.com/repos/arduino/arduino-cli/releases/latest";
 
@@ -145,16 +146,46 @@ export async function getLatestCliVersion(): Promise<string> {
     return release.tag_name.replace(/^v/, "");
 }
 
+function cliExecutableName(): string {
+    return os.platform() === "win32" ? "arduino-cli.exe" : "arduino-cli";
+}
+
+/**
+ * Dossiers ou un CLI telecharge peut se trouver, par ordre de preference.
+ *
+ * Le stockage global vient en premier : il survit aux mises a jour de l'extension,
+ * alors que le dossier de l'extension est recree a chaque version — le CLI y etait
+ * donc perdu a chaque mise a jour, et l'environnement paraissait casse sans raison.
+ * L'ancien emplacement reste lu pour les installations existantes.
+ */
+function cliSearchDirs(extensionPath: string): string[] {
+    const dirs: string[] = [];
+    const storagePath = getGlobalStoragePath();
+    if (storagePath) {
+        dirs.push(path.join(storagePath, "arduino-cli"));
+    }
+    if (extensionPath) {
+        dirs.push(path.join(extensionPath, "arduino-cli"));
+    }
+    return dirs;
+}
+
+/**
+ * Dossier ou installer le CLI : le stockage global des qu'il est connu, sinon
+ * le dossier de l'extension (activation non encore passee, tests).
+ */
+function cliInstallDir(extensionPath: string): string {
+    return cliSearchDirs(extensionPath)[0] || path.join(extensionPath, "arduino-cli");
+}
+
 /**
  * Returns the path to the downloaded Arduino CLI if it exists, or null.
  */
 export function getDownloadedCliPath(extensionPath: string): string | null {
-    const cliDir = path.join(extensionPath, "arduino-cli");
-    const platform = os.platform();
-    const execName = platform === "win32" ? "arduino-cli.exe" : "arduino-cli";
-    const execPath = path.join(cliDir, execName);
-    if (fs.existsSync(execPath)) {
-        return cliDir;
+    for (const cliDir of cliSearchDirs(extensionPath)) {
+        if (fs.existsSync(path.join(cliDir, cliExecutableName()))) {
+            return cliDir;
+        }
     }
     return null;
 }
@@ -167,9 +198,7 @@ export function getDownloadedCliExecutable(extensionPath: string): string | null
     if (!cliDir) {
         return null;
     }
-    const platform = os.platform();
-    const execName = platform === "win32" ? "arduino-cli.exe" : "arduino-cli";
-    return path.join(cliDir, execName);
+    return path.join(cliDir, cliExecutableName());
 }
 
 /**
@@ -177,7 +206,9 @@ export function getDownloadedCliExecutable(extensionPath: string): string | null
  * Returns the directory containing the CLI executable.
  */
 export async function downloadArduinoCli(extensionPath: string): Promise<string> {
-    const cliDir = path.join(extensionPath, "arduino-cli");
+    // Toujours le dossier cible, meme si une ancienne installation traine dans le
+    // dossier de l'extension : un retelechargement est l'occasion de la migrer.
+    const cliDir = cliInstallDir(extensionPath);
 
     const version = await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
@@ -297,7 +328,9 @@ async function getSystemCliVersion(): Promise<string | null> {
  * - Otherwise, checks the system-installed CLI and notifies if a newer version is available online.
  */
 export async function checkForCliUpdate(extensionPath: string): Promise<void> {
-    const cliDir = path.join(extensionPath, "arduino-cli");
+    // Le CLI gere par l'extension peut etre dans le stockage global (installations
+    // recentes) ou dans le dossier de l'extension (anciennes) : on suit celui qui existe.
+    const cliDir = getDownloadedCliPath(extensionPath) || cliInstallDir(extensionPath);
     const versionFile = path.join(cliDir, "VERSION");
     try {
         const latestVersion = await getLatestCliVersion();
@@ -316,8 +349,11 @@ export async function checkForCliUpdate(extensionPath: string): Promise<void> {
                     vscode.l10n.t("Later"),
                 );
                 if (choice === vscode.l10n.t("Update")) {
-                    const files = fs.readdirSync(cliDir);
-                    for (const f of files) {
+                    // Vide l'installation courante avant de retelecharger. Si elle etait dans
+                    // le dossier de l'extension, downloadArduinoCli installe desormais dans le
+                    // stockage global : la mise a jour vaut aussi migration, l'ancien dossier
+                    // ne restant que vide. L'archive n'ayant que des fichiers plats, unlink suffit.
+                    for (const f of fs.readdirSync(cliDir)) {
                         fs.unlinkSync(path.join(cliDir, f));
                     }
                     await downloadArduinoCli(extensionPath);

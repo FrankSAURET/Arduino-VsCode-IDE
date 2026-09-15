@@ -10,10 +10,12 @@ export const EXTENSION_ID = "electropol-fr.arduino-vscode-ide";
 
 let extensionMode: vscode.ExtensionMode | undefined;
 let packageJSON: any;
+let globalStoragePath: string = "";
 
 /** Memorise le mode d'execution et le manifeste fournis a l'activation. */
 export function setExtensionContext(context: vscode.ExtensionContext) {
     extensionMode = context.extensionMode;
+    globalStoragePath = context.globalStorageUri?.fsPath || "";
     packageJSON = (context as any).extension?.packageJSON;
     if (!packageJSON) {
         // Anciennes versions de l'API : le manifeste se lit sur le disque.
@@ -32,6 +34,17 @@ export function setExtensionContext(context: vscode.ExtensionContext) {
  */
 export function isProductionMode(): boolean {
     return extensionMode === undefined || extensionMode === vscode.ExtensionMode.Production;
+}
+
+/**
+ * Dossier de stockage persistant de l'extension, ou "" hors activation.
+ * Contrairement au dossier de l'extension, il survit aux mises a jour : c'est la
+ * qu'on range ce qu'on ne veut pas retelecharger a chaque version (arduino-cli).
+ * Il reste propre a l'utilisateur ET a l'editeur (VS Code, VSCodium...), un
+ * emplacement partage par toute la machine demandant les droits administrateur.
+ */
+export function getGlobalStoragePath(): string {
+    return globalStoragePath;
 }
 
 /** Contenu du package.json de l'extension, ou un objet vide si introuvable. */
