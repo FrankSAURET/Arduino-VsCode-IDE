@@ -28,6 +28,7 @@ import { setExtensionContext } from "./extensionInfo";
 const completionProviderModule = impor("./langService/completionProvider") as typeof import ("./langService/completionProvider");
 import { BuildMode } from "./arduino/arduino";
 import { checkForCliUpdate } from "./arduino/cliDownloader";
+import { isOfficialVSCode } from "./arduino/cppSupport";
 import { getEnvironmentStatus, promptSetupEnvironment, setupEnvironment } from "./arduino/environmentSetup";
 import { recommendCppTools, recommendKablix } from "./arduino/extensionRecommendation";
 import { getUserPortNames, resolvePortName, setUserPortName } from "./arduino/portIdentification";
@@ -48,6 +49,8 @@ const pendingTimers = new Set<NodeJS.Timeout>();
 
 const TELEPLOT_EXTENSION_ID = "alexnesnes.teleplot";
 const TELEPLOT_START_COMMAND = "teleplot.start";
+const TELEPLOT_MARKETPLACE_URL =
+    "https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot";
 
 export async function activate(context: vscode.ExtensionContext) {
     setExtensionContext(context);
@@ -83,6 +86,22 @@ export async function activate(context: vscode.ExtensionContext) {
             return true;
         }
 
+        // Teleplot n'est publié que sur la place de marché Microsoft : hors VS Code
+        // officiel, `installExtension` ne peut pas le récupérer. On dirige alors vers
+        // le téléchargement manuel du .vsix plutôt que de laisser échouer en silence.
+        if (!isOfficialVSCode()) {
+            const openPage = vscode.l10n.t("Open the download page");
+            const choice = await vscode.window.showWarningMessage(
+                vscode.l10n.t("The serial tracer needs the \"Teleplot\" extension, which is only published on the Microsoft marketplace and cannot be installed automatically here. Download its VSIX and install it with \"Install from VSIX...\"."),
+                { modal: true },
+                openPage,
+            );
+            if (choice === openPage) {
+                await vscode.env.openExternal(vscode.Uri.parse(TELEPLOT_MARKETPLACE_URL));
+            }
+            return false;
+        }
+
         const installButton = vscode.l10n.t("Install Teleplot");
         const installChoice = await vscode.window.showInformationMessage(
             vscode.l10n.t("Teleplot is required to use the serial tracer. Do you want to install it now?"),
@@ -106,7 +125,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         const reloadButton = vscode.l10n.t("Reload Window");
         const reloadChoice = await vscode.window.showInformationMessage(
-            vscode.l10n.t("Teleplot was installed. Reload VS Code to finish activating it."),
+            vscode.l10n.t("Teleplot was installed. Reload the window to finish activating it."),
             reloadButton,
         );
         if (reloadChoice === reloadButton) {

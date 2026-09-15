@@ -4,6 +4,22 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.3.30 — Préparation de la publication 2026.9.3 + audit VSCodium
+
+1. ✅ **Audit de compatibilité VSCodium demandé avant publication.** Passés en revue : détection de l'hôte, API employées, extensions installées automatiquement, `engines`, modules natifs.
+2. ✅ **Défaut trouvé — Teleplot** ([extension.ts:81](src/extension.ts#L81)) : `alexnesnes.teleplot` n'existe **pas sur Open VSX** (vérifié par l'API : 404, et absent de la recherche). `workbench.extensions.installExtension` échouait donc sur tout éditeur sans place de marché Microsoft, et le traceur série restait inerte sans explication. Hors VS Code officiel (`isOfficialVSCode()`, déjà écrit pour clangd), un message dit la cause et propose d'ouvrir la page de téléchargement pour une pose manuelle du VSIX.
+3. ✅ **« Rechargez VS Code » → « Rechargez la fenêtre »** dans le même flux : le nom du produit était écrit en dur alors que l'extension tourne aussi ailleurs. Clef FR reprise en conséquence.
+4. ✅ **`electropol-fr.coloredtheme` vérifié présent sur Open VSX** (2026.8.2) : l'installation automatique du thème fonctionne sur VSCodium, rien à changer.
+5. ✅ **`llvm-vs-code-extensions.vscode-clangd` vérifié présent sur Open VSX** (0.6.0) : la bascule IntelliSense du lot `.24` aboutit bien.
+6. ✅ **`engines: ^1.105.0` compatible** : VSCodium en est à 1.135, l'extension s'installe donc. Aucune API proposée (`enabledApiProposals`), aucune commande `workbench.*` propre à VS Code — toutes celles employées existent dans Code - OSS.
+7. ℹ️ **Modules natifs** (`serialport`, `usb-detection`) : même ABI Electron que VS Code à version égale, VSCodium étant construit depuis les mêmes sources. Rien à prévoir.
+8. ✅ **Version publique 2026.9.2 → 2026.9.3**. 2026.9.2 publiée le 12/09/2026, même mois donc incrément +1. `buildNumber` : `2026.9.3.30`.
+9. ✅ **CHANGELOG** : section `2026.9.3` datée du 15 septembre 2026, entrée Teleplot ajoutée en *Correction*.
+10. ✅ **Traductions FR d'avant publication** : 277 chaînes du code, 277 traduites, 0 manquante (script de contrôle). Les 30 orphelines du catalogue viennent des gabarits de la page d'accueil et du manifeste, comme au lot `.25` — hors périmètre.
+11. ✅ Construction, `tsc --noEmit`, `tslint` et validation des quatre JSON : propres.
+12. ⏳ **Non vérifié à l'exécution** : aucun essai réel sur VSCodium. L'audit est statique.
+13. ⏳ **Publication non faite** : attend l'accord explicite de Frank. Paquet `.vsix` non construit non plus.
+
 # v2026.9.2.29 — CLI téléchargé rangé dans le stockage global
 
 1. ✅ **Défaut** : le CLI était installé dans `<extension>/arduino-cli`, dossier recréé à chaque mise à jour de l'extension. Il disparaissait donc à chaque nouvelle version — exactement ce qui est arrivé à Frank en réinstallant le `.vsix` au lot `.27`.
