@@ -4,6 +4,15 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.2.28 — « Raison inconnue » masquait un ENOENT
+
+1. ✅ **Défaut d'emballage** — [arduino.ts:63](src/arduino/arduino.ts#L63) : `util.spawn` rejette **enveloppé** (`{ error }` si le processus n'a pas démarré, `{ code }` pour une sortie non nulle), or `describeCliFailure()` lisait `rejection.code` directement. Un ENOENT arrivait donc en `{ error: { code: "ENOENT" } }` : `error.code` valait `undefined`, aucune branche ne correspondait, et le message tombait sur « raison inconnue ». La branche ENOENT écrite au lot `.22` n'a donc **jamais** pu se déclencher. Déballage `rejection.error || rejection`.
+2. ✅ **Cascade d'erreurs sans CLI** — [arduinoActivator.ts:92](src/arduinoActivator.ts#L92) : `reloadAfterEnvironmentChange()` rechargeait les index même sans CLI invocable — trois appels voués à l'échec, canal rempli d'erreurs. Sortie anticipée sur `usableCli` (accesseur qui existait déjà).
+3. ✅ **Bilan de la redétection court-circuité** — [extension.ts:535](src/extension.ts#L535) : les index en échec relançaient l'erreur, `commandExecution` l'attrapait, et la proposition d'installer n'était jamais atteinte. Le rechargement est désormais tenté sous `try` : seul le bilan décide de la suite.
+4. ℹ️ **Cause du signalement de Frank** : plus aucun `arduino-cli.exe` sur la machine. Le dossier `arduino-cli/` vivait dans le dossier de l'extension, détruit par la réinstallation du `.vsix`. Aucun réglage `arduino.path`/`commandPath`, rien dans le PATH, pas d'Arduino IDE 2. Rien à corriger là-dessus — mais les trois défauts ci-dessus rendaient la situation illisible.
+5. ⏳ **À surveiller** : le CLI téléchargé est perdu à chaque mise à jour de l'extension. Le stocker dans `globalStorageUri` le rendrait persistant — hors périmètre de ce lot, à trancher par Frank.
+6. ✅ `tsc --noEmit` et `tslint` : propres.
+
 # v2026.9.2.27 — Commande de redétection du CLI
 
 1. ✅ **Manque** : aucune commande ne forçait une redétection. `arduino.setupEnvironment` refait la recherche mais ne recharge les réglages que si elle installe quelque chose ([extension.ts:517](src/extension.ts#L517)) — CLI déjà présent, donc aucun effet. Seul un *Developer: Reload Window* marchait.

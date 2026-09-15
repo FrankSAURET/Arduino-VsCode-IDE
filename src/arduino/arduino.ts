@@ -60,10 +60,14 @@ function translateBuildMode(buildMode: BuildMode): string {
  * de code de sortie : `error.code` vaut alors "ENOENT"/"EACCES" ou rien du tout,
  * et l'ancien message affichait « Exit with code={0} » avec le marqueur en clair.
  */
-function describeCliFailure(error: any): string {
-    if (!error) {
+function describeCliFailure(rejection: any): string {
+    if (!rejection) {
         return vscode.l10n.t("Arduino CLI failed for an unknown reason.");
     }
+    // util.spawn rejette enveloppé : { error } quand le processus n'a pas pu démarrer,
+    // { code } pour une sortie non nulle. Sans ce déballage, un ENOENT ne correspondait
+    // à aucune branche et sortait en « raison inconnue », masquant la vraie cause.
+    const error: any = rejection.error || rejection;
     if (error.code === "ENOENT") {
         return vscode.l10n.t("Arduino CLI not found: check the arduino.commandPath setting.");
     }

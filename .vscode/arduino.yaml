@@ -1,16 +1,15 @@
-port: ""
-configuration: ""
+port: ''
 output: build
-board: ""
-programmer: ""
+board: arduino:avr:uno
+programmer: ''
 useProgrammer: false
 optimize_for_debug: false
 configurationRequired: false
-compile_profile: ""
+compile_profile: ''
 monitorPortSettings:
-    port: ""
+    port: ''
     baudRate: 115200
     lineEnding: "\r\n"
     dataBits: 8
-    parity: "none"
-    stopBits: "one"
+    parity: none
+    stopBits: one

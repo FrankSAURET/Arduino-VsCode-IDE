@@ -539,13 +539,20 @@ export async function activate(context: vscode.ExtensionContext) {
             cancellable: false,
         }, async (progress) => {
             progress.report({ message: vscode.l10n.t("Detecting the Arduino CLI again...") });
-            if (!arduinoContextModule.default.initialized) {
-                // Activation jamais aboutie (CLI absent au démarrage) : la refaire est la seule
-                // façon de reconstruire les réglages, reloadAfterEnvironmentChange n'ayant alors
-                // aucun objet à recharger.
-                await arduinoActivatorModule.default.activate();
-            } else {
-                await arduinoActivatorModule.default.reloadAfterEnvironmentChange();
+            // Sans CLI, le rechargement échoue sur les mises à jour d'index et relance l'erreur :
+            // le bilan ci-dessous ne serait jamais atteint, et l'utilisateur ne verrait que
+            // « Échec de l'Arduino CLI » sans la proposition d'installer.
+            try {
+                if (!arduinoContextModule.default.initialized) {
+                    // Activation jamais aboutie (CLI absent au démarrage) : la refaire est la seule
+                    // façon de reconstruire les réglages, reloadAfterEnvironmentChange n'ayant alors
+                    // aucun objet à recharger.
+                    await arduinoActivatorModule.default.activate();
+                } else {
+                    await arduinoActivatorModule.default.reloadAfterEnvironmentChange();
+                }
+            } catch {
+                // Le bilan dira si un CLI a été trouvé : c'est la seule chose qui compte ici
             }
         });
 

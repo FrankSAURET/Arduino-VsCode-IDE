@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ### Correction
 
+- **« Échec de l'Arduino CLI pour une raison inconnue » : la vraie cause est enfin nommée.** Quand l'arduino-cli était introuvable, ce message opaque s'affichait à la place de « Arduino CLI introuvable », parce que l'erreur système était examinée à travers son emballage. Tous les échecs de lancement du CLI sont concernés, pas seulement la mise à jour des index
+- **Plus de cascade d'erreurs quand aucun arduino-cli n'est installé** : la relecture de l'environnement lançait quand même les mises à jour d'index, qui échouaient une à une et remplissaient le journal, donnant l'impression d'une panne alors que rien n'était installé. Il est maintenant proposé d'installer le CLI
 - **L'arduino-cli installé par l'extension est enfin retrouvé après coup** : si le réglage *Arduino : Path* (ou *Command Path*) contenait déjà un chemin — resté d'une installation précédente, d'un dossier depuis supprimé, ou d'un Arduino IDE 1.x qui ne fournit pas d'arduino-cli — l'extension s'y tenait et ignorait la copie qu'elle venait elle-même d'installer. Tout continuait à échouer comme si rien n'avait été installé. Un chemin configuré qui ne mène à aucun arduino-cli utilisable laisse désormais la place à la copie téléchargée
 
 ## Version 2026.9.2

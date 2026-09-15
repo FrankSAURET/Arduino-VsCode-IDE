@@ -92,6 +92,11 @@ class ArduinoActivator {
         if (!this._arduinoApp) {
             return;
         }
+        // Sans CLI invocable, recharger les index lance trois appels voués à l'échec : le canal
+        // se remplit d'erreurs qui font croire à une panne alors que rien n'est installé.
+        if (this._arduinoSettings && !this._arduinoSettings.usableCli) {
+            return;
+        }
         await this._arduinoApp.initialize(true);
         if (this._arduinoApp.boardManager) {
             await this._arduinoApp.boardManager.loadPackages(true);
