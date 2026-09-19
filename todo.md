@@ -4,7 +4,7 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
-# v2026.9.4.36 — Préparation de la publication 2026.9.4
+# v2026.9.4.36 — Publication 2026.9.4 (en ligne le 19 septembre 2026)
 
 1. ✅ **Version publique passée à `2026.9.4`**, `buildNumber` à `2026.9.4.36`. Mois du jour (septembre 2026) identique à celui de la version courante : l'incrément suit sa série, le compteur interne avance d'un cran sans repartir à zéro.
 2. ✅ **CHANGELOG daté** : `- prochaine publication` remplacé par `- Date de publication : 19 septembre 2026`. Le numéro était déjà le bon, il n'a pas bougé.
@@ -13,9 +13,9 @@
 5. ✅ **Traductions contrôlées avant publication**, comme le veut la règle du lot unique : 278 chaînes `l10n.t()` du code, **0 manquante** dans `l10n/bundle.l10n.fr.json` ; `package.nls.json` et `package.nls.fr.json` à 56 clefs chacun, **aucun écart**. Restent 30 clefs orphelines dans le bundle (chaînes retirées du code au fil des lots) — sans effet, non nettoyées. `arduino.view.container.title` volontairement identique en FR : c'est un nom propre.
 6. ✅ **Coupes du CHANGELOG arbitrées par Frank** : les entrées « numéro de lot affiché » et « description revue » avaient disparu des modifications locales. Frank les a confirmées volontaires — le texte local est conservé tel quel.
 7. ✅ `tsc --noEmit`, `tslint`, `gulp build --mode=production` : propres. Aucune version écrite en dur dans `src/`, le README ou les fichiers de traduction.
-8. ⏳ **Publication non faite** : aucune commande `vsce publish` ni `ovsx` lancée. Attend l'accord explicite de Frank.
-9. ⏳ **Paquet non construit** : pas de `.vsix` pour ce lot, faute de demande expresse.
-10. ⏳ **Report du lot `.35`, toujours à confirmer par Frank** : installer le paquet, vérifier le numéro de lot sur la page d'accueil, puis qu'une désinstallation efface bien le dossier de l'extension.
+8. ✅ **Publication faite par Frank** le 19 septembre 2026, hors de cette session. La `2026.9.4` est en ligne : sa section du CHANGELOG est datée, donc close — les prochains lots iront sous une nouvelle section.
+9. ✅ **Essais du lot `.35` validés par Frank** : numéro de lot affiché sur la page d'accueil, et désinstallation qui efface bien le dossier de l'extension. Le correctif du journal ([logger.ts](src/logger/logger.ts)) est confirmé à l'exécution.
+10. ℹ️ **`buildNumber` laissé à `2026.9.4.36`** : son préfixe doit reprendre la version **déjà publiée**, ce qui est désormais le cas. Le prochain lot livré passera à `2026.9.4.37`.
 
 # v2026.9.3.35 — Le journal bloquait la désinstallation sous Windows
 
