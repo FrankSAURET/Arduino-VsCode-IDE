@@ -211,12 +211,16 @@ export class ArduinoApp {
      * just returns false.
      * @param buildDir Override the build directory set by the project settings
      * with the given directory.
+     * @param forceClean Force une compilation propre (`--clean`). Indispensable
+     *  pour une reconstruction IntelliSense demandée par l'utilisateur : avec un
+     *  dossier de construction déjà chaud, arduino-cli n'émet aucune ligne de
+     *  compilateur et il n'y a donc rien à analyser.
      * @returns true on success, false if
      *  * another build is currently in progress
      *  * board- or programmer-manager aren't initialized yet
      *  * or something went wrong during the build
      */
-    public async build(buildMode: BuildMode, buildDir?: string) {
+    public async build(buildMode: BuildMode, buildDir?: string, forceClean: boolean = false) {
 
         if (!this._boardManager || !this._programmerManager || this._building) {
             return false;
@@ -224,7 +228,7 @@ export class ArduinoApp {
 
         this._building = true;
 
-        return await this._build(buildMode, buildDir)
+        return await this._build(buildMode, buildDir, forceClean)
         .then((ret) => {
             this._building = false;
             return ret;
@@ -529,9 +533,10 @@ export class ArduinoApp {
      * manages the build state.
      * @param buildMode See build()
      * @param buildDir See build()
+     * @param forceClean See build()
      * @see https://github.com/arduino/Arduino/blob/master/build/shared/manpage.adoc
      */
-    private async _build(buildMode: BuildMode, buildDir?: string): Promise<boolean> {
+    private async _build(buildMode: BuildMode, buildDir?: string, forceClean: boolean = false): Promise<boolean> {
         const dc = DeviceContext.getInstance();
         const args: string[] = [];
         const verbose = VscodeSettings.getInstance().outputVerbosity === "verbose";
@@ -666,16 +671,20 @@ export class ArduinoApp {
         // cocopa n'a rien a analyser et l'utilisateur voit « Failed to generate
         // IntelliSense configuration » a chaque compilation. Mesure du 11/09/2026 sur
         // arduino-cli 1.5.1 : cache froid 20 lignes avr-g++, cache chaud 0.
-        // On ne force une compilation propre que lorsqu'aucune configuration n'existe
-        // encore — le surcout (~2 s) ne se paie donc qu'une fois.
+        // En analyse automatique on ne force une compilation propre que lorsqu'aucune
+        // configuration n'existe encore — le surcout (~2 s) ne se paie donc qu'une fois.
         // Le fichier temoin depend du moteur IntelliSense : c_cpp_properties.json pour
         // l'extension C/C++, compile_commands.json pour clangd (VSCodium et derives).
+        // En revanche une reconstruction demandee explicitement (`forceClean`) nettoie
+        // toujours : sans cela la commande ne pourrait plus rien mettre a jour des lors
+        // qu'une configuration existe, par exemple apres l'ajout d'une bibliotheque.
         const intelliSenseConfigFile = getCppEngine() === CppEngine.Clangd
             ? constants.COMPILE_COMMANDS_FILE
             : constants.CPP_CONFIG_FILE;
         const needsCleanForIntelliSense = buildMode === BuildMode.Analyze
             && isCompilerParserEnabled(dc)
-            && !fs.existsSync(path.join(ArduinoWorkspace.rootPath ?? "", intelliSenseConfigFile));
+            && (forceClean
+                || !fs.existsSync(path.join(ArduinoWorkspace.rootPath ?? "", intelliSenseConfigFile)));
         if (needsCleanForIntelliSense) {
             args.push("--clean");
         }

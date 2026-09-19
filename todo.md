@@ -4,6 +4,17 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.4.31 — Reconstruire IntelliSense ne reconstruisait plus rien
+
+1. ✅ **Défaut signalé par Frank** : `#include <OneWire.h>` et `<DallasTemperature.h>` soulignés en rouge, bibliothèques pourtant installées. *Arduino : Reconstruire IntelliSense* semblait ne rien faire. Sortie Arduino : « Aucune nouvelle donnée IntelliSense capturée (cache de build réutilisé). Configuration existante conservée. »
+2. ✅ **Cause** ([arduino.ts:681](src/arduino/arduino.ts#L681)) : `--clean` n'était ajouté **que si aucune configuration n'existait encore**. Une fois `c_cpp_properties.json` écrit, toute reconstruction repartait d'un dossier de construction chaud ; arduino-cli n'émettait alors aucune ligne de compilateur et cocopa n'avait rien à analyser. La commande était donc inopérante à vie après sa première réussite — exactement le cas d'une bibliothèque ajoutée après coup.
+3. ✅ **Correctif** : `build()` / `_build()` prennent un paramètre `forceClean`. La commande `arduino.rebuildIntelliSenseConfig` le passe à `true` ; l'analyse automatique de fond garde le comportement d'origine et continue de profiter du cache.
+4. ✅ **Second défaut, même commande** ([extension.ts:455](src/extension.ts#L455)) : le mode Analyze étant non interactif, un échec de prérequis (carte non sélectionnée, croquis introuvable) sortait en silence — aucun message nulle part. Le retour de `build()` est désormais testé et un avertissement s'affiche.
+5. ✅ Chaîne FR du nouvel avertissement ajoutée au catalogue.
+6. ✅ **Vérifié sur le cas de Frank** : `c_cpp_properties.json` de `testkablix` ne contenait que le cœur Arduino et avr-gcc, aucune entrée `libraries\`. Bibliothèques bien présentes dans le carnet de croquis (`h:\Nuage\Documents\Arduino\libraries\`) — seul le cache était en cause.
+7. ✅ `tsc --noEmit` et construction : propres.
+8. ⏳ **Non vérifié à l'exécution** : le correctif n'a pas encore été essayé dans un éditeur réel. À confirmer par Frank sur le croquis ds18b20-uno.
+
 # v2026.9.3.30 — Préparation de la publication 2026.9.3 + audit VSCodium
 
 1. ✅ **Audit de compatibilité VSCodium demandé avant publication.** Passés en revue : détection de l'hôte, API employées, extensions installées automatiquement, `engines`, modules natifs.

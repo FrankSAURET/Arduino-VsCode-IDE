@@ -1,9 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 2026.9.4
+
+- prochaine publication
+
+### Correction
+
+- **La commande *Reconstruire la configuration IntelliSense* ne reconstruisait plus rien** dès qu'une configuration existait déjà. Résultat : une bibliothèque ajoutée après coup (OneWire, DallasTemperature…) restait soulignée en rouge, et relancer la commande ne changeait rien. En cause, le dossier de construction déjà chaud : arduino-cli réutilisait son cache et n'émettait aucune commande de compilation à analyser. La commande force désormais une compilation propre, comme son nom le promet. L'analyse automatique de fond, elle, continue de profiter du cache
+- **La même commande ne signalait plus ses échecs** : lancée sans carte sélectionnée ou sur un croquis introuvable, elle s'arrêtait en silence et paraissait ne rien faire. Un avertissement est maintenant affiché
+
 ## Version 2026.9.3
 
-- Date de publication : 15 septembre 2026
+- Date de publication : 16 septembre 2026
 
 ### Nouveauté
 

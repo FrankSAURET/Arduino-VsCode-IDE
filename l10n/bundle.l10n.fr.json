@@ -24,6 +24,7 @@
   "Arduino: Uploading (programmer)...": "Arduino : Téléversement (programmeur) en cours...",
   "Arduino: Using CLI to upload (programmer)...": "Arduino : Téléversement via CLI (programmeur) en cours...",
   "Arduino: Rebuilding IS Configuration...": "Arduino : Reconstruction de la configuration IntelliSense...",
+  "Unable to rebuild the IntelliSense configuration. Check that a board is selected and that the sketch is valid, then see the Arduino output for details.": "Impossible de reconstruire la configuration IntelliSense. Vérifiez qu'une carte est sélectionnée et que le croquis est valide, puis consultez la sortie Arduino pour le détail.",
   "Project": "Projet",
   "Device": "Appareil",
   "Tools": "Outils",

@@ -454,12 +454,22 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerArduinoCommand("arduino.rebuildIntelliSenseConfig", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
-            await vscode.window.withProgress({
+            // Reconstruction demandee a la main : on force la compilation propre, sinon
+            // le cache de construction prive cocopa de toute ligne de compilateur et la
+            // configuration existante reste figee (bibliotheques ajoutees non prises en
+            // compte). L'analyse de fond, elle, continue de profiter du cache.
+            const ok = await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Window,
                 title: vscode.l10n.t("Arduino: Rebuilding IS Configuration..."),
             }, async () => {
-                await arduinoContextModule.default.arduinoApp.build(BuildMode.Analyze);
+                return await arduinoContextModule.default.arduinoApp.build(BuildMode.Analyze, undefined, true);
             });
+            // Le mode Analyze est silencieux par construction : sans ce retour, un echec
+            // de prerequis (carte non selectionnee, sketch introuvable) ne se voit nulle part.
+            if (!ok) {
+                vscode.window.showWarningMessage(vscode.l10n.t(
+                    "Unable to rebuild the IntelliSense configuration. Check that a board is selected and that the sketch is valid, then see the Arduino output for details."));
+            }
         }
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
