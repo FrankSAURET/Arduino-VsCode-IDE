@@ -4,6 +4,18 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.3.33 — Numéro de lot affiché sur la page d'accueil
+
+1. ✅ **Demande de Frank** : afficher `Build : 33` sous la version, sur la page d'accueil, **quel que soit le mode** — F5, `.vsix` posé à la main, ou version installée depuis une place de marché.
+2. ✅ **`_getDisplayedVersion()` scindé en deux** ([arduinoHomePanel.ts](src/arduino/arduinoHomePanel.ts)) : la version publique d'un côté, `_getDisplayedBuild()` de l'autre, qui ne renvoie que le **dernier segment** du `buildNumber`. Le test `isProductionMode()` disparaît — c'était lui qui masquait le numéro sur une version installée. Importation devenue morte retirée.
+3. ✅ **Disponible dans les trois cas** : `getExtensionPackageJSON()` lit le manifeste fourni par le contexte d'activation, qui porte le `buildNumber` aussi bien en développement que dans un paquet installé. Aucune plomberie supplémentaire nécessaire.
+4. ✅ Ligne `<p class="welcome-build">` sous la version, même aspect (11 px, opacité 0,55), collée dessus (`margin-top: 2px`). Libellé non localisé, comme « Version » juste au-dessus : une clef l10n manquante rendrait la ligne invisible.
+5. ✅ **Absence de `buildNumber` gérée** : chaîne vide, la ligne n'est simplement pas produite.
+6. ✅ **Description de l'extension** changée sur demande de Frank : `CLI-based Arduino IDE with a user-friendly interface and full translation`.
+7. ✅ Construction propre, rendu vérifié dans le `out/` compilé.
+8. ℹ️ **Diagnostic du « mode automatique ne marche pas » signalé par Frank** : le défaut n'était pas dans le code. L'extension installée dans son VS Code était le **`.30`** (posée le 16 septembre), antérieure à la fonction — aucune trace de `computeIncludeFingerprint` ni du déclencheur dans le paquet installé, et pas de `.vscode/.arduino-includes` dans `testkablix`. Les lots `.31` et `.32` n'ont jamais tourné chez lui. Rien à corriger de ce côté ; reste à installer un paquet à jour pour valider pour de bon.
+9. ⬜ **Défaut réel repéré au passage, non corrigé** : `isConfigUpToDate()` ([intellisense.ts](src/arduino/intellisense.ts)) considère « à jour » l'absence d'empreinte, mais l'empreinte n'est écrite qu'**après** une analyse. Sur un projet ancien (configuration présente, empreinte absente), le déclencheur sur sauvegarde sort donc sans rien faire au premier `#include` ajouté ; il faut une reconstruction manuelle pour amorcer, une fois par projet. Correctif à arbitrer avec Frank.
+
 # v2026.9.3.32 — Analyse IntelliSense automatique sur changement des `#include`
 
 1. ✅ **Demande de Frank** : rendre la reconstruction automatique. Option retenue après arbitrage : déclencher **seulement sur ajout/retrait d'un `#include`**, pas à chaque sauvegarde.
@@ -41,13 +53,14 @@
 4. ✅ **`electropol-fr.coloredtheme` vérifié présent sur Open VSX** (2026.8.2) : l'installation automatique du thème fonctionne sur VSCodium, rien à changer.
 5. ✅ **`llvm-vs-code-extensions.vscode-clangd` vérifié présent sur Open VSX** (0.6.0) : la bascule IntelliSense du lot `.24` aboutit bien.
 6. ✅ **`engines: ^1.105.0` compatible** : VSCodium en est à 1.135, l'extension s'installe donc. Aucune API proposée (`enabledApiProposals`), aucune commande `workbench.*` propre à VS Code — toutes celles employées existent dans Code - OSS.
-7. ℹ️ **Modules natifs** (`serialport`, `usb-detection`) : même ABI Electron que VS Code à version égale, VSCodium étant construit depuis les mêmes sources. Rien à prévoir.
-8. ✅ **Version publique 2026.9.2 → 2026.9.3**. 2026.9.2 publiée le 12/09/2026, même mois donc incrément +1. `buildNumber` : `2026.9.3.30`.
-9. ✅ **CHANGELOG** : section `2026.9.3` datée du 15 septembre 2026, entrée Teleplot ajoutée en *Correction*.
-10. ✅ **Traductions FR d'avant publication** : 277 chaînes du code, 277 traduites, 0 manquante (script de contrôle). Les 30 orphelines du catalogue viennent des gabarits de la page d'accueil et du manifeste, comme au lot `.25` — hors périmètre.
-11. ✅ Construction, `tsc --noEmit`, `tslint` et validation des quatre JSON : propres.
-12. ⏳ **Non vérifié à l'exécution** : aucun essai réel sur VSCodium. L'audit est statique.
-13. ⏳ **Publication non faite** : attend l'accord explicite de Frank. Paquet `.vsix` non construit non plus.
+7. ℹ️ **Modules natifs** (`serialport`, `usb-de
+1. tection`) : même ABI Electron que VS Code à version égale, VSCodium étant construit depuis les mêmes sources. Rien à prévoir.
+1. ✅ **Version publique 2026.9.2 → 2026.9.3**. 2026.9.2 publiée le 12/09/2026, même mois donc incrément +1. `buildNumber` : `2026.9.3.30`.
+1. ✅ **CHANGELOG** : section `2026.9.3` datée du 15 septembre 2026, entrée Teleplot ajoutée en *Correction*.
+1. ✅ **Traductions FR d'avant publication** : 277 chaînes du code, 277 traduites, 0 manquante (script de contrôle). Les 30 orphelines du catalogue viennent des gabarits de la page d'accueil et du manifeste, comme au lot `.25` — hors périmètre.
+1. ✅ Construction, `tsc --noEmit`, `tslint` et validation des quatre JSON : propres.
+1. ⏳ **Non vérifié à l'exécution** : aucun essai réel sur VSCodium. L'audit est statique.
+1. ⏳ **Publication non faite** : attend l'accord explicite de Frank. Paquet `.vsix` non construit non plus.
 
 # v2026.9.2.29 — CLI téléchargé rangé dans le stockage global
 

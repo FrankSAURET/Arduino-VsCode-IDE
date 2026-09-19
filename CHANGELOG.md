@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 ### Nouveauté
 
 - **IntelliSense se met à jour tout seul quand vous ajoutez un `#include`.** Jusqu'ici, inclure une bibliothèque fraîchement installée laissait la ligne soulignée en rouge jusqu'à une reconstruction manuelle. L'enregistrement d'un fichier du croquis déclenche maintenant la mise à jour, mais seulement si la liste des `#include` a réellement changé : réécrire du code ne relance rien
+- **Le numéro de lot est affiché sous la version, sur la page d'accueil.** Il apparaît désormais dans tous les cas — version installée depuis une place de marché comprise — et non plus seulement en développement. En cas d'anomalie, il permet de désigner sans ambiguïté la version exacte qui tourne
+
+### Modification
+
+- **Description de l'extension revue** : elle annonce maintenant un EDI Arduino fondé sur la CLI, avec une interface facile d'accès et entièrement traduite
 
 ### Correction
 

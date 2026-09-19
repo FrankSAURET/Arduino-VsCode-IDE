@@ -3,7 +3,7 @@ import * as child_process from "child_process";
 import * as vscode from "vscode";
 import ArduinoContext from "../arduinoContext";
 import { DeviceContext } from "../deviceContext";
-import { getExtensionPackageJSON, isProductionMode } from "../extensionInfo";
+import { getExtensionPackageJSON } from "../extensionInfo";
 import { getDownloadedCliExecutable } from "./cliDownloader";
 import { getUserPortNames, resolvePortName } from "./portIdentification";
 import { canStoreArduinoThemeLocally } from "./themeManager";
@@ -325,19 +325,24 @@ export class ArduinoHomePanel {
         }
     }
 
-    /**
-     * Numero de version a afficher : la version publique du manifeste,
-     * completee du numero interne (buildNumber) quand l'extension ne tourne
-     * pas en production (developpement ou tests).
-     */
+    /** Numero de version publique du manifeste. */
     private static _getDisplayedVersion(): string {
         const packageJSON = getExtensionPackageJSON();
-        const version = <string>packageJSON.version || "";
+        return <string>packageJSON.version || "";
+    }
+
+    /**
+     * Dernier segment du buildNumber : le compteur interne du lot livre.
+     * Affiche quel que soit le mode d'execution (F5, .vsix, place de marche),
+     * pour qu'un rapport d'anomalie designe sans ambiguite la version en cause.
+     * Le manifeste vient du contexte d'activation, il porte donc le buildNumber
+     * dans les trois cas. Chaine vide si le champ manque : la ligne disparait.
+     */
+    private static _getDisplayedBuild(): string {
+        const packageJSON = getExtensionPackageJSON();
         const buildNumber = <string>packageJSON.buildNumber || "";
-        if (!isProductionMode() && buildNumber) {
-            return buildNumber;
-        }
-        return version;
+        const segments = buildNumber.split(".");
+        return segments.length >= 4 ? segments[segments.length - 1] : "";
     }
 
     private _getHtml(initialView?: string): string {
@@ -356,12 +361,13 @@ export class ArduinoHomePanel {
 
         const defaultView = initialView || "";
 
-        // Numero affiche en bas de la page d'accueil.
-        // Hors production, on montre le numero interne a 4 segments (buildNumber).
-        // Le libelle n'est pas localise a dessein : "Version" s'ecrit de la meme
-        // facon dans les langues visees, et une clef absente du paquet l10n
-        // rendrait la ligne vide donc invisible.
+        // Numeros affiches en bas de la page d'accueil : version publique, puis
+        // numero de lot interne juste dessous.
+        // Les libelles ne sont pas localises a dessein : "Version" et "Build"
+        // s'ecrivent de la meme facon dans les langues visees, et une clef absente
+        // du paquet l10n rendrait la ligne vide donc invisible.
         const displayedVersion = ArduinoHomePanel._getDisplayedVersion();
+        const displayedBuild = ArduinoHomePanel._getDisplayedBuild();
 
         // Localized strings (English defaults, translated via vscode.l10n.t)
         const t = {
@@ -381,6 +387,7 @@ export class ArduinoHomePanel {
             welcomeText: vscode.l10n.t("Welcome! To get started, create a new project or open a folder containing an Arduino sketch (.ino)."),
             openExistingProject: vscode.l10n.t("Open Existing Project"),
             version: `Version ${displayedVersion}`,
+            build: displayedBuild ? `Build : ${displayedBuild}` : "",
             welcomeHint: vscode.l10n.t("Use the toolbar on the left to navigate between views, or {0} → \"Arduino\" to access all commands.", "Ctrl+Shift+P"),
             settingsTitle: vscode.l10n.t("Settings"),
             openInVsCodeSettings: vscode.l10n.t("Open in VS Code Settings"),
@@ -634,6 +641,12 @@ export class ArduinoHomePanel {
             color: var(--vscode-descriptionForeground);
             opacity: 0.55;
             margin-top: 24px;
+        }
+        .welcome-build {
+            font-size: 11px;
+            color: var(--vscode-descriptionForeground);
+            opacity: 0.55;
+            margin-top: 2px;
         }
         .welcome-kbd {
             display: inline-block;
@@ -929,6 +942,7 @@ export class ArduinoHomePanel {
             </div>
             <p class="welcome-hint">${t.welcomeHint}</p>
             <p class="welcome-version">${t.version}</p>
+            ${t.build ? `<p class="welcome-build">${t.build}</p>` : ""}
         </div>
         <iframe id="frame" style="display:none;"></iframe>
 
