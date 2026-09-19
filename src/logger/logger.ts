@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as fs from "fs";
+import * as path from "path";
 import * as vscode from "vscode";
 import * as winston from "winston";
 import UserNotificationTransport from "./user-notification-transport";
@@ -23,10 +25,36 @@ function FilterErrorPath(line: string): string {
     }
 }
 
+/**
+ * Emplacement du journal : le dossier de donnees de l'extension, jamais le dossier
+ * de l'extension elle-meme.
+ *
+ * Winston garde le descripteur ouvert tant que l'extension vit. Sous Windows, un
+ * fichier ouvert ne s'efface pas : ecrit dans le dossier de l'extension, il
+ * empechait VS Code de supprimer ce dossier a la desinstallation. Celle-ci restait
+ * a moitie faite — entree retiree du registre, dossier toujours la — et la
+ * reinstallation tournait longuement avant d'abandonner sans rien poser.
+ *
+ * Repli sur le dossier de l'extension si le dossier de donnees est indisponible :
+ * mieux vaut le defaut d'origine qu'aucun journal.
+ */
+function resolveLogFile(context: vscode.ExtensionContext): string {
+    const storagePath = context.globalStorageUri?.fsPath;
+    if (storagePath) {
+        try {
+            fs.mkdirSync(storagePath, { recursive: true });
+            return path.join(storagePath, "arduino.log");
+        } catch (error) {
+            // Dossier de donnees inaccessible : on retombe sur le comportement d'origine.
+        }
+    }
+    return context.asAbsolutePath("arduino.log");
+}
+
 export function configure(context: vscode.ExtensionContext) {
     winston.configure({
         transports: [
-            new (winston.transports.File)({ level: LogLevel.Warn, filename: context.asAbsolutePath("arduino.log") }),
+            new (winston.transports.File)({ level: LogLevel.Warn, filename: resolveLogFile(context) }),
             new UserNotificationTransport({ level: LogLevel.Info }),
         ],
     });

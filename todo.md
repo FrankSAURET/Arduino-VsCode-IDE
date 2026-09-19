@@ -4,6 +4,19 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.3.35 — Le journal bloquait la désinstallation sous Windows
+
+1. ✅ **Défaut signalé par Frank** : F5 affiche bien le numéro de lot, mais « Installer le VSIX de l'extension » tourne longuement et ne pose rien. Désinstallation faite au préalable, sans effet.
+2. ✅ **État constaté** : plus aucune entrée `electropol-fr.arduino-vscode-ide` dans `extensions.json`, mais le dossier `-2026.9.3` toujours présent, 6,1 Mo, contenant le `.30`. Désinstallation **à moitié faite** : registre nettoyé, dossier orphelin. Toute réinstallation butait dessus.
+3. ✅ **Cause** ([logger.ts](src/logger/logger.ts)) : le journal était écrit dans le dossier de l'extension via `context.asAbsolutePath("arduino.log")`. Winston garde le descripteur ouvert tant que l'extension vit ; sous Windows un fichier ouvert ne s'efface pas, donc VS Code ne pouvait pas supprimer le dossier. **Vérifié sur pièce** : `File.Open(…, 'None')` sur `arduino.log` échouait tant qu'une fenêtre tournait, réussissait une fois toutes fermées.
+4. ✅ **Pourquoi F5 marchait** : l'hôte de développement charge le code depuis le dossier du projet, sans jamais passer par le dossier d'extensions installées.
+5. ✅ **Correctif** : `resolveLogFile()` place le journal dans le dossier de données de l'extension (`globalStorageUri`), comme l'arduino-cli depuis le lot `.30`. Repli sur l'ancien emplacement si ce dossier est indisponible — mieux vaut le défaut d'origine qu'aucun journal. Le dossier de l'extension redevient purement en lecture.
+6. ✅ **Reste du code audité** : aucune autre écriture dans le dossier de l'extension. `cliDownloader` ne l'utilise plus qu'en **lecture**, pour retrouver une installation antérieure.
+7. ✅ **Dossier orphelin traité** : déplacé (jamais supprimé) vers `A Examiner/vscode-extensions-residus/electropol-fr.arduino-vscode-ide-2026.9.3-bloque`, une fois le verrou tombé. `.vscode\extensions` est propre.
+8. ✅ **CHANGELOG** : correction décrite côté utilisateur, avec la marche à suivre si le cas s'est déjà produit chez lui.
+9. ✅ `tsc --noEmit`, `tslint`, construction : propres.
+10. ⏳ **Non vérifié à l'exécution** : à confirmer par Frank — installer le `.vsix` du lot `.35`, vérifier `Build : 35` sur la page d'accueil, puis vérifier qu'une désinstallation efface bien le dossier cette fois.
+
 # v2026.9.3.34 — Le `buildNumber` était invisible à l'exécution
 
 1. ✅ **Défaut signalé par Frank** : paquet `.33` construit et installé au clic droit, mais toujours pas de numéro de lot sur la page d'accueil.

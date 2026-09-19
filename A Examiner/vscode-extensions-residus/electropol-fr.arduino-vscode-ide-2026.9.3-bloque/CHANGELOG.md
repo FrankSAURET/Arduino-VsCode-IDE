@@ -1,28 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## Version 2026.9.4
-
-- prochaine publication
-
-### Nouveauté
-
-- **IntelliSense se met à jour tout seul quand vous ajoutez un `#include`.** Jusqu'ici, inclure une bibliothèque fraîchement installée laissait la ligne soulignée en rouge jusqu'à une reconstruction manuelle. L'enregistrement d'un fichier du croquis déclenche maintenant la mise à jour, mais seulement si la liste des `#include` a réellement changé : réécrire du code ne relance rien
-- **Le numéro de lot est affiché sous la version, sur la page d'accueil.** Il apparaît désormais dans tous les cas — version installée depuis une place de marché comprise — et non plus seulement en développement. En cas d'anomalie, il permet de désigner sans ambiguïté la version exacte qui tourne
-
-### Modification
-
-- **Description de l'extension revue** : elle annonce maintenant un EDI Arduino fondé sur la CLI, avec une interface facile d'accès et entièrement traduite
-
-### Correction
-
-- **L'extension ne pouvait plus être désinstallée ni mise à jour sous Windows.** Son journal d'erreurs était écrit dans son propre dossier d'installation et y restait ouvert tant que l'éditeur tournait : Windows refusait alors d'effacer ce dossier. La désinstallation restait à moitié faite et toute réinstallation tournait longuement avant d'abandonner sans rien poser. Le journal est désormais rangé dans le dossier de données de l'extension. Si le cas s'est déjà produit, il reste un dossier `electropol-fr.arduino-vscode-ide-*` à supprimer à la main dans `.vscode\extensions`, toutes les fenêtres de l'éditeur étant fermées
-- **La commande *Reconstruire la configuration IntelliSense* ne reconstruisait plus rien** dès qu'une configuration existait déjà. Résultat : une bibliothèque ajoutée après coup restait soulignée en rouge, et relancer la commande ne changeait rien.
-- **La même commande ne signalait plus ses échecs** : lancée sans carte sélectionnée ou sur un croquis introuvable, elle s'arrêtait en silence et paraissait ne rien faire. Un avertissement est maintenant affiché
-
 ## Version 2026.9.3
 
-- Date de publication : 16 septembre 2026
+- Date de publication : 15 septembre 2026
 
 ### Nouveauté
 
@@ -245,7 +226,7 @@ All notable changes to this project will be documented in this file.
 
 - Arduino CLI is now the default backend (`arduino.useArduinoCli` defaults to `true`)
 - Build output path now uses `path.normalize()` and creates full directory structure ([#72](https://github.com/vscode-arduino/vscode-arduino/issues/72))
-- IntelliSense: normalize `--param VALUE` to `--param=VALUE` format ([PR #84](https://github.com/vscode-arduino/vscode-arduino/pull/84))
+- IntelliSense: normalize `--param VALUE` to `--param=VALUE` format ([PR [#84](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/84)](https://github.com/vscode-arduino/vscode-arduino/pull/84))
 - IntelliSense: rate-limited analysis to reduce CPU load ([#76](https://github.com/vscode-arduino/vscode-arduino/issues/76))
 - Serial monitor: input field now clears after sending ([#81](https://github.com/vscode-arduino/vscode-arduino/issues/81))
 - Serial monitor: added 5-second close timeout with force fallback ([#74](https://github.com/vscode-arduino/vscode-arduino/issues/74), [#75](https://github.com/vscode-arduino/vscode-arduino/issues/75))
@@ -389,11 +370,11 @@ monitor. Please report any issues you see with the serial monitor.
 - Release date: March 22. 2021
 
 ### Added
-- Support for Arduino CLI #1017
+- Support for Arduino CLI [#1017](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/1017)
 
 ### Changed
-- Autogenerate c_cpp_properties.json with all complier arguments and libraries for IntelliSense #1183
-- Detects available programmers for selected board #1118
+- Autogenerate c_cpp_properties.json with all complier arguments and libraries for IntelliSense [#1183](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/1183)
+- Detects available programmers for selected board [#1118](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/1118)
 
 ### Fixed
 - Typos
@@ -749,7 +730,7 @@ Special thanks to [GarethE](https://github.com/keyoke), thank you for your contr
 - Lazy load the arduino extension on startup, only usb detection works in background, when it detects an arduino board, the extension will fully activate
 - Update unit test to some basic arduino commands
 - Fix some typos in code
-- Fix issue #289 #324 #327
+- Fix issue [#289](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/289) [#324](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/324) [#327](https://github.com/FrankSAURET/Arduino-VsCode-IDE/issues/327)
 
 ## Version 0.2.2
 
