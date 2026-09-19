@@ -4,6 +4,21 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.4.32 — Analyse IntelliSense automatique sur changement des `#include`
+
+1. ✅ **Demande de Frank** : rendre la reconstruction automatique. Option retenue après arbitrage : déclencher **seulement sur ajout/retrait d'un `#include`**, pas à chaque sauvegarde.
+2. ✅ **Coût mesuré** (arduino-cli 1.5.1, croquis ds18b20-uno, Uno) : compilation propre **4,9 s / 26 lignes avr-g++** ; cache chaud **2,0 s / 0 ligne**, y compris après modification du `.ino`. Surcoût réel d'une analyse : ~2,9 s. Confirme que le cache chaud ne produit **jamais** de données exploitables.
+3. ✅ **`computeIncludeFingerprint()`** ([intellisense.ts](src/arduino/intellisense.ts)) : liste triée et dédoublonnée des `#include` de tous les fichiers source du dossier du croquis (`.ino`, `.pde`, `.h`, `.hpp`, `.c`, `.cpp`). Commentaires retirés avant analyse, sinon mettre un `#include` en commentaire déclencherait une analyse pour rien.
+4. ✅ **Empreinte mémorisée** dans `.vscode/.arduino-includes` (nouvelle constante `INTELLISENSE_INCLUDES_FILE`). Sur disque et non en mémoire : sinon chaque réouverture de l'éditeur relancerait une compilation propre.
+5. ✅ **`isConfigUpToDate()` réécrit** : la date du croquis ne sert plus de critère (réécrire un corps de fonction ne change aucun chemin d'en-tête). Reste la date d'`arduino.yaml` (changement de carte) et désormais la comparaison d'empreintes.
+6. ✅ **Anti-boucle** : une empreinte absente compte comme « à jour ». Sans ce garde, un dossier en lecture seule — ou toute configuration créée par une version antérieure — aurait relancé une compilation propre à **chaque** sauvegarde, sans jamais pouvoir s'arrêter.
+7. ✅ **`_conclude` enveloppé** : l'empreinte n'est enregistrée qu'après vérification qu'un fichier de configuration existe réellement. Couvre les quatre sorties en succès (cpptools écrit / déjà à jour, clangd synchronisé / base conservée) sans les traiter une à une.
+8. ✅ **Déclencheur sur sauvegarde** ([arduino.ts](src/arduino/arduino.ts)) : `onDidSaveTextDocument` filtré sur l'extension **et** sur l'appartenance au dossier du croquis courant. Passe par `AnalysisManager`, donc temporisation de 5 s et garde-fou anti-surchauffe déjà en place.
+9. ✅ **`--clean` ajouté à l'analyse automatique** : sans lui, tous les déclencheurs existants (ouverture, changement de carte) restaient inopérants — ils repartaient d'un cache chaud. C'était le défaut de fond, le lot `.31` ne l'avait corrigé que pour la commande manuelle.
+10. ✅ **Tests hors éditeur** (scratchpad, `vscode` bouché) : 8/8 sur l'empreinte (croquis réel de Frank, includes commentés, corps modifié, fichier annexe, guillemets, doublons, dossier absent) ; 8/8 sur le cycle de décision, rejoués pour **cpptools et clangd** (migration sans empreinte, corps modifié, ajout, retrait, changement de carte, absence de boucle).
+11. ✅ `tsc --noEmit`, `tslint`, construction : propres.
+12. ⏳ **Non vérifié à l'exécution** : pas d'essai dans un éditeur réel. À confirmer par Frank — ajouter un `#include` dans ds18b20-uno, enregistrer, attendre ~5 s.
+
 # v2026.9.4.31 — Reconstruire IntelliSense ne reconstruisait plus rien
 
 1. ✅ **Défaut signalé par Frank** : `#include <OneWire.h>` et `<DallasTemperature.h>` soulignés en rouge, bibliothèques pourtant installées. *Arduino : Reconstruire IntelliSense* semblait ne rien faire. Sortie Arduino : « Aucune nouvelle donnée IntelliSense capturée (cache de build réutilisé). Configuration existante conservée. »

@@ -116,9 +116,13 @@ export class ArduinoApp {
     constructor(private _settings: IArduinoSettings) {
         // Issue #76: Increase analysis delay to reduce CPU load from repeated analysis triggers
         const analysisDelayMs = 1000 * 5;
+        // L'analyse exige une compilation propre : avec un dossier de construction
+        // chaud, arduino-cli n'emet aucune ligne de compilateur et il n'y a rien a
+        // analyser. Le surcout (~3 s) est acceptable car AnalysisManager ne declenche
+        // que sur un vrai changement des `#include` ou de la carte.
         this._analysisManager = new AnalysisManager(
             () => this._building,
-            async () => { await this.build(BuildMode.Analyze); },
+            async () => { await this.build(BuildMode.Analyze, undefined, true); },
             analysisDelayMs);
     }
 
@@ -145,6 +149,28 @@ export class ArduinoApp {
             dc.onChangeBoard(requestAnalysis);
             dc.onChangeConfiguration(requestAnalysis);
             dc.onChangeSketch(requestAnalysis);
+
+            // Ajouter un `#include` est le cas courant qu'aucun des evenements ci-dessus
+            // ne couvre : installer une bibliotheque puis l'inclure ne changeait ni la
+            // carte ni le croquis choisi, la configuration restait donc figee et les
+            // en-tetes soulignes en rouge.
+            // AnalysisManager ne recompile que si la liste des `#include` a reellement
+            // change (cf. isConfigUpToDate) : une sauvegarde ordinaire ne coute rien.
+            vscode.workspace.onDidSaveTextDocument((document) => {
+                const ext = path.extname(document.fileName).toLowerCase();
+                if (![".ino", ".pde", ".h", ".hpp", ".c", ".cpp"].includes(ext)) {
+                    return;
+                }
+                // Hors du dossier du croquis courant : sans effet sur sa configuration.
+                if (!dc.sketch || !ArduinoWorkspace.rootPath) {
+                    return;
+                }
+                const sketchDir = path.dirname(path.resolve(ArduinoWorkspace.rootPath, dc.sketch));
+                if (path.dirname(path.resolve(document.fileName)) !== sketchDir) {
+                    return;
+                }
+                requestAnalysis();
+            });
         }
     }
 

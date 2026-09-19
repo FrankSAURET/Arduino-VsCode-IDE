@@ -10,6 +10,11 @@ export const CPP_CONFIG_FILE = path.join(".vscode", "c_cpp_properties.json");
 /** The name of the intellisense configuration managed by vscode-arduino. */
 export const C_CPP_PROPERTIES_CONFIG_NAME = "Arduino";
 
+// Empreinte des `#include` du croquis au moment de la derniere analyse IntelliSense
+// reussie. Elle survit au redemarrage de l'editeur : sans elle, rouvrir un projet
+// relancerait une compilation propre a chaque fois.
+export const INTELLISENSE_INCLUDES_FILE = path.join(".vscode", ".arduino-includes");
+
 // Fichiers consommes par clangd, le moteur IntelliSense utilise hors VS Code
 // officiel (VSCodium et derives, ou l'extension C/C++ de Microsoft est interdite).
 // Ils vivent a la racine du projet : clangd ne les cherche pas ailleurs.

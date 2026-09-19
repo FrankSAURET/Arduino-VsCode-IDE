@@ -20,6 +20,89 @@ export interface ICoCoPaContext {
     conclude: () => Promise<void>;
 }
 
+/** Extensions des fichiers d'un croquis susceptibles de porter des `#include`. */
+const SKETCH_SOURCE_EXTENSIONS = [".ino", ".pde", ".h", ".hpp", ".c", ".cpp"];
+
+/**
+ * Empreinte des bibliothèques incluses par le croquis : liste triée et dédoublonnée
+ * des `#include <...>` / `#include "..."` de tous ses fichiers source.
+ *
+ * Sert à décider si une analyse IntelliSense est réellement nécessaire. Seul un
+ * changement de cette liste peut modifier les chemins d'en-têtes de la configuration :
+ * réécrire le corps d'une fonction n'y change rien, et ne mérite donc pas la
+ * compilation propre (~3 s) qu'exige la capture des commandes du compilateur.
+ *
+ * Les directives commentées sont ignorées — sans quoi mettre un `#include` en
+ * commentaire déclencherait une analyse pour rien. L'analyse reste sommaire (pas de
+ * préprocesseur complet) : une fausse détection coûte au pire une analyse inutile.
+ *
+ * @param sketchPath chemin du fichier principal du croquis
+ * @returns empreinte stable, ou chaîne vide si le dossier est illisible
+ */
+export function computeIncludeFingerprint(sketchPath: string): string {
+    try {
+        const sketchDir = path.dirname(sketchPath);
+        const files = fs.readdirSync(sketchDir)
+            .filter((name) => SKETCH_SOURCE_EXTENSIONS.includes(path.extname(name).toLowerCase()))
+            .sort();
+
+        const includes = new Set<string>();
+        for (const name of files) {
+            let content: string;
+            try {
+                content = fs.readFileSync(path.join(sketchDir, name), "utf8");
+            } catch {
+                continue;
+            }
+            // Retire les commentaires avant de chercher les directives, pour ne pas
+            // compter un `#include` neutralisé par l'auteur.
+            const stripped = content
+                .replace(/\/\*[\s\S]*?\*\//g, "")
+                .replace(/\/\/[^\n]*/g, "");
+            const re = /^[ \t]*#[ \t]*include[ \t]*[<"]([^>"]+)[>"]/gm;
+            let match = re.exec(stripped);
+            while (match) {
+                includes.add(match[1].trim());
+                match = re.exec(stripped);
+            }
+        }
+        return Array.from(includes).sort().join("\n");
+    } catch {
+        return "";
+    }
+}
+
+/** Empreinte des `#include` enregistrée lors de la dernière analyse réussie. */
+function readStoredIncludeFingerprint(): string | undefined {
+    if (!ArduinoWorkspace.rootPath) {
+        return undefined;
+    }
+    try {
+        return fs.readFileSync(
+            path.join(ArduinoWorkspace.rootPath, constants.INTELLISENSE_INCLUDES_FILE), "utf8");
+    } catch {
+        return undefined;
+    }
+}
+
+/**
+ * Mémorise l'empreinte des `#include` du croquis. À n'appeler qu'après une analyse
+ * réellement aboutie : enregistrer une empreinte sans configuration correspondante
+ * ferait croire que tout est à jour et bloquerait les analyses suivantes.
+ */
+export function storeIncludeFingerprint(sketchPath: string | undefined): void {
+    if (!ArduinoWorkspace.rootPath || !sketchPath) {
+        return;
+    }
+    try {
+        const target = path.join(ArduinoWorkspace.rootPath, constants.INTELLISENSE_INCLUDES_FILE);
+        fs.mkdirSync(path.dirname(target), { recursive: true });
+        fs.writeFileSync(target, computeIncludeFingerprint(sketchPath), "utf8");
+    } catch {
+        // Dossier en lecture seule : on perd seulement l'optimisation, pas la fonction.
+    }
+}
+
 function hasArduinoForcedInclude(configPath: string): boolean {
     try {
         const raw = fs.readFileSync(configPath, "utf8");
@@ -151,7 +234,7 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string,
     const runner = new ccp.Runner(engines);
 
     // Set up the callback to be called after parsing
-    const _conclude = async () => {
+    const _concludeInner = async () => {
         const engine = getCppEngine();
 
         if (!runner.result) {
@@ -259,6 +342,27 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string,
             arduinoChannel.error(vscode.l10n.t("Failed to read or write IntelliSense configuration: {0}", JSON.stringify(e)));
         }
     };
+
+    /**
+     * Enveloppe qui mémorise l'empreinte des `#include` une fois l'analyse terminée,
+     * mais seulement si une configuration exploitable est bien en place. Enregistrer
+     * une empreinte sans configuration correspondante ferait passer le projet pour à
+     * jour et empêcherait toute analyse ultérieure.
+     */
+    const _conclude = async () => {
+        await _concludeInner();
+        if (!ArduinoWorkspace.rootPath || !dc.sketch) {
+            return;
+        }
+        const configPath = path.join(ArduinoWorkspace.rootPath,
+            getCppEngine() === CppEngine.Clangd
+                ? constants.COMPILE_COMMANDS_FILE
+                : constants.CPP_CONFIG_FILE);
+        if (fs.existsSync(configPath)) {
+            storeIncludeFingerprint(path.join(ArduinoWorkspace.rootPath, dc.sketch));
+        }
+    };
+
     return {
         callback: runner.callback(),
         conclude: _conclude,
@@ -409,11 +513,31 @@ export class AnalysisManager {
         }
         const configMtime = fs.statSync(configPath).mtimeMs;
         const arduinoJsonPath = path.join(ArduinoWorkspace.rootPath, constants.ARDUINO_CONFIG_FILE);
+        const arduinoMtime = fs.existsSync(arduinoJsonPath) ? fs.statSync(arduinoJsonPath).mtimeMs : 0;
+        if (configMtime <= arduinoMtime) {
+            // Carte ou configuration de carte modifiée : les chemins d'en-têtes du
+            // cœur changent, l'analyse s'impose.
+            return false;
+        }
+
+        // La date du croquis ne dit rien d'utile : réécrire le corps d'une fonction ne
+        // change aucun chemin d'en-tête. Seule la liste des `#include` compte.
         const dc = DeviceContext.getInstance();
         const sketchPath = dc.sketch ? path.join(ArduinoWorkspace.rootPath, dc.sketch) : null;
-        const arduinoMtime = fs.existsSync(arduinoJsonPath) ? fs.statSync(arduinoJsonPath).mtimeMs : 0;
-        const sketchMtime = sketchPath && fs.existsSync(sketchPath) ? fs.statSync(sketchPath).mtimeMs : 0;
-        return configMtime > arduinoMtime && configMtime > sketchMtime;
+        if (!sketchPath || !fs.existsSync(sketchPath)) {
+            return true;
+        }
+        const stored = readStoredIncludeFingerprint();
+        if (stored === undefined) {
+            // Aucune empreinte enregistrée : soit la configuration vient d'une version
+            // anterieure de l'extension, soit l'enregistrement a echoue (dossier en
+            // lecture seule). Dans les deux cas on considère la configuration valable —
+            // la déclarer obsolète relancerait une compilation propre à CHAQUE
+            // sauvegarde, sans jamais pouvoir s'arrêter. L'analyse reste déclenchable
+            // à la main, et le prochain changement de carte la relancera.
+            return true;
+        }
+        return computeIncludeFingerprint(sketchPath) === stored;
     }
 
     /**

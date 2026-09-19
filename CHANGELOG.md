@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 
 - prochaine publication
 
+### Nouveauté
+
+- **IntelliSense se met à jour tout seul quand vous ajoutez un `#include`.** Jusqu'ici, inclure une bibliothèque fraîchement installée laissait la ligne soulignée en rouge jusqu'à une reconstruction manuelle. L'enregistrement d'un fichier du croquis déclenche maintenant la mise à jour, mais seulement si la liste des `#include` a réellement changé : réécrire du code ne relance rien
+
 ### Correction
 
-- **La commande *Reconstruire la configuration IntelliSense* ne reconstruisait plus rien** dès qu'une configuration existait déjà. Résultat : une bibliothèque ajoutée après coup (OneWire, DallasTemperature…) restait soulignée en rouge, et relancer la commande ne changeait rien. En cause, le dossier de construction déjà chaud : arduino-cli réutilisait son cache et n'émettait aucune commande de compilation à analyser. La commande force désormais une compilation propre, comme son nom le promet. L'analyse automatique de fond, elle, continue de profiter du cache
+- **La commande *Reconstruire la configuration IntelliSense* ne reconstruisait plus rien** dès qu'une configuration existait déjà. Résultat : une bibliothèque ajoutée après coup restait soulignée en rouge, et relancer la commande ne changeait rien.
 - **La même commande ne signalait plus ses échecs** : lancée sans carte sélectionnée ou sur un croquis introuvable, elle s'arrêtait en silence et paraissait ne rien faire. Un avertissement est maintenant affiché
 
 ## Version 2026.9.3
