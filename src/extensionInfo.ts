@@ -12,18 +12,31 @@ let extensionMode: vscode.ExtensionMode | undefined;
 let packageJSON: any;
 let globalStoragePath: string = "";
 
-/** Memorise le mode d'execution et le manifeste fournis a l'activation. */
+/**
+ * Memorise le mode d'execution et le manifeste fournis a l'activation.
+ *
+ * Le manifeste expose par `context.extension.packageJSON` est filtre par VS Code :
+ * il n'en garde que les champs du schema officiel. Nos champs maison — `buildNumber`
+ * en tete — en sont absents. Le manifeste du disque est donc relu et fusionne par
+ * dessous : l'objet de VS Code reste prioritaire (il porte les valeurs effectivement
+ * retenues par l'hote), le disque ne comble que ce qui manque.
+ */
 export function setExtensionContext(context: vscode.ExtensionContext) {
     extensionMode = context.extensionMode;
     globalStoragePath = context.globalStorageUri?.fsPath || "";
-    packageJSON = (context as any).extension?.packageJSON;
-    if (!packageJSON) {
-        // Anciennes versions de l'API : le manifeste se lit sur le disque.
-        try {
-            packageJSON = JSON.parse(fs.readFileSync(path.join(context.extensionPath, "package.json"), "utf8"));
-        } catch (error) {
-            packageJSON = undefined;
-        }
+
+    let onDisk: any;
+    try {
+        onDisk = JSON.parse(fs.readFileSync(path.join(context.extensionPath, "package.json"), "utf8"));
+    } catch (error) {
+        onDisk = undefined;
+    }
+
+    const provided = (context as any).extension?.packageJSON;
+    if (provided && onDisk) {
+        packageJSON = { ...onDisk, ...provided };
+    } else {
+        packageJSON = provided || onDisk;
     }
 }
 

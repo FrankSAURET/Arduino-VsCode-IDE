@@ -3,7 +3,7 @@
   "displayName": "Arduino VsCode IDE",
   "description": "CLI-based Arduino IDE with a user-friendly interface and full translation",
   "version": "2026.9.3",
-  "buildNumber": "2026.9.3.33",
+  "buildNumber": "2026.9.3.34",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {

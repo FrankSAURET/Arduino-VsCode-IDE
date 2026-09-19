@@ -4,6 +4,18 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.3.34 — Le `buildNumber` était invisible à l'exécution
+
+1. ✅ **Défaut signalé par Frank** : paquet `.33` construit et installé au clic droit, mais toujours pas de numéro de lot sur la page d'accueil.
+2. ✅ **Deux causes distinctes, aucune dans le rendu lui-même** — le `.vsix` a été décompressé et contrôlé : `buildNumber` correct, `welcome-build` et `_getDisplayedBuild` bien présents dans le `out/` empaqueté.
+3. ✅ **Cause 1 — l'installation n'a pas eu lieu.** Le dossier `electropol-fr.arduino-vscode-ide-2026.9.3` contenait toujours le `.30` du 16 septembre. VS Code nomme le dossier d'après la seule `version` du manifeste, qui ne bouge plus entre deux publications (règle actée au lot `.32`) : voyant le même numéro déjà installé, il considère qu'il n'y a rien à faire et se termine sans erreur. **Deux paquets locaux successifs sont indistinguables pour lui.**
+4. ✅ **Parade retenue par Frank** : désinstaller avant d'installer, ou `code --install-extension <vsix> --force`. La règle de numérotation reste inchangée.
+5. ✅ **Cause 2 — `buildNumber` absent à l'exécution** ([extensionInfo.ts](src/extensionInfo.ts)) : `context.extension.packageJSON` est **toujours** défini, donc le repli lisant le manifeste sur le disque n'était jamais atteint. Or VS Code ne conserve dans cet objet que les champs de son schéma officiel — `buildNumber`, champ maison, en est écarté. Même correctement installée, la ligne serait restée vide.
+6. ✅ **Correctif** : le manifeste du disque est désormais lu systématiquement et fusionné **par dessous** (`{ ...onDisk, ...provided }`). L'objet de VS Code reste prioritaire — il porte les valeurs effectivement retenues par l'hôte — le disque ne comble que ce qui manque.
+7. ✅ **Essais hors éditeur** (scratchpad) : 8/8 — manifeste filtré + disque, disque illisible, ancienne API, rien du tout, `buildNumber` à 3 segments, champ absent, compteur à plusieurs chiffres, priorité de la version de l'hôte.
+8. ✅ `tsc --noEmit`, `tslint`, construction : propres.
+9. ⏳ **Non vérifié à l'exécution** : à confirmer par Frank — **désinstaller** l'extension, puis installer le `.vsix` du lot `.34`.
+
 # v2026.9.3.33 — Numéro de lot affiché sur la page d'accueil
 
 1. ✅ **Demande de Frank** : afficher `Build : 33` sous la version, sur la page d'accueil, **quel que soit le mode** — F5, `.vsix` posé à la main, ou version installée depuis une place de marché.
