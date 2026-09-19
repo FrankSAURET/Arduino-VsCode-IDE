@@ -23,10 +23,10 @@ const buildNumber = manifeste.buildNumber ?? '';
 // Le buildNumber vaut « ANNÉE.MOIS.incrément.compteur » et sert tel quel de suffixe
 // au nom du paquet.
 //
-// Son préfixe est le numéro de la PROCHAINE publication (celui ouvert dans le
-// CHANGELOG), pas le champ « version », qui reste sur la dernière version publiée
-// jusqu'au jour de la publication. Un écart entre les deux est donc l'état normal
-// pendant tout le développement, et non une erreur.
+// Son préfixe reprend « version », c'est-à-dire la DERNIÈRE version publiée : le
+// paquet installé en local doit rester en retrait de la version en ligne, sinon
+// l'éditeur ne proposerait jamais la mise à jour. Les deux n'avancent qu'à la
+// publication.
 if (!/^\d+\.\d+\.\d+\.\d+$/.test(String(buildNumber))) {
 	console.error(`Erreur : « buildNumber » (${buildNumber}) doit valoir ANNÉE.MOIS.incrément.compteur dans package.json.`);
 	process.exit(1);

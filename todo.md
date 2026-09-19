@@ -4,7 +4,7 @@
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
-# v2026.9.4.32 — Analyse IntelliSense automatique sur changement des `#include`
+# v2026.9.3.32 — Analyse IntelliSense automatique sur changement des `#include`
 
 1. ✅ **Demande de Frank** : rendre la reconstruction automatique. Option retenue après arbitrage : déclencher **seulement sur ajout/retrait d'un `#include`**, pas à chaque sauvegarde.
 2. ✅ **Coût mesuré** (arduino-cli 1.5.1, croquis ds18b20-uno, Uno) : compilation propre **4,9 s / 26 lignes avr-g++** ; cache chaud **2,0 s / 0 ligne**, y compris après modification du `.ino`. Surcoût réel d'une analyse : ~2,9 s. Confirme que le cache chaud ne produit **jamais** de données exploitables.
@@ -17,11 +17,12 @@
 9. ✅ **`--clean` ajouté à l'analyse automatique** : sans lui, tous les déclencheurs existants (ouverture, changement de carte) restaient inopérants — ils repartaient d'un cache chaud. C'était le défaut de fond, le lot `.31` ne l'avait corrigé que pour la commande manuelle.
 10. ✅ **Tests hors éditeur** (scratchpad, `vscode` bouché) : 8/8 sur l'empreinte (croquis réel de Frank, includes commentés, corps modifié, fichier annexe, guillemets, doublons, dossier absent) ; 8/8 sur le cycle de décision, rejoués pour **cpptools et clangd** (migration sans empreinte, corps modifié, ajout, retrait, changement de carte, absence de boucle).
 11. ✅ `tsc --noEmit`, `tslint`, construction : propres.
-12. ✅ **Contrôle du `buildNumber` corrigé** ([scripts/package.mjs](scripts/package.mjs)) : il exigeait que `buildNumber` commence par `version`, ce qui interdisait l'empaquetage dès que le préfixe passait à la **prochaine publication** — c'est-à-dire tout le temps. Il valide désormais la forme `ANNÉE.MOIS.incrément.compteur` et ne refuse qu'un vrai retour en arrière, comparé segment par segment au premier qui diffère (sinon `2026.10.0` face à `2026.9.9` passait pour un recul). 10/10 aux essais.
-13. ✅ **Paquet construit et vérifié** : `arduino-vscode-ide-2026.9.4.32.vsix` (2,06 Mo, 182 fichiers). Contenu contrôlé après décompression — empreinte des `#include`, déclencheur `onDidSaveTextDocument`, `build(BuildMode.Analyze, undefined, true)` dans l'analyse automatique **et** dans la commande manuelle, avertissement d'échec, traduction FR.
-14. ⏳ **Non vérifié à l'exécution** : pas d'essai dans un éditeur réel. À confirmer par Frank — installer le `.vsix`, lancer une fois Ctrl+Alt+I (amorçage de l'empreinte), puis ajouter un `#include` dans ds18b20-uno, enregistrer, attendre ~5 s.
+12. ✅ **Contrôle du `buildNumber` assoupli** ([scripts/package.mjs](scripts/package.mjs)) : il exigeait que `buildNumber` commence exactement par `version`. Il valide désormais la forme `ANNÉE.MOIS.incrément.compteur` et ne refuse qu'un vrai retour en arrière, comparé segment par segment au premier qui diffère (sinon `2026.10.0` face à `2026.9.9` passait pour un recul). Le cas normal reste l'égalité des préfixes. 10/10 aux essais.
+13. ✅ **Règle de numérotation confirmée par Frank** : le `buildNumber` se préfixe de la version **déjà publiée** (`version`), pas de la prochaine. Les deux n'avancent qu'à la publication, pour que le paquet installé en local se fasse bien remplacer par la mise à jour en ligne. Lot renuméroté `2026.9.3.32` (et `.31` pour le précédent).
+14. ✅ **Paquet construit et vérifié** : `arduino-vscode-ide-2026.9.3.32.vsix`. Contenu contrôlé après décompression — empreinte des `#include`, déclencheur `onDidSaveTextDocument`, `build(BuildMode.Analyze, undefined, true)` dans l'analyse automatique **et** dans la commande manuelle, avertissement d'échec, traduction FR.
+15. ⏳ **Non vérifié à l'exécution** : pas d'essai dans un éditeur réel. À confirmer par Frank — installer le `.vsix`, lancer une fois Ctrl+Alt+I (amorçage de l'empreinte), puis ajouter un `#include` dans ds18b20-uno, enregistrer, attendre ~5 s.
 
-# v2026.9.4.31 — Reconstruire IntelliSense ne reconstruisait plus rien
+# v2026.9.3.31 — Reconstruire IntelliSense ne reconstruisait plus rien
 
 1. ✅ **Défaut signalé par Frank** : `#include <OneWire.h>` et `<DallasTemperature.h>` soulignés en rouge, bibliothèques pourtant installées. *Arduino : Reconstruire IntelliSense* semblait ne rien faire. Sortie Arduino : « Aucune nouvelle donnée IntelliSense capturée (cache de build réutilisé). Configuration existante conservée. »
 2. ✅ **Cause** ([arduino.ts:681](src/arduino/arduino.ts#L681)) : `--clean` n'était ajouté **que si aucune configuration n'existait encore**. Une fois `c_cpp_properties.json` écrit, toute reconstruction repartait d'un dossier de construction chaud ; arduino-cli n'émettait alors aucune ligne de compilateur et cocopa n'avait rien à analyser. La commande était donc inopérante à vie après sa première réussite — exactement le cas d'une bibliothèque ajoutée après coup.
