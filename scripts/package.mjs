@@ -20,9 +20,27 @@ const nom = manifeste.name;
 const version = manifeste.version;
 const buildNumber = manifeste.buildNumber ?? '';
 
-// Le buildNumber vaut « version.compteur » : il sert tel quel de suffixe au nom du paquet.
-if (!String(buildNumber).startsWith(`${version}.`)) {
-	console.error(`Erreur : « buildNumber » (${buildNumber}) ne découle pas de « version » (${version}) dans package.json.`);
+// Le buildNumber vaut « ANNÉE.MOIS.incrément.compteur » et sert tel quel de suffixe
+// au nom du paquet.
+//
+// Son préfixe est le numéro de la PROCHAINE publication (celui ouvert dans le
+// CHANGELOG), pas le champ « version », qui reste sur la dernière version publiée
+// jusqu'au jour de la publication. Un écart entre les deux est donc l'état normal
+// pendant tout le développement, et non une erreur.
+if (!/^\d+\.\d+\.\d+\.\d+$/.test(String(buildNumber))) {
+	console.error(`Erreur : « buildNumber » (${buildNumber}) doit valoir ANNÉE.MOIS.incrément.compteur dans package.json.`);
+	process.exit(1);
+}
+
+// Seul cas vraiment fautif : un buildNumber en retard sur la version publiée.
+// Comparaison segment par segment, au premier qui diffère — sinon un passage de mois
+// (2026.10.1 face à 2026.9.5) serait pris pour un retour en arrière.
+const enNombres = (v) => String(v).split('.').slice(0, 3).map(Number);
+const prefixeBuild = enNombres(buildNumber);
+const versionPubliee = enNombres(version);
+const rang = prefixeBuild.findIndex((n, i) => n !== versionPubliee[i]);
+if (rang !== -1 && prefixeBuild[rang] < versionPubliee[rang]) {
+	console.error(`Erreur : « buildNumber » (${buildNumber}) est antérieur à « version » (${version}) dans package.json.`);
 	process.exit(1);
 }
 
