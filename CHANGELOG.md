@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2026.9.5
 
-- prochaine publication
+- Date de publication : 26 septembre 2026
 
 ### Nouveauté
 

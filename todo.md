@@ -1,10 +1,21 @@
 # À faire
 
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
-3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
-4. ⏳ Traduire en FR les 8 chaînes du lot `.37` (téléversement sans port), au lot de publication
-5. ⬜ Essayer le lot `.37` sur carte réelle (voir v2026.9.4.37, item 14)
+2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
+
+# v2026.9.5.38 — Préparation de la publication 2026.9.5
+
+1. ✅ **Version publique passée à `2026.9.5`**, `buildNumber` à `2026.9.5.38`. Mois du jour (septembre 2026) identique à celui de la version courante : l'incrément suit sa série, le compteur interne avance d'un cran sans repartir à zéro.
+2. ✅ **CHANGELOG daté** : `- prochaine publication` remplacé par `- Date de publication : 26 septembre 2026`. Le numéro était déjà le bon, il n'a pas bougé. Contenu de la section relu : aucune entrée tronquée.
+3. ✅ **Traductions FR du lot `.37`** ajoutées à [bundle.l10n.fr.json](l10n/bundle.l10n.fr.json), alignées sur le vocabulaire du CHANGELOG : « Téléversement annulé. », « La carte ne répond pas sur {0} : vérifier le port et la carte choisie. », « Aucun port », « Port série du téléversement », « Aucun port série choisi pour le téléversement. », « Le port {0} n'est pas connecté. », « Choisir un port », « Téléverser sur {0} ».
+4. ✅ **Traductions contrôlées** : 281 chaînes `l10n.t()` dans le code, **0 manquante** dans le bundle FR ; `package.nls.json` et `package.nls.fr.json` à 56 clefs chacun, **aucun écart**, aucune clef `%…%` du manifeste sans texte. 35 clefs orphelines dans le bundle (chaînes retirées du code) — sans effet, non nettoyées. `arduino.view.container.title` identique en FR : nom propre.
+5. ✅ **README** (page de la place de marché) : puce « Safer uploads » dans *What's new in this fork* (port dans la barre d'état, contrôle avant téléversement, arrêt à la première tentative sans réponse, annulation) ; description du champ `port` complétée par le clic sur la barre d'état.
+6. ✅ `tsc --noEmit`, `tslint`, `gulp build --mode=production` : propres. Suite complète : 72 réussis. Aucune version écrite en dur dans `src/`, le README ou les fichiers de traduction.
+7. ℹ️ **Liste « à faire »** : l'essai sur carte réelle du lot `.37` en a été retiré par Frank ; l'item 14 de la section `.37` reste ⏳, faute de résultat consigné.
+8. ℹ️ **Suppressions de Frank dans `A Examiner/`** (profil de test, `arduino-cli-1.4.1`, résidus d'extensions) : laissées hors de cet enregistrement, à valider par lui.
+9. ⏳ **Publication non faite** : aucune commande `vsce publish` ni `ovsx` lancée. Attend l'accord explicite de Frank.
+10. ⏳ **Paquet non construit** : pas de `.vsix` pour ce lot, faute de demande expresse.
 
 # v2026.9.4.37 — Téléversement sans port : fenêtre claire et annulation
 

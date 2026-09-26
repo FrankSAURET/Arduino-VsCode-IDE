@@ -58,6 +58,7 @@ Compared to the original Microsoft extension (v0.4.12), this fork includes:
 - **Custom paths**: New `arduino.customLibraryPath` and `arduino.arduinoCliConfigFile` settings.
 - **Build output verbosity**: New `arduino.outputVerbosity` setting (`compact`, `normal`, `verbose`).
 - **Build path fix**: Output build path is properly normalized and the full directory structure is created automatically.
+- **Safer uploads**: the upload port is shown in the status bar, with a warning when none is selected or the board is unplugged. A missing or disconnected port is reported before uploading, with a one-click port picker. A board that does not respond stops the upload at the first failed attempt instead of retrying for twenty seconds, and any upload can be cancelled from its notification.
 - **No hard dependency on the C/C++ extension**: IntelliSense is a recommendation, not a requirement, so the extension installs cleanly on VSCodium, Gitpod and other Open VSX based editors.
 - **Non-intrusive output panel**: the Arduino panel no longer steals focus during background IntelliSense analysis, and its bracketed prefixes are coloured with theme tokens in every UI language.
 
@@ -188,7 +189,7 @@ intelliSenseGen: global
 ```
 
 - `sketch` - The main sketch file name of Arduino.
-- `port` - Name of the serial port connected to the device. Can be set by the `Arduino: Select Serial Port` command. For Mac users could be "/dev/cu.wchusbserial1420".
+- `port` - Name of the serial port connected to the device. Can be set by the `Arduino: Select Serial Port` command, or by clicking the port in the status bar. For Mac users could be "/dev/cu.wchusbserial1420".
 - `board` - Currently selected Arduino board alias. Can be set by the `Arduino: Change Board Type` command. Also, you can find the board list there.
 - `output` - Arduino build output path, relative to the workspace. When this field is missing the extension falls back to `.build` inside the workspace, so intermediate build results are always reused and verify/upload stay fast. The path must not be the workspace folder itself. It's worth noting that the contents of this folder could be deleted during the build process, so pick (or create) a directory that will not store files you want to keep - and add it to your `.gitignore`.
 - `debugger` - The short name of the debugger that will be used when the board itself does not have a debugger and there is more than one debugger available. You can find the list of debuggers [here](https://github.com/Microsoft/vscode-arduino/blob/main/misc/debuggerUsbMapping.json). By default, this option is not set.

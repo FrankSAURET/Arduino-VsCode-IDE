@@ -306,5 +306,13 @@
   "Unable to write the \"{0}\" file: {1}": "Impossible d'écrire le fichier « {0} » : {1}",
   "Unable to copy the \"{0}\" file: {1}": "Impossible de copier le fichier « {0} » : {1}",
   "IntelliSense configuration updated for clangd ({0}).": "Configuration IntelliSense mise à jour pour clangd ({0}).",
-  "Arduino CLI not found: it is needed to compile and upload. Install everything now?": "Arduino CLI introuvable : il est nécessaire pour compiler et téléverser. Tout installer maintenant ?"
+  "Arduino CLI not found: it is needed to compile and upload. Install everything now?": "Arduino CLI introuvable : il est nécessaire pour compiler et téléverser. Tout installer maintenant ?",
+  "Upload cancelled.": "Téléversement annulé.",
+  "The board is not responding on {0}: check the port and the selected board.": "La carte ne répond pas sur {0} : vérifier le port et la carte choisie.",
+  "No port": "Aucun port",
+  "Serial port for upload": "Port série du téléversement",
+  "No serial port selected for upload.": "Aucun port série choisi pour le téléversement.",
+  "Port {0} is not connected.": "Le port {0} n'est pas connecté.",
+  "Select a port": "Choisir un port",
+  "Upload to {0}": "Téléverser sur {0}"
 }
