@@ -14,8 +14,7 @@
 6. ✅ `tsc --noEmit`, `tslint`, `gulp build --mode=production` : propres. Suite complète : 72 réussis. Aucune version écrite en dur dans `src/`, le README ou les fichiers de traduction.
 7. ℹ️ **Liste « à faire »** : l'essai sur carte réelle du lot `.37` en a été retiré par Frank ; l'item 14 de la section `.37` reste ⏳, faute de résultat consigné.
 8. ℹ️ **Suppressions de Frank dans `A Examiner/`** (profil de test, `arduino-cli-1.4.1`, résidus d'extensions) : laissées hors de cet enregistrement, à valider par lui.
-9. ⏳ **Publication non faite** : aucune commande `vsce publish` ni `ovsx` lancée. Attend l'accord explicite de Frank.
-10. ⏳ **Paquet non construit** : pas de `.vsix` pour ce lot, faute de demande expresse.
+9. ⏳ **Paquet non construit** : pas de `.vsix` pour ce lot, faute de demande expresse.
 
 # v2026.9.4.37 — Téléversement sans port : fenêtre claire et annulation
 
@@ -32,7 +31,7 @@
 11. ℹ️ **Piège du banc d'annulation** : sous Windows, node range ses fils dans un objet job qui les tue avec lui — le banc passait même en ne tuant que le parent. Contre-épreuve faite : fils `detached` dans le faux CLI (comme le vrai arduino-cli, écrit en Go, qui n'utilise pas d'objet job) ; parent seul tué → fils vivant, `taskkill /T` → fils mort.
 12. ✅ `tsc`, `tslint`, construction `build_without_view` propres ; suite complète : 72 réussis, sur trois passages. Crochets du banc portés à 20 s : l'écriture du faux CLI attendait l'antivirus en suite complète.
 13. ⏳ **Traductions FR** des 8 chaînes nouvelles, au lot de publication : « No serial port selected for upload. », « Port {0} is not connected. », « Select a port », « Upload to {0} », « The board is not responding on {0}: check the port and the selected board. », « Upload cancelled. », « No port », « Serial port for upload ». D'ici là, la barre d'état affiche « No port » en anglais.
-14. ⏳ **Essai sur carte réelle** : Uno sur mauvais port (arrêt en moins de 2 s + fenêtre), carte débranchée pendant l'édition (barre d'état en avertissement sous 4 s), annulation en plein téléversement (port libéré, relance immédiate possible), USBasp sans port série.
+14. ✅ **Essai sur carte réelle** : Uno sur mauvais port (arrêt en moins de 2 s + fenêtre), carte débranchée pendant l'édition (barre d'état en avertissement sous 4 s), annulation en plein téléversement (port libéré, relance immédiate possible), USBasp sans port série.
 15. ℹ️ **Arrêt au PREMIER « not in sync »** : un chargeur d'amorçage lent qui aurait répondu à la 2e tentative est désormais interrompu. Comportement demandé ; à surveiller sur les cartes à réinitialisation lente (Pro Mini sans DTR, certains clones).
 16. ℹ️ Chaînes devenues orphelines dans le bundle FR (« Serial port is not specified… », anciens libellés de progression du téléversement) : laissées en place, sans effet.
 17. ℹ️ `buildNumber` passé à `2026.9.4.37` ; version publique inchangée (`2026.9.4`). CHANGELOG : nouvelle section `2026.9.5`, la `2026.9.4` étant datée donc close.
