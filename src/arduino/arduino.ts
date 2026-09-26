@@ -20,6 +20,12 @@ import { AnalysisManager,
          isCompilerParserEnabled,
          makeCompilerParserContext } from "./intellisense";
 import { LibraryManager } from "./libraryManager";
+import { askAfterNoResponse,
+         ensureUploadPort,
+         isBoardNotRespondingLine,
+         UploadAbort,
+         uploadNeedsSerialPort,
+         vscodeUploadPortUi } from "./uploadPort";
 import { VscodeSettings } from "./vscodeSettings";
 
 import { arduinoChannel } from "../common/outputChannel";
@@ -109,6 +115,12 @@ export class ArduinoApp {
      * If so any call to this.build() will return false immediately.
      */
     private _building: boolean = false;
+
+    /**
+     * Posé par _build() quand l'utilisateur a choisi un autre port après un téléversement
+     * sans réponse : build() relance alors le téléversement sans relâcher _building.
+     */
+    private _uploadRetryRequested: boolean = false;
 
     /**
      * @param {IArduinoSettings} _settings ArduinoSetting object.
@@ -254,7 +266,16 @@ export class ArduinoApp {
 
         this._building = true;
 
-        return await this._build(buildMode, buildDir, forceClean)
+        const buildWithRetry = async () => {
+            let ret: boolean;
+            do {
+                this._uploadRetryRequested = false;
+                ret = await this._build(buildMode, buildDir, forceClean);
+            } while (!ret && this._uploadRetryRequested);
+            return ret;
+        };
+
+        return await buildWithRetry()
         .then((ret) => {
             this._building = false;
             return ret;
@@ -428,12 +449,11 @@ export class ArduinoApp {
             if (sketchFile) {
                 // Generate arduino.yaml
                 const dc = DeviceContext.getInstance();
-                const defaultPort = os.platform() === "win32" ? "COM1"
-                    : os.platform() === "darwin" ? "/dev/cu.usbmodem1"
-                    : "/dev/ttyUSB0";
+                // Pas de port inventé (l'ancien COM1 n'existait presque jamais et coûtait dix
+                // tentatives d'avrdude) : sans port, le téléversement demandera d'en choisir un.
                 const arduinoConfig = {
                     sketch: sketchFile,
-                    port: dc.port || defaultPort,
+                    port: dc.port || undefined,
                     board: dc.board,
                     configuration: dc.configuration,
                 };
@@ -614,69 +634,50 @@ export class ArduinoApp {
             }
         }
 
-        const selectSerial = async () => {
-            const choice = await vscode.window.showInformationMessage(
-                vscode.l10n.t("Serial port is not specified. Do you want to select a serial port for uploading?"),
-                vscode.l10n.t("Yes"), vscode.l10n.t("No"));
-            if (choice === vscode.l10n.t("Yes")) {
-                vscode.commands.executeCommand("arduino.selectSerialPort");
+        const isUploadMode = buildMode === BuildMode.Upload
+            || buildMode === BuildMode.CliUpload
+            || buildMode === BuildMode.UploadProgrammer
+            || buildMode === BuildMode.CliUploadProgrammer;
+
+        // Port contrôlé AVANT de lancer arduino-cli : vide ou débranché, avrdude
+        // s'épuiserait en dix tentatives de synchronisation. Le ST-Link s'en passe, et un
+        // programmateur USB (USBasp…) aussi : une carte nue n'offre souvent aucun port série.
+        // Pour un programmateur série (Arduino as ISP), la détection du « not in sync » prend
+        // le relais pendant le téléversement.
+        let uploadPort: string | undefined;
+        const viaProgrammer = buildMode === BuildMode.UploadProgrammer
+            || buildMode === BuildMode.CliUploadProgrammer;
+        if (isUploadMode) {
+            if (viaProgrammer && !this.programmerManager.currentProgrammer) {
+                logger.notifyUserError("programmerManager.currentProgrammer", new Error(constants.messages.NO_PROGRAMMMER_SELECTED));
+                return false;
+            }
+            if (!viaProgrammer && uploadNeedsSerialPort(dc.configuration)) {
+                uploadPort = await ensureUploadPort(vscodeUploadPortUi());
+                if (!uploadPort) {
+                    return false;
+                }
+            } else {
+                uploadPort = dc.port || undefined;
             }
         }
 
         if (buildMode === BuildMode.Upload) {
-            if ((!dc.configuration || !/upload_method=[^=,]*st[^,]*link/i.test(dc.configuration)) && !dc.port) {
-                await selectSerial();
-                return false;
-            }
-
             args.push("compile", "--upload");
-
-            if (dc.port) {
-                args.push("--port", dc.port);
-            }
         } else if (buildMode === BuildMode.CliUpload) {
-            if ((!dc.configuration || !/upload_method=[^=,]*st[^,]*link/i.test(dc.configuration)) && !dc.port) {
-                await selectSerial();
-                return false;
-            }
-
             args.push("upload");
-
-            if (dc.port) {
-                args.push("--port", dc.port);
-            }
         } else if (buildMode === BuildMode.UploadProgrammer) {
-            const programmer = this.programmerManager.currentProgrammer;
-            if (!programmer) {
-                logger.notifyUserError("programmerManager.currentProgrammer", new Error(constants.messages.NO_PROGRAMMMER_SELECTED));
-                return false;
-            }
-            if (!dc.port) {
-                await selectSerial();
-                return false;
-            }
-
             args.push("compile",
                 "--upload",
-                "--programmer", programmer);
-
-            args.push("--port", dc.port);
+                "--programmer", this.programmerManager.currentProgrammer);
         } else if (buildMode === BuildMode.CliUploadProgrammer) {
-            const programmer = this.programmerManager.currentProgrammer;
-            if (!programmer) {
-                logger.notifyUserError("programmerManager.currentProgrammer", new Error(constants.messages.NO_PROGRAMMMER_SELECTED));
-                return false;
-            }
-            if (!dc.port) {
-                await selectSerial();
-                return false;
-            }
-
             args.push("upload",
-                "--programmer", programmer,
-                "--port", dc.port);
+                "--programmer", this.programmerManager.currentProgrammer);
         } else {
             args.unshift("compile");
+        }
+        if (uploadPort) {
+            args.push("--port", uploadPort);
         }
 
         if (isCompileMode && dc.buildPreferences) {
@@ -784,11 +785,12 @@ export class ArduinoApp {
             return false;
         }
 
+        // Téléversement : l'annulation, comme le premier « not in sync » d'avrdude, tue
+        // arduino-cli ET ses fils, qui tiendraient sinon le port série.
+        const abort = isUploadMode ? new util.SpawnAbort() : undefined;
+
         // Pause USB detection during upload
-        if (buildMode === BuildMode.Upload ||
-            buildMode === BuildMode.UploadProgrammer ||
-            buildMode === BuildMode.CliUpload ||
-            buildMode === BuildMode.CliUploadProgrammer) {
+        if (isUploadMode) {
             UsbDetector.getInstance().pauseListening();
         }
 
@@ -803,10 +805,7 @@ export class ArduinoApp {
                 ret = await this.runPrePostBuildCommand(dc, env, "post");
             }
             await cocopa.conclude();
-            if (buildMode === BuildMode.Upload ||
-                buildMode === BuildMode.UploadProgrammer ||
-                buildMode === BuildMode.CliUpload ||
-                buildMode === BuildMode.CliUploadProgrammer) {
+            if (isUploadMode) {
                 UsbDetector.getInstance().resumeListening();
             }
             return ret;
@@ -828,7 +827,15 @@ export class ArduinoApp {
             };
         }
 
+        // Inutile d'attendre les neuf autres tentatives d'avrdude : la carte ne répond pas.
+        const watchUploadLine = (line: string) => {
+            if (abort && isBoardNotRespondingLine(line)) {
+                abort.abort(UploadAbort.NotResponding);
+            }
+        };
+
         const stdoutcb = wrapLineCallback((line: string) => {
+            watchUploadLine(line);
             if (cocopa.callback) {
                 cocopa.callback(line);
             }
@@ -842,6 +849,7 @@ export class ArduinoApp {
             }
         });
         const stderrcb = wrapLineCallback((line: string) => {
+            watchUploadLine(line);
             // Also feed stderr to CoCoPa: some toolchains or wrappers
             // may emit compiler commands on stderr instead of stdout
             if (cocopa.callback) {
@@ -875,12 +883,32 @@ export class ArduinoApp {
             arduinoChannel.channel.append(line);
         });
 
-        return await util.spawn(
+        const runCli = () => util.spawn(
             this._settings.commandPath,
             args,
             { cwd: ArduinoWorkspace.rootPath },
             { /*channel: arduinoChannel.channel,*/ stdout: stdoutcb, stderr: stderrcb },
-        ).then(async () => {
+            abort,
+        );
+        // Téléversement dans une notification annulable ; la notification se referme
+        // dès qu'arduino-cli s'arrête, avant la commande de post-construction.
+        const cliRun = !abort ? runCli() : vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: vscode.l10n.t("{0} sketch '{1}'", translateBuildMode(buildMode), dc.sketch),
+            cancellable: true,
+        }, async (_progress, token) => {
+            const subscription = token.onCancellationRequested(() => abort.abort(UploadAbort.Cancelled));
+            try {
+                return await runCli();
+            } finally {
+                subscription.dispose();
+            }
+        });
+
+        // Un programmateur USB se passe de port : le message nomme alors le programmateur.
+        const noResponseTarget = uploadPort
+            || (viaProgrammer ? this.programmerManager.currentProgrammer : dc.port) || "?";
+        const result = await cliRun.then(async () => {
             const ret = await cleanup("ok");
             if (ret) {
                 arduinoChannel.end(vscode.l10n.t("{0} sketch '{1}'", translateBuildMode(buildMode), dc.sketch));
@@ -888,12 +916,28 @@ export class ArduinoApp {
             return ret;
         }, async (reason) => {
             await cleanup("error");
+            if (reason.aborted === UploadAbort.Cancelled) {
+                arduinoChannel.warning(vscode.l10n.t("Upload cancelled."));
+                return false;
+            }
+            if (reason.aborted === UploadAbort.NotResponding) {
+                arduinoChannel.error(vscode.l10n.t(
+                    "The board is not responding on {0}: check the port and the selected board.", noResponseTarget));
+                return false;
+            }
             const msg = reason.code
                 ? `Exit with code=${reason.code}`
                 : JSON.stringify(reason);
             arduinoChannel.error(vscode.l10n.t("{0} sketch '{1}': {2}", translateBuildMode(buildMode), dc.sketch, msg));
             return false;
         });
+
+        // Fenêtre posée une fois la notification de progression refermée. Nouveau port
+        // choisi : build() relance le téléversement.
+        if (abort && abort.reason === UploadAbort.NotResponding && await askAfterNoResponse(noResponseTarget)) {
+            this._uploadRetryRequested = true;
+        }
+        return result;
     }
 
     /**

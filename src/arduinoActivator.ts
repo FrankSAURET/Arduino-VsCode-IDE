@@ -9,7 +9,9 @@ import { BoardManager } from "./arduino/boardManager";
 import { ExampleManager } from "./arduino/exampleManager";
 import { ExampleProvider } from "./arduino/exampleProvider";
 import { LibraryManager } from "./arduino/libraryManager";
+import { PortStatusBar } from "./arduino/portStatusBar";
 import { ProgrammerManager } from "./arduino/programmerManager";
+import { uploadNeedsSerialPort } from "./arduino/uploadPort";
 import { VscodeSettings } from "./arduino/vscodeSettings";
 import ArduinoContext from "./arduinoContext";
 import { DeviceContext } from "./deviceContext";
@@ -58,6 +60,10 @@ class ArduinoActivator {
 
             // Show sketch status bar, and allow user to change sketch in config file
             deviceContext.showStatusBar();
+            // Port série : en avertissement tant qu'il est vide ou débranché
+            PortStatusBar.getInstance().start(
+                () => arduinoApp.building,
+                () => uploadNeedsSerialPort(deviceContext.configuration));
             // Arduino board manager & library manager
             arduinoApp.boardManager = new BoardManager(arduinoSettings, arduinoApp);
             ArduinoContext.boardManager = arduinoApp.boardManager;

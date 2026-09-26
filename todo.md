@@ -2,7 +2,29 @@
 
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 3. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
+4. ⏳ Traduire en FR les 8 chaînes du lot `.37` (téléversement sans port), au lot de publication
+5. ⬜ Essayer le lot `.37` sur carte réelle (voir v2026.9.4.37, item 14)
 
+
+# v2026.9.4.37 — Téléversement sans port : fenêtre claire et annulation
+
+1. ✅ **Port contrôlé avant de lancer arduino-cli** ([uploadPort.ts](src/arduino/uploadPort.ts)) : vide → fenêtre modale « No serial port selected for upload. » ; renseigné mais absent de la liste des ports (même source que le sélecteur, `listSerialPorts`) → « Port COMx is not connected. ». Bouton « Select a port » : sélecteur, puis nouveau contrôle et téléversement dans la foulée. Rien n'est lancé si l'utilisateur renonce.
+2. ✅ **Seule carte USB proposée d'office** : un unique port muni de VID/PID → bouton « Upload to COM5 » en tête, port inscrit dans `arduino.yaml`. Ports sans VID/PID (COM1 de la carte mère, Bluetooth) écartés.
+3. ✅ **Faux positifs évités** : adresse réseau (OTA ESP32) et liste de ports illisible laissées à arduino-cli ; COM comparé sans casse ; liens `/dev/serial/by-id` résolus ; ST-Link exempté.
+4. ✅ **Port dans la barre d'état** ([portStatusBar.ts](src/arduino/portStatusBar.ts)) : `$(plug) COMx`, ou `$(warning) No port` sur fond `statusBarItem.warningBackground` tant que le port est vide ou débranché. Relevé toutes les 4 s, fenêtre active et hors téléversement (serialport n'émet aucun événement de débranchement fiable) ; minuteur `unref`, libéré dans `deactivate`.
+5. ✅ **Téléversement annulable** : notification `withProgress` `cancellable` autour du seul lancement d'arduino-cli ([arduino.ts](src/arduino/arduino.ts)). Les commandes de téléversement d'[extension.ts](src/extension.ts) ne l'enveloppent plus dans une progression de fenêtre.
+6. ✅ **Arrêt de l'arbre de processus** ([util.ts](src/common/util.ts)) : `SpawnAbort` + `killProcessTree`. Windows : `taskkill /PID <pid> /T /F`. Ailleurs : lancement `detached`, `process.kill(-pid)`, puis SIGKILL du groupe 3 s plus tard (le minuteur survit à la sortie d'arduino-cli : c'est le fils qu'il vise). Le rejet attend la fin de `taskkill`, pour qu'une relance trouve le port libéré. Un processus interrompu est toujours rejeté, même sorti avec 0.
+7. ✅ **Premier « not in sync » ou « programmer is not responding » → arrêt immédiat** : « The board is not responding on COMx: check the port and the selected board. » dans le journal, puis en fenêtre modale avec « Select a port ». Port choisi → `build()` relance le téléversement (drapeau `_uploadRetryRequested`, `_building` jamais relâché entre-temps).
+8. ✅ **Échafaudage des exemples** : plus de port par défaut (`COM1`, `/dev/cu.usbmodem1`, `/dev/ttyUSB0`) écrit dans `arduino.yaml`.
+9. ✅ **Modes programmateur** : ni contrôle ni port exigé. Un USBasp sur carte nue n'a souvent aucun port série : avec le retrait du COM1 inventé, l'ancienne exigence l'aurait bloqué pour de bon. Le port est transmis s'il est renseigné ; un programmateur série (Arduino as ISP) reste couvert par la détection du « not in sync ». Sans port, le message nomme le programmateur.
+10. ✅ **Bancs d'essai** ([uploadPort.test.ts](test/uploadPort.test.ts)), 17 cas : port vide, port absent, port unique, choix puis relance, abandon, port déjà branché, adresse réseau, lignes d'avrdude, annulation et « not in sync » sur un faux arduino-cli dont le fils endormi doit mourir aussi.
+11. ℹ️ **Piège du banc d'annulation** : sous Windows, node range ses fils dans un objet job qui les tue avec lui — le banc passait même en ne tuant que le parent. Contre-épreuve faite : fils `detached` dans le faux CLI (comme le vrai arduino-cli, écrit en Go, qui n'utilise pas d'objet job) ; parent seul tué → fils vivant, `taskkill /T` → fils mort.
+12. ✅ `tsc`, `tslint`, construction `build_without_view` propres ; suite complète : 72 réussis, sur trois passages. Crochets du banc portés à 20 s : l'écriture du faux CLI attendait l'antivirus en suite complète.
+13. ⏳ **Traductions FR** des 8 chaînes nouvelles, au lot de publication : « No serial port selected for upload. », « Port {0} is not connected. », « Select a port », « Upload to {0} », « The board is not responding on {0}: check the port and the selected board. », « Upload cancelled. », « No port », « Serial port for upload ». D'ici là, la barre d'état affiche « No port » en anglais.
+14. ⏳ **Essai sur carte réelle** : Uno sur mauvais port (arrêt en moins de 2 s + fenêtre), carte débranchée pendant l'édition (barre d'état en avertissement sous 4 s), annulation en plein téléversement (port libéré, relance immédiate possible), USBasp sans port série.
+15. ℹ️ **Arrêt au PREMIER « not in sync »** : un chargeur d'amorçage lent qui aurait répondu à la 2e tentative est désormais interrompu. Comportement demandé ; à surveiller sur les cartes à réinitialisation lente (Pro Mini sans DTR, certains clones).
+16. ℹ️ Chaînes devenues orphelines dans le bundle FR (« Serial port is not specified… », anciens libellés de progression du téléversement) : laissées en place, sans effet.
+17. ℹ️ `buildNumber` passé à `2026.9.4.37` ; version publique inchangée (`2026.9.4`). CHANGELOG : nouvelle section `2026.9.5`, la `2026.9.4` étant datée donc close.
 
 # v2026.9.4.36 — Publication 2026.9.4 (en ligne le 19 septembre 2026)
 

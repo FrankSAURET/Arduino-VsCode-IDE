@@ -32,7 +32,9 @@ import { isOfficialVSCode } from "./arduino/cppSupport";
 import { getEnvironmentStatus, promptSetupEnvironment, setupEnvironment } from "./arduino/environmentSetup";
 import { recommendCppTools, recommendKablix } from "./arduino/extensionRecommendation";
 import { getUserPortNames, resolvePortName, setUserPortName } from "./arduino/portIdentification";
+import { PortStatusBar } from "./arduino/portStatusBar";
 import { applyArduinoTheme } from "./arduino/themeManager";
+import { selectSerialPort } from "./arduino/uploadPort";
 import { listSerialPorts } from "./common/portList";
 import * as Logger from "./logger/logger";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
@@ -363,14 +365,11 @@ export async function activate(context: vscode.ExtensionContext) {
         };
     });
 
+    // Les téléversements affichent leur propre notification annulable (ArduinoApp._build),
+    // ouverte seulement une fois le port contrôlé.
     registerArduinoCommand("arduino.upload", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Window,
-                title: vscode.l10n.t("Arduino: Uploading..."),
-            }, async () => {
-                await arduinoContextModule.default.arduinoApp.build(BuildMode.Upload);
-            });
+            await arduinoContextModule.default.arduinoApp.build(BuildMode.Upload);
         }
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
@@ -378,12 +377,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerArduinoCommand("arduino.cliUpload", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Window,
-                title: vscode.l10n.t("Arduino: Using CLI to upload..."),
-            }, async () => {
-                await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUpload);
-            });
+            await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUpload);
         }
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
@@ -428,12 +422,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerArduinoCommand("arduino.uploadUsingProgrammer", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Window,
-                title: vscode.l10n.t("Arduino: Uploading (programmer)..."),
-            }, async () => {
-                await arduinoContextModule.default.arduinoApp.build(BuildMode.UploadProgrammer);
-            });
+            await arduinoContextModule.default.arduinoApp.build(BuildMode.UploadProgrammer);
         }
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
@@ -441,12 +430,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerArduinoCommand("arduino.cliUploadUsingProgrammer", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Window,
-                title: vscode.l10n.t("Arduino: Using CLI to upload (programmer)..."),
-            }, async () => {
-                await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUploadProgrammer);
-            });
+            await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUploadProgrammer);
         }
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
@@ -616,19 +600,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     }));
     registerNonArduinoCommand("arduino.selectSerialPort", async () => {
-        const ports = await listSerialPorts();
-        if (!ports.length) {
-            vscode.window.showInformationMessage(vscode.l10n.t("No serial port is available."));
-            return;
-        }
-        const chosen = await vscode.window.showQuickPick(
-            ports.map((p) => ({ label: p.port, description: p.desc }))
-                 .sort((a, b) => a.label < b.label ? -1 : a.label > b.label ? 1 : 0),
-            { placeHolder: vscode.l10n.t("Select a serial port") },
-        );
-        if (chosen) {
-            DeviceContext.getInstance().port = chosen.label;
-        }
+        await selectSerialPort();
     });
 
     // Renommage d'un port : les cartes a pont serie generique (CH340, CP2102...)
@@ -884,6 +856,12 @@ export async function deactivate() {
         arduinoHomePanelModule.ArduinoHomePanel.disposeCurrent();
     } catch (error) {
         Logger.traceError("deactivateDisposeHomePanel", error);
+    }
+
+    try {
+        PortStatusBar.disposeCurrent();
+    } catch (error) {
+        Logger.traceError("deactivateDisposePortStatusBar", error);
     }
 
     // Le serveur HTTP local doit etre ferme explicitement, sinon son `listen`

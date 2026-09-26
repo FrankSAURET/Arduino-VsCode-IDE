@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## Version 2026.9.5
+
+- prochaine publication
+
+### Nouveauté
+
+- **Le port série s'affiche dans la barre d'état.** Il passe en avertissement (« Aucun port ») tant qu'aucun port n'est choisi ou que la carte est débranchée ; un clic ouvre le choix du port
+- **Un téléversement peut s'annuler.** Il se déroule dans une notification munie d'un bouton *Annuler*, qui arrête aussi l'outil de téléversement (avrdude) et libère le port série aussitôt
+
+### Modification
+
+- **Port manquant ou débranché : une fenêtre le signale avant de téléverser**, au lieu de laisser l'outil de téléversement s'acharner. Le bouton *Choisir un port* ouvre la liste, et le téléversement reprend dès qu'un port est choisi. Si une seule carte USB est branchée, elle est proposée directement (*Téléverser sur COM5*)
+- **Téléverser avec un programmateur (USBasp…) ne réclame plus de port série** : une carte programmée de cette façon n'en offre souvent aucun
+
+### Correction
+
+- **Fini les vingt secondes d'attente sur un mauvais port.** Avec un port faux ou absent, avrdude tentait dix synchronisations avant d'échouer sans explication, et rien ne permettait de l'interrompre. Le téléversement s'arrête désormais à la première tentative sans réponse, avec le message « La carte ne répond pas sur COMx : vérifier le port et la carte choisie » et la possibilité de choisir un autre port puis de relancer
+- **Les exemples ouverts n'inventent plus de port** : un port par défaut (COM1 sous Windows) était écrit dans la configuration du croquis, alors qu'il ne correspondait presque jamais à la carte
+
 ## Version 2026.9.4
 
 - Date de publication : 19 septembre 2026

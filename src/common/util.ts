@@ -207,6 +207,67 @@ function getConsoleCodepage(): string {
     return cachedConsoleCodepage;
 }
 
+/**
+ * Interrompt de l'extérieur un processus lancé par spawn(), descendance comprise.
+ *
+ * arduino-cli lance avrdude (ou esptool…) en processus fils : tuer le seul
+ * arduino-cli laisserait le fils tourner et garder le port série ouvert.
+ */
+export class SpawnAbort {
+    private _reason: string | undefined;
+    private _listener: (() => void) | undefined;
+
+    /** Motif passé à abort(), undefined tant que rien n'a été interrompu. */
+    public get reason(): string | undefined {
+        return this._reason;
+    }
+
+    /** Tue l'arbre de processus. Seul le premier appel compte. */
+    public abort(reason: string) {
+        if (this._reason !== undefined) {
+            return;
+        }
+        this._reason = reason;
+        if (this._listener) {
+            this._listener();
+        }
+    }
+
+    /** Réservé à spawn() : branche l'action d'arrêt sur le processus lancé. */
+    public bind(listener: () => void) {
+        this._listener = listener;
+        // Interruption demandée avant même le lancement : on l'applique aussitôt.
+        if (this._reason !== undefined) {
+            listener();
+        }
+    }
+}
+
+/**
+ * Tue un processus et toute sa descendance.
+ * Windows : `taskkill /T` suit la filiation. Ailleurs : le processus doit avoir été
+ * lancé `detached`, il dirige alors son propre groupe, qu'un pid négatif désigne en bloc.
+ */
+export function killProcessTree(pid: number): Promise<void> {
+    return new Promise((resolve) => {
+        if (os.platform() === "win32") {
+            child_process.execFile("taskkill", ["/PID", String(pid), "/T", "/F"], { windowsHide: true }, () => resolve());
+            return;
+        }
+        try {
+            process.kill(-pid, "SIGTERM");
+        } catch {
+            // Groupe introuvable (processus lancé sans `detached`) : on vise au moins le processus lui-même.
+            try {
+                process.kill(pid, "SIGTERM");
+            } catch {
+                // Déjà terminé.
+            }
+        }
+        resolve();
+    });
+}
+
 export function spawn(
     command: string,
     args: string[] = [],
@@ -214,10 +275,39 @@ export function spawn(
     output?: {channel?: vscode.OutputChannel,
               stdout?: (s: string) => void,
               stderr?: (s: string) => void},
+    abort?: SpawnAbort,
 ): Thenable<object> {
     return new Promise((resolve, reject) => {
         options.cwd = options.cwd || path.resolve(path.join(__dirname, ".."));
+        // Hors Windows, un groupe de processus propre est la seule façon d'atteindre les fils.
+        // Sous Windows `detached` ouvrirait une console : taskkill /T n'en a pas besoin.
+        if (abort && os.platform() !== "win32") {
+            options.detached = true;
+        }
         const child = child_process.spawn(command, args, options);
+
+        let exited = false;
+        let killing: Promise<void> | undefined;
+        if (abort && child.pid) {
+            abort.bind(() => {
+                if (exited) {
+                    return;
+                }
+                killing = killProcessTree(child.pid);
+                // Un fils sourd à SIGTERM ne doit pas bloquer le port série indéfiniment. Le
+                // minuteur survit à la sortie d'arduino-cli : c'est le fils qu'il vise.
+                if (os.platform() !== "win32") {
+                    const forceKillTimer = setTimeout(() => {
+                        try {
+                            process.kill(-child.pid, "SIGKILL");
+                        } catch {
+                            // Déjà terminé.
+                        }
+                    }, 3000);
+                    forceKillTimer.unref();
+                }
+            });
+        }
 
         let codepage = "65001";
         if (os.platform() === "win32") {
@@ -258,8 +348,14 @@ export function spawn(
         }
 
         child.on("error", (error) => reject({ error }));
-        child.on("exit", (code) => {
-            if (code === 0) {
+        child.on("exit", (code, signal) => {
+            exited = true;
+            if (abort && abort.reason !== undefined) {
+                // Un processus tué peut sortir avec 0 sous Windows : l'interruption prime toujours.
+                // arduino-cli peut mourir avant ses fils : attendre la fin de taskkill, pour
+                // qu'une relance trouve le port série libéré.
+                Promise.resolve(killing).then(() => reject({ code, signal, aborted: abort.reason }));
+            } else if (code === 0) {
                 resolve({ code });
             } else {
                 reject({ code });
