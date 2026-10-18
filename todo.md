@@ -4,6 +4,12 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.10.0.41 — Publication en une commande
+
+1. ✅ **`npm run publier`** : nouveau [publier.mjs](scripts/publier.mjs). Construit un seul `.vsix`, l'envoie au Marketplace puis à Open VSX. Garde-fou CHANGELOG (« prochaine publication » → arrêt, sauf `--force`), `OVSX_PAT` exigé avant tout envoi, `--dry-run` pour l'essai. Script identique dans Kablix, drawio-diagrams-editor, colored-theme (seule `OPTIONS_PAQUET` change).
+2. ✅ **Nom `publier` et non `publish`** : npm exécute un script `publish` même sous `npm publish --dry-run` (un essai a publié 2026.10.0 sur le Marketplace par erreur). `"private": true` ajouté : un vrai `npm publish` est refusé.
+3. ℹ️ Aucun changement visible pour l'utilisateur : pas d'entrée CHANGELOG.
+
 # v2026.10.0.40 — Préparation de la publication 2026.10.0
 
 1. ✅ **Version publique passée à `2026.10.0`**, `buildNumber` à `2026.10.0.40`. Mois changé depuis la 2026.9.5 (vérifié : 18 octobre 2026) : l'incrément repart à 0 ; le compteur interne avance d'un cran sans repartir à zéro.

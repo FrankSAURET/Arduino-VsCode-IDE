@@ -2,8 +2,9 @@
   "name": "arduino-vscode-ide",
   "displayName": "Arduino VsCode IDE",
   "description": "CLI-based Arduino IDE with a user-friendly interface and full translation",
+  "private": true,
   "version": "2026.10.0",
-  "buildNumber": "2026.10.0.40",
+  "buildNumber": "2026.10.0.41",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {
@@ -718,7 +719,8 @@
     "test": "gulp test",
     "lint": "gulp --no-color tslint",
     "build:ext": "gulp --no-color build_without_view",
-    "package": "node scripts/package.mjs"
+    "package": "node scripts/package.mjs",
+    "publier": "node scripts/publier.mjs"
   },
   "devDependencies": {
     "@types/compare-versions": "^3.0.0",
