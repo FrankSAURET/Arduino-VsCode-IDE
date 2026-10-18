@@ -6,6 +6,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { promisify } from "util";
 import * as vscode from "vscode";
+import { cliEnv } from "../common/cliEnv";
 import { arduinoChannel } from "../common/outputChannel";
 import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
 import { downloadArduinoCli, getDownloadedCliExecutable } from "./cliDownloader";
@@ -34,7 +35,7 @@ export interface IEnvironmentStatus {
  */
 async function cliResponds(commandPath: string): Promise<boolean> {
     try {
-        await execFileAsync(commandPath, ["version"], { timeout: 8000, windowsHide: true });
+        await execFileAsync(commandPath, ["version"], { timeout: 8000, windowsHide: true, env: cliEnv() });
         return true;
     } catch {
         return false;
@@ -60,13 +61,13 @@ async function listInstalledCores(commandPath: string): Promise<string[] | null>
     };
     try {
         const { stdout } = await execFileAsync(commandPath, ["core", "list", "--json"],
-            { timeout: 15000, windowsHide: true, maxBuffer: 8 * 1024 * 1024 });
+            { timeout: 15000, windowsHide: true, env: cliEnv(), maxBuffer: 8 * 1024 * 1024 });
         return parse(stdout);
     } catch {
         // Anciennes versions du CLI (< 1.0) : --json s'écrivait --format json
         try {
             const { stdout } = await execFileAsync(commandPath, ["core", "list", "--format", "json"],
-                { timeout: 15000, windowsHide: true, maxBuffer: 8 * 1024 * 1024 });
+                { timeout: 15000, windowsHide: true, env: cliEnv(), maxBuffer: 8 * 1024 * 1024 });
             return parse(stdout);
         } catch {
             return null;
@@ -201,7 +202,7 @@ async function findUsableCli(extensionPath?: string): Promise<string> {
  */
 function runCli(commandPath: string, args: string[]): Promise<void> {
     return new Promise((resolve, reject) => {
-        const child = child_process.spawn(commandPath, args, { windowsHide: true });
+        const child = child_process.spawn(commandPath, args, { windowsHide: true, env: cliEnv() });
         const relay = (data: Buffer) => {
             const text = data.toString().replace(/\r?\n$/, "");
             if (text) {

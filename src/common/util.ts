@@ -10,6 +10,7 @@ import * as path from "path";
 import * as properties from "properties";
 import * as vscode from "vscode";
 import * as WinReg from "winreg";
+import { cliEnv } from "./cliEnv";
 import { arduinoChannel } from "./outputChannel";
 
 const encodingMapping: object = JSON.parse(fs.readFileSync(path.join(__dirname, "../../../misc", "codepageMapping.json"), "utf8"));
@@ -284,6 +285,8 @@ export function spawn(
         if (abort && os.platform() !== "win32") {
             options.detached = true;
         }
+        // Un env explicite (commandes avant/après compilation) reste tel quel : il appartient à l'utilisateur.
+        options.env = options.env || cliEnv();
         const child = child_process.spawn(command, args, options);
 
         let exited = false;

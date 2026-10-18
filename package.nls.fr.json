@@ -42,6 +42,7 @@
   "arduino.configuration.clearOutputOnBuild.description": "Effacer les journaux de sortie avant de téléverser ou de vérifier.",
   "arduino.configuration.openPDEFiletype.description": "Autoriser l'extension à ouvrir les croquis PDE des versions d'Arduino antérieures à 1.0.0",
   "arduino.configuration.enableUSBDetection.description": "La détection USB ne fonctionne pas actuellement",
+  "arduino.configuration.checkCliUpdate.description": "Rechercher au démarrage une version plus récente d'Arduino CLI (une requête vers api.github.com, qui expose votre adresse IP à GitHub). Désactiver pour l'empêcher.",
   "arduino.configuration.debugger.gdbPort.description": "Port TCP utilisé par OpenOCD pour exposer le serveur GDB (par défaut : 3333). À modifier si le port est déjà utilisé.",
   "arduino.configuration.disableIntelliSenseAutoGen.description": "Lorsque cette option est désactivée, l'extension ne génère pas automatiquement de configuration IntelliSense (c_cpp_properties.json) en analysant la sortie du compilateur.",
   "arduino.configuration.analyzeOnOpen.description": "Si activé, lance automatiquement l'analyse à l'ouverture du projet. Ne fonctionne que si `arduino.analyzeOnSettingChange` est activé.",

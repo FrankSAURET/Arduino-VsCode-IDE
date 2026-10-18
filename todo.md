@@ -4,14 +4,24 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.10.0.40 — Préparation de la publication 2026.10.0
+
+1. ✅ **Version publique passée à `2026.10.0`**, `buildNumber` à `2026.10.0.40`. Mois changé depuis la 2026.9.5 (vérifié : 18 octobre 2026) : l'incrément repart à 0 ; le compteur interne avance d'un cran sans repartir à zéro.
+2. ✅ **CHANGELOG daté** : `(prochaine publication)` remplacé par `- Date de publication : 18 octobre 2026`. Entrées ajoutées : section *Privacy* du README (Nouveauté), CLI sans mesures d'usage ni recherche de mise à jour (Modification).
+3. ✅ **Arduino CLI sans sortie facultative** : nouveau [cliEnv.ts](src/common/cliEnv.ts) (`ARDUINO_METRICS_ENABLED=false`, `ARDUINO_UPDATER_ENABLE_NOTIFICATION=false`), appliqué à `util.spawn` et aux six appels `execFile`/`spawn` directs du CLI. Un `env` explicite (commandes avant/après compilation) reste intact. Noms des variables vérifiés sur arduino-cli 1.5.1 : `config dump` reflète les deux valeurs. Fichier `arduino-cli.yaml` de l'utilisateur non touché.
+4. ✅ **Renommages** : `traceUserData` → `traceInfo` ([logger.ts](src/logger/logger.ts) et 4 appels), `telemetryKey` → `logKey` ([extensionRecommendation.ts](src/arduino/extensionRecommendation.ts)). Constat : le journal fichier est réglé sur Warn, donc ces événements Info n'étaient écrits nulle part.
+5. ✅ **README** : section *Privacy* (tableau des requêtes réseau) et ligne `arduino.checkCliUpdate` dans les options.
+6. ✅ **Traductions FR** : 2 chaînes de l'interface dans [bundle.l10n.fr.json](l10n/bundle.l10n.fr.json) et la description du réglage dans `package.nls.fr.json`. README (anglais) inchangé côté traduction : pas de README localisé dans le dépôt.
+7. ⏳ **Paquet non construit** : pas de `.vsix`, faute de demande expresse. Publication non lancée.
+
 # v2026.9.5.39 — Audit télémétrie : réglage de la vérification de mise à jour du CLI
 
 1. ✅ **Audit des sorties réseau** : aucune télémétrie propre à l'extension. Appels restants : index de cartes/bibliothèques (arduino-cli), api.github.com (version du CLI), github.com (téléchargement du CLI, sur demande).
 2. ✅ **Nouveau réglage `arduino.checkCliUpdate`** (booléen, **vrai par défaut**) : coupe l'appel à api.github.com du démarrage ([extension.ts](src/extension.ts)). Lu au déclenchement du délai, pas à l'activation. Absent de la configuration = actif.
 3. ✅ Case ajoutée dans la page d'accueil ([arduinoHomePanel.ts](src/arduino/arduinoHomePanel.ts)), après la détection USB.
 4. ✅ CHANGELOG : section `2026.10.0 (prochaine publication)` ouverte (mois changé depuis la 2026.9.5, datée donc close).
-5. ⏳ **Traductions FR** au lot de publication : « Check for Arduino CLI updates », « Query GitHub at startup for a newer Arduino CLI (your IP address is visible to GitHub) », clef `arduino.configuration.checkCliUpdate.description` de `package.nls.fr.json`.
-6. ⬜ Autres pistes de l'audit, non faites : arduino-cli `metrics.enabled=false` / `updater.enable_notification=false` ; renommer `traceUserData` → `traceInfo` et `telemetryKey` → `logKey` ; section « Vie privée » du README.
+5. ✅ **Traductions FR** faites au lot .40 : « Check for Arduino CLI updates », « Query GitHub at startup… », clef `arduino.configuration.checkCliUpdate.description`.
+6. ✅ Autres pistes de l'audit (métriques et mise à jour du CLI, renommages, section Privacy du README) : faites au lot .40.
 7. ℹ️ `buildNumber` passé à `2026.9.5.39` ; version publique inchangée (`2026.9.5`).
 
 # v2026.9.5.38 — Préparation de la publication 2026.9.5

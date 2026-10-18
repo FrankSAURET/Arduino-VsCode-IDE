@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## Version 2026.10.0 (prochaine publication)
+## Version 2026.10.0
+
+- Date de publication : 18 octobre 2026
 
 ### Nouveauté
 
 - **Un réglage coupe la vérification de mise à jour d'Arduino CLI.** Au démarrage, l'extension interroge GitHub pour savoir si un CLI plus récent existe, ce qui expose votre adresse IP à GitHub. La vérification reste active par défaut ; décochez *Rechercher les mises à jour d'Arduino CLI* dans les paramètres (`arduino.checkCliUpdate`) pour qu'aucune requête ne parte
+- **Le README contient une section *Privacy*** qui liste toutes les requêtes réseau de l'extension : destinataire, moment, et moyen de les éviter. Aucune télémétrie n'existe, aucun identifiant n'est envoyé
+
+### Modification
+
+- **Arduino CLI ne collecte plus de mesures d'usage et ne cherche plus ses propres mises à jour.** L'extension le lance avec ces deux options coupées, sans toucher à votre fichier `arduino-cli.yaml`. Les index de cartes et de bibliothèques restent téléchargés : le CLI en a besoin
 
 ## Version 2026.9.5
 

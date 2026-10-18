@@ -110,7 +110,7 @@ export class ArduinoDebugConfigurationProvider implements vscode.DebugConfigurat
         // Use the C++ debugger MIEngine as the real internal debugger
         config.type = "cppdbg";
         const dc = DeviceContext.getInstance();
-        Logger.traceUserData("start-cppdbg", { board: dc.board });
+        Logger.traceInfo("start-cppdbg", { board: dc.board });
         return config;
     }
 

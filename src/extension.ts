@@ -732,7 +732,7 @@ export async function activate(context: vscode.ExtensionContext) {
             await renamePdeToIno(editor.document);
         }));
     }
-    Logger.traceUserData("end-activate-extension");
+    Logger.traceInfo("end-activate-extension");
 
     context.subscriptions.push(vscode.commands.registerCommand("arduino.showBoardManager", async () => {
         if (!arduinoContextModule.default.initialized) {
@@ -879,5 +879,5 @@ export async function deactivate() {
         Logger.traceError("deactivateDisposeContentProvider", error);
     }
 
-    Logger.traceUserData("deactivate-extension");
+    Logger.traceInfo("deactivate-extension");
 }

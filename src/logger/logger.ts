@@ -84,7 +84,7 @@ export function silly(message: string, metadata?: any) {
     winston.silly(message, metadata);
 }
 
-export function traceUserData(message: string, metadata?: any) {
+export function traceInfo(message: string, metadata?: any) {
     winston.log(LogLevel.Info, message, metadata);
 }
 

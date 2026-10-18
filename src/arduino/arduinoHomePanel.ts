@@ -2,6 +2,7 @@
 import * as child_process from "child_process";
 import * as vscode from "vscode";
 import ArduinoContext from "../arduinoContext";
+import { cliEnv } from "../common/cliEnv";
 import { DeviceContext } from "../deviceContext";
 import { getExtensionPackageJSON } from "../extensionInfo";
 import { getDownloadedCliExecutable } from "./cliDownloader";
@@ -253,6 +254,7 @@ export class ArduinoHomePanel {
             const result = await new Promise<string>((resolve, reject) => {
                 child_process.execFile(commandPath, ["board", "list", "--format", "json"], {
                     timeout: 10000,
+                    env: cliEnv(),
                 }, (err, stdout) => {
                     if (err) {
                         reject(err);

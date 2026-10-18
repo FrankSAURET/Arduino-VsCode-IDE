@@ -70,7 +70,7 @@ export class UsbDetector {
                     return;
                 }
                 const boardKey = `${deviceDescriptor.package}:${deviceDescriptor.architecture}:${deviceDescriptor.id}`;
-                Logger.traceUserData("detected a board", { board: boardKey });
+                Logger.traceInfo("detected a board", { board: boardKey });
                 if (!ArduinoContext.initialized) {
                     await ArduinoActivator.activate();
                 }

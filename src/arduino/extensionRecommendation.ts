@@ -62,7 +62,7 @@ async function promptRecommendation(
     message: string,
     installAction: string,
     installErrorMessage: string,
-    telemetryKey: string,
+    logKey: string,
 ): Promise<void> {
     const state = context.globalState.get<IRecommendationState>(stateKey);
     const currentVersion = <string>context.extension?.packageJSON?.version || "";
@@ -91,7 +91,7 @@ async function promptRecommendation(
     try {
         await vscode.commands.executeCommand("workbench.extensions.installExtension", extensionId);
     } catch (error) {
-        Logger.traceError(telemetryKey, error, { extensionId });
+        Logger.traceError(logKey, error, { extensionId });
         void vscode.window.showWarningMessage(installErrorMessage);
         await vscode.commands.executeCommand(
             "workbench.extensions.search",

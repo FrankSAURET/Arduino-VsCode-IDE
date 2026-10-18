@@ -15,6 +15,7 @@ import * as https from "https";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
+import { cliEnv } from "../common/cliEnv";
 import { arduinoChannel } from "../common/outputChannel";
 import { getGlobalStoragePath } from "../extensionInfo";
 
@@ -313,6 +314,7 @@ async function getSystemCliVersion(): Promise<string | null> {
             encoding: "utf8",
             timeout: 5000,
             windowsHide: true,
+            env: cliEnv(),
         });
         // Output: "arduino-cli  Version: 1.2.0 Commit: ... Status: ..."
         const match = output.match(/Version:\s+v?(\d+\.\d+\.\d+)/);

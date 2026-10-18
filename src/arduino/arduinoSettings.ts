@@ -7,6 +7,7 @@ import * as path from "path";
 import * as WinReg from "winreg";
 import * as util from "../common/util";
 
+import { cliEnv } from "../common/cliEnv";
 import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
 import { ArduinoWorkspace } from "../common/workspace";
 import { getDownloadedCliPath } from "./cliDownloader";
@@ -118,7 +119,7 @@ export class ArduinoSettings implements IArduinoSettings {
         }
 
         const runDump = (args: string[]) => new Promise<string>((resolve, reject) => {
-            child_process.execFile(this.commandPath, args, { timeout: 10000 }, (error, stdout) => {
+            child_process.execFile(this.commandPath, args, { timeout: 10000, env: cliEnv() }, (error, stdout) => {
                 if (error) {
                     reject(error);
                 } else {
