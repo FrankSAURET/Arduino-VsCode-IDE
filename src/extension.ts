@@ -803,8 +803,12 @@ export async function activate(context: vscode.ExtensionContext) {
             .catch((error) => Logger.traceError("startUsbDetectorError", error));
     });
 
-    // Silently check for Arduino CLI updates (downloaded CLIs only)
+    // Silently check for Arduino CLI updates (downloaded CLIs only).
+    // Réglage lu au moment de l'appel : le coupler à l'activation ignorerait un changement fait pendant le délai.
     deferred(5000, () => {
+        if (!VscodeSettings.getInstance().checkCliUpdate) {
+            return;
+        }
         checkForCliUpdate(context.extensionPath).catch(() => { /* ignore */ });
     });
 

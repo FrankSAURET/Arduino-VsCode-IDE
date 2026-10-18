@@ -166,7 +166,7 @@ export class ArduinoHomePanel {
             "path", "commandPath", "arduinoCliConfigFile", "customLibraryPath",
             "clearOutputOnBuild", "logLevel", "additionalUrls",
             "disableIntelliSenseAutoGen", "analyzeOnOpen", "analyzeOnSettingChange",
-            "theme", "enableUSBDetection", "teleplotOpenMode",
+            "theme", "enableUSBDetection", "checkCliUpdate", "teleplotOpenMode",
             "openPDEFiletype", "skipHeaderProvider", "ignoreBoards",
         ];
         for (const key of vscodeKeys) {
@@ -424,6 +424,8 @@ export class ArduinoHomePanel {
             sArduinoThemeDesc: vscode.l10n.t("Theme to apply for Arduino views"),
             sUsbDetection: vscode.l10n.t("USB Detection"),
             sUsbDetectionDesc: vscode.l10n.t("Automatically detect boards plugged via USB"),
+            sCheckCliUpdate: vscode.l10n.t("Check for Arduino CLI updates"),
+            sCheckCliUpdateDesc: vscode.l10n.t("Query GitHub at startup for a newer Arduino CLI (your IP address is visible to GitHub)"),
             sTeleplotOpenMode: vscode.l10n.t("Teleplot Open Mode"),
             sTeleplotOpenModeDesc: vscode.l10n.t("Choose how Teleplot opens from the serial tracer action"),
             sTeleplotNewTab: vscode.l10n.t("New tab"),
@@ -1106,6 +1108,17 @@ export class ArduinoHomePanel {
                     </div>
                     <div class="settings-item-control">
                         <input class="settings-checkbox" type="checkbox" data-scope="vscode" data-key="enableUSBDetection" />
+                        <span class="settings-saved">✓</span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-info">
+                        <div class="settings-item-label">${t.sCheckCliUpdate}</div>
+                        <div class="settings-item-desc">${t.sCheckCliUpdateDesc}</div>
+                        <div class="settings-item-key">arduino.checkCliUpdate</div>
+                    </div>
+                    <div class="settings-item-control">
+                        <input class="settings-checkbox" type="checkbox" data-scope="vscode" data-key="checkCliUpdate" />
                         <span class="settings-saved">✓</span>
                     </div>
                 </div>

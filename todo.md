@@ -4,6 +4,16 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.9.5.39 — Audit télémétrie : réglage de la vérification de mise à jour du CLI
+
+1. ✅ **Audit des sorties réseau** : aucune télémétrie propre à l'extension. Appels restants : index de cartes/bibliothèques (arduino-cli), api.github.com (version du CLI), github.com (téléchargement du CLI, sur demande).
+2. ✅ **Nouveau réglage `arduino.checkCliUpdate`** (booléen, **vrai par défaut**) : coupe l'appel à api.github.com du démarrage ([extension.ts](src/extension.ts)). Lu au déclenchement du délai, pas à l'activation. Absent de la configuration = actif.
+3. ✅ Case ajoutée dans la page d'accueil ([arduinoHomePanel.ts](src/arduino/arduinoHomePanel.ts)), après la détection USB.
+4. ✅ CHANGELOG : section `2026.10.0 (prochaine publication)` ouverte (mois changé depuis la 2026.9.5, datée donc close).
+5. ⏳ **Traductions FR** au lot de publication : « Check for Arduino CLI updates », « Query GitHub at startup for a newer Arduino CLI (your IP address is visible to GitHub) », clef `arduino.configuration.checkCliUpdate.description` de `package.nls.fr.json`.
+6. ⬜ Autres pistes de l'audit, non faites : arduino-cli `metrics.enabled=false` / `updater.enable_notification=false` ; renommer `traceUserData` → `traceInfo` et `telemetryKey` → `logKey` ; section « Vie privée » du README.
+7. ℹ️ `buildNumber` passé à `2026.9.5.39` ; version publique inchangée (`2026.9.5`).
+
 # v2026.9.5.38 — Préparation de la publication 2026.9.5
 
 1. ✅ **Version publique passée à `2026.9.5`**, `buildNumber` à `2026.9.5.38`. Mois du jour (septembre 2026) identique à celui de la version courante : l'incrément suit sa série, le compteur interne avance d'un cran sans repartir à zéro.

@@ -3,7 +3,7 @@
   "displayName": "Arduino VsCode IDE",
   "description": "CLI-based Arduino IDE with a user-friendly interface and full translation",
   "version": "2026.9.5",
-  "buildNumber": "2026.9.5.38",
+  "buildNumber": "2026.9.5.39",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {
@@ -591,6 +591,11 @@
           "type": "boolean",
           "default": false,
           "description": "%arduino.configuration.enableUSBDetection.description%"
+        },
+        "arduino.checkCliUpdate": {
+          "type": "boolean",
+          "default": true,
+          "description": "%arduino.configuration.checkCliUpdate.description%"
         },
         "arduino.debugger.gdbPort": {
           "type": "number",

@@ -15,6 +15,7 @@ const configKeys = {
     AUTO_UPDATE_INDEX_FILES: "arduino.autoUpdateIndexFiles",
     ALLOW_PDE_FILETYPE: "arduino.allowPDEFiletype",
     ENABLE_USB_DETECTION: "arduino.enableUSBDetection",
+    CHECK_CLI_UPDATE: "arduino.checkCliUpdate",
     DISABLE_TESTING_OPEN: "arduino.disableTestingOpen",
     IGNORE_BOARDS: "arduino.ignoreBoards",
     SKIP_HEADER_PROVIDER: "arduino.skipHeaderProvider",
@@ -44,6 +45,7 @@ export interface IVscodeSettings {
     clearOutputOnBuild: boolean;
     allowPDEFiletype: boolean;
     enableUSBDetection: boolean;
+    checkCliUpdate: boolean;
     disableTestingOpen: boolean;
     ignoreBoards: string[];
     skipHeaderProvider: boolean;
@@ -119,6 +121,11 @@ export class VscodeSettings implements IVscodeSettings {
 
     public get enableUSBDetection(): boolean {
         return this.getConfigValue<boolean>(configKeys.ENABLE_USB_DETECTION);
+    }
+
+    public get checkCliUpdate(): boolean {
+        // Actif sauf refus explicite : une valeur absente ne coupe pas la vérification.
+        return this.getConfigValue<boolean>(configKeys.CHECK_CLI_UPDATE) !== false;
     }
 
     public get disableTestingOpen(): boolean {

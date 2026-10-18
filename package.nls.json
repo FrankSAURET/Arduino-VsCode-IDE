@@ -42,6 +42,7 @@
   "arduino.configuration.clearOutputOnBuild.description": "Clear the output logs before uploading or verifying.",
   "arduino.configuration.openPDEFiletype.description": "Allow VSCode Arduino to open PDE sketches, from pre-1.0.0 versions of Arduino",
   "arduino.configuration.enableUSBDetection.description": "USB Detection is currently not working",
+  "arduino.configuration.checkCliUpdate.description": "Check for a newer Arduino CLI at startup (one request to api.github.com, which exposes your IP address to GitHub). Disable to prevent it.",
   "arduino.configuration.debugger.gdbPort.description": "TCP port used by OpenOCD to expose the GDB server (default: 3333). Change if the port is already in use.",
   "arduino.configuration.disableIntelliSenseAutoGen.description": "When disabled vscode-arduino will not auto-generate an IntelliSense configuration (i.e. c_cpp_properties.json) by analyzing the compiler output.",
   "arduino.configuration.intelliSenseEngine.description": "Which C/C++ language engine provides IntelliSense. `auto` picks the one your editor allows: the Microsoft C/C++ extension on official Visual Studio Code, clangd elsewhere (VSCodium and other builds, where the C/C++ extension is unavailable).",
