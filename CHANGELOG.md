@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 
 - **Le parcours d'installation initial contrôle aussi les bibliothèques de base.** Leur absence est détectée via `arduino-cli lib list`, et le parcours est proposé même quand Arduino CLI et le cœur sont déjà en place (poste qui vient d'un autre IDE, par exemple)
 
+### Correction
+
+- **Plus de faux « Arduino CLI introuvable » après une mise à jour de l'extension.** Si la mise à jour était interrompue pendant que l'extension tournait, la mise à jour des index et les autres commandes échouaient en annonçant un CLI absent, alors qu'il était bien installé
+
 ## Version 2026.10.0
 
 - Date de publication : 18 octobre 2026

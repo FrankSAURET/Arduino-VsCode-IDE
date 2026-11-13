@@ -4,6 +4,12 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.10.0.43 — Faux « Arduino CLI introuvable » après une mise à jour interrompue
+
+1. ✅ **Constat** : `.vsix` installé pendant que l'extension tournait → ancien dossier supprimé, nouveau resté en `…vsctmp` (sans `node_modules`). `util.spawn` prenait pour `cwd` le dossier de l'extension, disparu : `spawn` échoue en `ENOENT`, traduit en « Arduino CLI introuvable ». Le parcours d'installation ([environmentSetup.ts](src/arduino/environmentSetup.ts)) passait, lui : `spawn` sans `cwd`.
+2. ✅ **Correctif** [util.ts](src/common/util.ts) : `cwd` par défaut = dossier de l'extension s'il existe, sinon `os.homedir()`.
+3. ℹ️ `buildNumber` passé à `2026.10.0.43`.
+
 # v2026.10.0.42 — Bibliothèques de base Arduino : sécurités
 
 1. ✅ **Nouveau module [arduinoLibs.ts](src/arduino/arduinoLibs.ts)** : porté de Kablix (v2026.11.2.310), adapté au style du projet (indentation 4 espaces, `cliEnv()` pour l'environnement du CLI). Fonctions pures de reconnaissance (`enTeteManquant`, `termeDeRecherche`, `classerCandidats`, `candidatEvident`, `fourniParLaBase`, `lotDeBaseComplet`) + trois fonctions CLI (`chercherBibliotheques`, `installerBibliotheque`, `listeInstallees`).

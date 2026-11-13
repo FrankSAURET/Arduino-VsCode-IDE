@@ -279,7 +279,13 @@ export function spawn(
     abort?: SpawnAbort,
 ): Thenable<object> {
     return new Promise((resolve, reject) => {
-        options.cwd = options.cwd || path.resolve(path.join(__dirname, ".."));
+        // Dossier de travail par défaut : celui de l'extension. S'il a disparu (mise à jour
+        // interrompue pendant que l'extension tourne), spawn échoue en ENOENT et le CLI passe
+        // pour introuvable alors qu'il est bien là : repli sur le dossier personnel.
+        if (!options.cwd) {
+            const extensionDir = path.resolve(path.join(__dirname, ".."));
+            options.cwd = directoryExistsSync(extensionDir) ? extensionDir : os.homedir();
+        }
         // Hors Windows, un groupe de processus propre est la seule façon d'atteindre les fils.
         // Sous Windows `detached` ouvrirait une console : taskkill /T n'en a pas besoin.
         if (abort && os.platform() !== "win32") {
