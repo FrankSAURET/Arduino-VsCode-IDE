@@ -9,6 +9,7 @@ import * as vscode from "vscode";
 import { cliEnv } from "../common/cliEnv";
 import { arduinoChannel } from "../common/outputChannel";
 import { getExecutableFileName, resolveArduinoPath } from "../common/platform";
+import { BIBLIOTHEQUES_DE_BASE, listeInstallees, lotDeBaseComplet } from "./arduinoLibs";
 import { downloadArduinoCli, getDownloadedCliExecutable } from "./cliDownloader";
 import { getCppExtensionId, getCppExtensionName, isCppExtensionInstalled } from "./cppSupport";
 
@@ -27,6 +28,12 @@ export interface IEnvironmentStatus {
     hasCore: boolean;
     /** L'extension IntelliSense de l'hôte est installée (C/C++ ou clangd). */
     hasCppTools: boolean;
+    /**
+     * Les bibliothèques de base d'Arduino (Servo, Stepper, LiquidCrystal…) sont installées.
+     * Faux si au moins une manque — Arduino_BuiltIn rattrape tout le lot d'un coup.
+     * Valeur indéterminée (null) si le CLI n'a pas répondu : l'appelant ne conclut pas à une absence.
+     */
+    hasBuiltInLibraries: boolean | null;
 }
 
 /**
@@ -126,11 +133,18 @@ export async function getEnvironmentStatus(
     }
     const hasCli = !!resolvedCli;
     let hasCore = false;
+    let hasBuiltInLibraries: boolean | null = null;
     if (hasCli) {
         const cores = await listInstalledCores(resolvedCli);
         hasCore = cores === null
             ? (hasCoreOnDisk(packagePath) || hasCoreOnDisk(defaultDataDirectory()))
             : cores.length > 0;
+        // Sans cœur, la question des bibliothèques de base ne se pose pas encore :
+        // le parcours commencera par le cœur, le lot `Arduino_BuiltIn` suivra.
+        if (hasCore) {
+            const libs = await listeInstallees(resolvedCli);
+            hasBuiltInLibraries = libs === null ? null : lotDeBaseComplet(libs);
+        }
     } else {
         hasCore = hasCoreOnDisk(packagePath) || hasCoreOnDisk(defaultDataDirectory());
     }
@@ -138,6 +152,7 @@ export async function getEnvironmentStatus(
         hasCli,
         hasCore,
         hasCppTools: isCppExtensionInstalled(),
+        hasBuiltInLibraries,
     };
 }
 
@@ -227,6 +242,8 @@ export interface ISetupResult {
     cliInstalled: boolean;
     /** Le cœur arduino:avr a été installé pendant ce parcours. */
     coreInstalled: boolean;
+    /** Le lot `Arduino_BuiltIn` (Servo, Stepper, LiquidCrystal…) a été installé pendant ce parcours. */
+    builtInInstalled: boolean;
     /** Toutes les étapes indispensables sont satisfaites. */
     ready: boolean;
 }
@@ -244,7 +261,12 @@ export async function setupEnvironment(
     resolveCommandPath: () => string,
     additionalUrlsArgs: () => string[],
 ): Promise<ISetupResult> {
-    const result: ISetupResult = { cliInstalled: false, coreInstalled: false, ready: false };
+    const result: ISetupResult = {
+        cliInstalled: false,
+        coreInstalled: false,
+        builtInInstalled: false,
+        ready: false,
+    };
     arduinoChannel.show();
     arduinoChannel.start(vscode.l10n.t("Set up the Arduino environment..."));
 
@@ -307,6 +329,27 @@ export async function setupEnvironment(
         } catch (error) {
             arduinoChannel.warning(vscode.l10n.t("Library index update failed: {0}", error.message));
         }
+
+        // Étape 5 : bibliothèques de base d'Arduino (Servo, Stepper, LiquidCrystal, Ethernet,
+        // SD, Keyboard, Mouse, TFT, Firmata). Elles ne sont PAS dans le cœur arduino:avr :
+        // Arduino IDE 2 les installe au premier lancement via la méta `Arduino_BuiltIn`,
+        // mais arduino-cli ne le fait jamais. Sans cela, un .ino avec `#include <Servo.h>`
+        // échoue en compilation sur un poste où l'IDE n'a jamais été ouvert. Jamais bloquant :
+        // le réseau peut manquer, le reste de l'environnement est déjà utilisable.
+        const installed = await listeInstallees(commandPath);
+        const needsBuiltIn = installed !== null && !lotDeBaseComplet(installed);
+        if (needsBuiltIn) {
+            progress.report({ message: vscode.l10n.t("Installing the {0} library bundle...", BIBLIOTHEQUES_DE_BASE) });
+            arduinoChannel.info(vscode.l10n.t("Installing the {0} library bundle (Servo, Stepper, LiquidCrystal, Ethernet, SD, Keyboard, Mouse, TFT, Firmata)...", BIBLIOTHEQUES_DE_BASE));
+            try {
+                await runCli(commandPath, ["lib", "install", BIBLIOTHEQUES_DE_BASE]);
+                result.builtInInstalled = true;
+            } catch (error) {
+                arduinoChannel.warning(vscode.l10n.t("Installation of the {0} library bundle failed: {1}", BIBLIOTHEQUES_DE_BASE, error.message));
+            }
+        } else if (installed !== null) {
+            arduinoChannel.info(vscode.l10n.t("The {0} library bundle is already installed.", BIBLIOTHEQUES_DE_BASE));
+        }
     });
 
     // Étape 5 : extension IntelliSense (facultative, jamais bloquante). Selon l'hôte,
@@ -361,7 +404,8 @@ export async function promptSetupEnvironment(
     context: vscode.ExtensionContext,
     status: IEnvironmentStatus,
 ): Promise<boolean> {
-    if (status.hasCli && status.hasCore) {
+    // CLI + cœur + lot de base présents (ou indéterminé pour ce dernier, prudence) : rien à proposer.
+    if (status.hasCli && status.hasCore && status.hasBuiltInLibraries !== false) {
         return false;
     }
 
@@ -370,9 +414,16 @@ export async function promptSetupEnvironment(
         return false;
     }
 
-    const message = !status.hasCli
-        ? vscode.l10n.t("The Arduino environment is missing: Arduino CLI and a board core are needed to compile and upload. Install everything now?")
-        : vscode.l10n.t("No board core is installed: nothing can be compiled or uploaded. Install the {0} core now?", DEFAULT_CORE);
+    let message: string;
+    if (!status.hasCli) {
+        message = vscode.l10n.t("The Arduino environment is missing: Arduino CLI and a board core are needed to compile and upload. Install everything now?");
+    } else if (!status.hasCore) {
+        message = vscode.l10n.t("No board core is installed: nothing can be compiled or uploaded. Install the {0} core now?", DEFAULT_CORE);
+    } else {
+        // CLI et cœur présents, mais les bibliothèques de base manquent (Servo, Stepper…).
+        // Sans elles, un croquis avec #include <Servo.h> échoue en compilation.
+        message = vscode.l10n.t("The Arduino base libraries (Servo, Stepper, LiquidCrystal…) are not installed. Without them, many sketches will not compile. Install the {0} library bundle now?", BIBLIOTHEQUES_DE_BASE);
+    }
 
     const installAction = vscode.l10n.t("Install");
     const neverAction = vscode.l10n.t("Don't show again");

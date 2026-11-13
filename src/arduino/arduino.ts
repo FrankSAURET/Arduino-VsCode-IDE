@@ -12,6 +12,15 @@ import * as util from "../common/util";
 import * as logger from "../logger/logger";
 
 import { DeviceContext } from "../deviceContext";
+import {
+    BIBLIOTHEQUES_DE_BASE,
+    Candidat,
+    candidatEvident,
+    chercherBibliotheques,
+    enTeteManquant,
+    fourniParLaBase,
+    installerBibliotheque,
+} from "./arduinoLibs";
 import { IArduinoSettings } from "./arduinoSettings";
 import { BoardManager } from "./boardManager";
 import { CppEngine, getCppEngine } from "./cppSupport";
@@ -121,6 +130,20 @@ export class ArduinoApp {
      * sans réponse : build() relance alors le téléversement sans relâcher _building.
      */
     private _uploadRetryRequested: boolean = false;
+
+    /**
+     * Posé après qu'une bibliothèque manquante a été installée : build() relance
+     * alors la vérification/téléversement sans que l'utilisateur ait à recliquer.
+     */
+    private _libraryRetryRequested: boolean = false;
+
+    /**
+     * Sortie accumulée du dernier appel à arduino-cli pour une compilation : on y
+     * cherche après coup « fatal error: X.h: No such file or directory ». Tronquée
+     * à ~256 Ko (la seule ligne qui nous intéresse arrive dans les premiers kilos).
+     */
+    private _lastCompileOutput: string = "";
+    private static readonly COMPILE_OUTPUT_LIMIT = 256 * 1024;
 
     /**
      * @param {IArduinoSettings} _settings ArduinoSetting object.
@@ -270,8 +293,20 @@ export class ArduinoApp {
             let ret: boolean;
             do {
                 this._uploadRetryRequested = false;
+                this._libraryRetryRequested = false;
+                this._lastCompileOutput = "";
                 ret = await this._build(buildMode, buildDir, forceClean);
-            } while (!ret && this._uploadRetryRequested);
+                // Compilation échouée sur un en-tête manquant : proposer l'installation
+                // puis relancer la MÊME commande. Les modes CliUpload* ne compilent pas,
+                // Analyze est silencieux par construction — on les écarte.
+                if (!ret
+                    && buildMode !== BuildMode.CliUpload
+                    && buildMode !== BuildMode.CliUploadProgrammer
+                    && buildMode !== BuildMode.Analyze
+                    && !this._uploadRetryRequested) {
+                    await this._offerMissingLibraryInstall();
+                }
+            } while (!ret && (this._uploadRetryRequested || this._libraryRetryRequested));
             return ret;
         };
 
@@ -839,6 +874,7 @@ export class ArduinoApp {
             if (cocopa.callback) {
                 cocopa.callback(line);
             }
+            this._captureCompileLine(line);
             if (verbose) {
                 arduinoChannel.channel.append(line);
             } else {
@@ -855,6 +891,7 @@ export class ArduinoApp {
             if (cocopa.callback) {
                 cocopa.callback(line);
             }
+            this._captureCompileLine(line);
             if (os.platform() === "win32") {
                 line = line.trim();
                 if (line.length <= 0) {
@@ -945,4 +982,107 @@ export class ArduinoApp {
      * USB CDC boards (e.g. Arduino Uno R4 WiFi) may disappear during
      * programming and need time to re-enumerate.
      */
+
+    /**
+     * Accumule la sortie du CLI pendant une compilation. Tronqué à
+     * `COMPILE_OUTPUT_LIMIT` octets : la ligne « fatal error » apparaît dans les
+     * tout premiers kilos (avant les méga de template C++).
+     */
+    private _captureCompileLine(line: string): void {
+        if (this._lastCompileOutput.length >= ArduinoApp.COMPILE_OUTPUT_LIMIT) {
+            return;
+        }
+        this._lastCompileOutput += line;
+    }
+
+    /**
+     * Compilation échouée sur un en-tête manquant (« fatal error: X.h: No such
+     * file or directory ») : propose l'installation de la bibliothèque qui le
+     * fournit, puis signale à build() de relancer la même commande.
+     *
+     * En-tête du lot « de base » d'Arduino (Servo, Stepper, LiquidCrystal…) :
+     * on installe `Arduino_BuiltIn` d'un coup, comme Arduino IDE 2 au premier
+     * lancement. Sinon : recherche dans l'index Arduino, candidat évident
+     * installé directement, choix rapide à défaut.
+     *
+     * Jamais bloquant : un échec de recherche ou d'installation se signale
+     * dans l'avertissement, sans empêcher l'utilisateur de reprendre la main.
+     */
+    private async _offerMissingLibraryInstall(): Promise<void> {
+        const header = enTeteManquant(this._lastCompileOutput);
+        if (!header) {
+            return;
+        }
+        const cheminCli = this._settings.commandPath;
+        if (!cheminCli) {
+            return;
+        }
+        const install = vscode.l10n.t("Install the library");
+        const choice = await vscode.window.showErrorMessage(
+            vscode.l10n.t("The library that provides {0} is not installed on this computer.", header),
+            install,
+        );
+        if (choice !== install) {
+            return;
+        }
+        try {
+            if (fourniParLaBase(header)) {
+                // Servo, Stepper, LiquidCrystal… : tout le lot d'un coup.
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: vscode.l10n.t(
+                            "Installing the {0} library bundle (Servo, Stepper, LiquidCrystal, Ethernet, SD, Keyboard, Mouse, TFT, Firmata)...",
+                            BIBLIOTHEQUES_DE_BASE),
+                    },
+                    () => installerBibliotheque(cheminCli, BIBLIOTHEQUES_DE_BASE),
+                );
+            } else {
+                const candidats: Candidat[] = await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: vscode.l10n.t("Searching the Arduino library index for {0}...", header),
+                    },
+                    () => chercherBibliotheques(cheminCli, header),
+                );
+                if (candidats.length === 0) {
+                    vscode.window.showWarningMessage(vscode.l10n.t(
+                        "No library of the Arduino index provides {0}. Install it by hand (Library Manager).",
+                        header));
+                    return;
+                }
+                let retenu = candidatEvident(candidats);
+                if (!retenu) {
+                    const pick = await vscode.window.showQuickPick(
+                        candidats.slice(0, 15).map((c) => ({
+                            label: c.nom,
+                            description: [c.version, c.auteur].filter(Boolean).join(" — "),
+                            detail: c.phrase,
+                            c,
+                        })),
+                        {
+                            title: vscode.l10n.t("Which library provides {0}?", header),
+                            ignoreFocusOut: true,
+                        },
+                    );
+                    if (!pick) {
+                        return;
+                    }
+                    retenu = pick.c;
+                }
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: vscode.l10n.t("Installing the {0} library...", retenu.nom),
+                    },
+                    () => installerBibliotheque(cheminCli, retenu!.nom),
+                );
+            }
+        } catch (err) {
+            vscode.window.showErrorMessage(
+                vscode.l10n.t("Library installation failed: {0}", err instanceof Error ? err.message : String(err)));
+            return;
+        }
+        this._libraryRetryRequested = true;
+    }
 }

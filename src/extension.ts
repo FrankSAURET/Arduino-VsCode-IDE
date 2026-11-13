@@ -527,12 +527,14 @@ export async function activate(context: vscode.ExtensionContext) {
                 ? arduinoContextModule.default.arduinoApp.getAdditionalUrlsArgs()
                 : []),
         );
-        if (result.cliInstalled || result.coreInstalled) {
+        if (result.cliInstalled || result.coreInstalled || result.builtInInstalled) {
             await arduinoActivatorModule.default.reloadAfterEnvironmentChange();
         }
         // Régénérer la configuration IntelliSense : sans cœur installé, les chemins d'en-têtes
         // étaient introuvables, donc le c_cpp_properties.json généré (s'il l'était) était vide.
-        if (result.coreInstalled) {
+        // Idem après l'installation des bibliothèques de base : Servo.h et consœurs viennent
+        // de débarquer dans le carnet, les chemins d'inclusion doivent les refléter.
+        if (result.coreInstalled || result.builtInInstalled) {
             try {
                 await vscode.commands.executeCommand("arduino.rebuildIntelliSenseConfig");
             } catch {

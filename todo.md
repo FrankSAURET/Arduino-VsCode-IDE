@@ -4,6 +4,16 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.10.0.42 — Bibliothèques de base Arduino : sécurités
+
+1. ✅ **Nouveau module [arduinoLibs.ts](src/arduino/arduinoLibs.ts)** : porté de Kablix (v2026.11.2.310), adapté au style du projet (indentation 4 espaces, `cliEnv()` pour l'environnement du CLI). Fonctions pures de reconnaissance (`enTeteManquant`, `termeDeRecherche`, `classerCandidats`, `candidatEvident`, `fourniParLaBase`, `lotDeBaseComplet`) + trois fonctions CLI (`chercherBibliotheques`, `installerBibliotheque`, `listeInstallees`).
+2. ✅ **Installation du lot `Arduino_BuiltIn` au parcours initial** ([environmentSetup.ts](src/arduino/environmentSetup.ts)) : nouvelle étape 5 après l'index des bibliothèques. Détection via `listeInstallees` + `lotDeBaseComplet`. `IEnvironmentStatus` gagne un champ `hasBuiltInLibraries: boolean | null` (null = CLI muet). `promptSetupEnvironment` propose le parcours si le lot manque, même quand CLI + cœur sont déjà là.
+3. ✅ **Bouton *Installer la bibliothèque* après un échec de compilation** ([arduino.ts](src/arduino/arduino.ts)) : sortie de compilation captée (`_captureCompileLine`, plafonnée à 256 Ko). En-tête extrait au premier `fatal error`. En-tête du lot de base → tout le lot `Arduino_BuiltIn`. Sinon → `chercherBibliotheques`, `candidatEvident` ou choix rapide. Relance automatique du build via `_libraryRetryRequested`, modèle identique à `_uploadRetryRequested`.
+4. ✅ **Banc d'essai** [scripts/verify-arduinolibs.mjs](scripts/verify-arduinolibs.mjs) : 45 contrôles, 5 parties (reconnaissance, classement, vraie recherche dans l'index Arduino avec sandbox `ARDUINO_DIRECTORIES_USER`, câblage source, traductions FR). Transpilation à la volée via `typescript.transpileModule` (pas d'`esbuild` dans ce projet).
+5. ✅ **Traductions FR** ([bundle.l10n.fr.json](l10n/bundle.l10n.fr.json)) : 12 chaînes nouvelles — bouton, message d'avertissement, titres de progression, question du choix rapide, avis d'échec.
+6. ✅ **CHANGELOG** : nouvelle section `## Version 2026.11.0` (mois changé depuis la 2026.10.0 publiée le 18/10/2026).
+7. ℹ️ `buildNumber` passé à `2026.10.0.42` ; version publique inchangée (`2026.10.0`).
+
 # v2026.10.0.41 — Publication en une commande
 
 1. ✅ **`npm run publier`** : nouveau [publier.mjs](scripts/publier.mjs). Construit un seul `.vsix`, l'envoie au Marketplace puis à Open VSX. Garde-fou CHANGELOG (« prochaine publication » → arrêt, sauf `--force`), `OVSX_PAT` exigé avant tout envoi, `--dry-run` pour l'essai. Script identique dans Kablix, drawio-diagrams-editor, colored-theme (seule `OPTIONS_PAQUET` change).

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## Version 2026.11.0
+
+- prochaine publication
+
+### Nouveauté
+
+- **Les bibliothèques de base Arduino s'installent toutes seules.** Avec l'extension seule (sans Arduino IDE 2), un croquis qui utilisait Servo, Stepper, LiquidCrystal, Ethernet, SD, Keyboard, Mouse, TFT ou Firmata s'arrêtait net sur « Servo.h: No such file or directory ». Ces neuf bibliothèques ne sont pas dans le cœur `arduino:avr` — Arduino IDE 2 les installe au premier lancement via le lot `Arduino_BuiltIn`, arduino-cli jamais. L'extension pose maintenant ce lot en même temps que le cœur Arduino : l'erreur disparaît pour les élèves
+- **Bouton *Installer la bibliothèque* à la compilation.** Quand une compilation échoue sur `X.h: No such file or directory`, une fenêtre propose d'installer la bibliothèque qui fournit l'en-tête. Un en-tête du lot de base (Servo.h, Stepper.h…) installe tout le lot d'un coup. Sinon, l'index Arduino est interrogé, un candidat évident est installé directement, et à défaut un choix rapide s'affiche. La compilation reprend ensuite toute seule
+
+### Modification
+
+- **Le parcours d'installation initial contrôle aussi les bibliothèques de base.** Leur absence est détectée via `arduino-cli lib list`, et le parcours est proposé même quand Arduino CLI et le cœur sont déjà en place (poste qui vient d'un autre IDE, par exemple)
+
 ## Version 2026.10.0
 
 - Date de publication : 18 octobre 2026

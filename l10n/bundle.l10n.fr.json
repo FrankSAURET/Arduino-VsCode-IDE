@@ -316,5 +316,17 @@
   "No serial port selected for upload.": "Aucun port série choisi pour le téléversement.",
   "Port {0} is not connected.": "Le port {0} n'est pas connecté.",
   "Select a port": "Choisir un port",
-  "Upload to {0}": "Téléverser sur {0}"
+  "Upload to {0}": "Téléverser sur {0}",
+  "Install the library": "Installer la bibliothèque",
+  "The library that provides {0} is not installed on this computer.": "La bibliothèque qui fournit {0} n'est pas installée sur cet ordinateur.",
+  "Installing the {0} library bundle (Servo, Stepper, LiquidCrystal, Ethernet, SD, Keyboard, Mouse, TFT, Firmata)...": "Installation du lot de bibliothèques {0} (Servo, Stepper, LiquidCrystal, Ethernet, SD, Keyboard, Mouse, TFT, Firmata)…",
+  "Searching the Arduino library index for {0}...": "Recherche de {0} dans l'index des bibliothèques Arduino…",
+  "No library of the Arduino index provides {0}. Install it by hand (Library Manager).": "Aucune bibliothèque de l'index Arduino ne fournit {0}. Installez-la à la main (gestionnaire de bibliothèques).",
+  "Which library provides {0}?": "Quelle bibliothèque fournit {0} ?",
+  "Installing the {0} library...": "Installation de la bibliothèque {0}…",
+  "Library installation failed: {0}": "Échec de l'installation de la bibliothèque : {0}",
+  "Installing the {0} library bundle...": "Installation du lot de bibliothèques {0}…",
+  "The {0} library bundle is already installed.": "Le lot de bibliothèques {0} est déjà installé.",
+  "Installation of the {0} library bundle failed: {1}": "Échec de l'installation du lot de bibliothèques {0} : {1}",
+  "The Arduino base libraries (Servo, Stepper, LiquidCrystal…) are not installed. Without them, many sketches will not compile. Install the {0} library bundle now?": "Les bibliothèques de base Arduino (Servo, Stepper, LiquidCrystal…) ne sont pas installées. Sans elles, de nombreux croquis ne se compileront pas. Installer le lot {0} maintenant ?"
 }
