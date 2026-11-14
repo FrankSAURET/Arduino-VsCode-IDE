@@ -14,11 +14,11 @@ import * as logger from "../logger/logger";
 import { DeviceContext } from "../deviceContext";
 import {
     BIBLIOTHEQUES_DE_BASE,
-    Candidat,
     candidatEvident,
     chercherBibliotheques,
     enTeteManquant,
     fourniParLaBase,
+    ICandidat,
     installerBibliotheque,
 } from "./arduinoLibs";
 import { IArduinoSettings } from "./arduinoSettings";
@@ -1038,7 +1038,7 @@ export class ArduinoApp {
                     () => installerBibliotheque(cheminCli, BIBLIOTHEQUES_DE_BASE),
                 );
             } else {
-                const candidats: Candidat[] = await vscode.window.withProgress(
+                const candidats: ICandidat[] = await vscode.window.withProgress(
                     {
                         location: vscode.ProgressLocation.Notification,
                         title: vscode.l10n.t("Searching the Arduino library index for {0}...", header),

@@ -4,6 +4,12 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.10.0.44 — CI GitHub en échec (tslint)
+
+1. ✅ **Constat** : CI rouge sur les 3 systèmes depuis v2026.10.0.42. Règle tslint `interface-name` : `BibliothequeIndex` et `Candidat` ([arduinoLibs.ts](src/arduino/arduinoLibs.ts)) sans préfixe `I`.
+2. ✅ **Correctif** : renommées `IBibliothequeIndex` / `ICandidat` (import réordonné dans [arduino.ts](src/arduino/arduino.ts)). `npm run lint` et `npm run build:ext` passent.
+3. ℹ️ `buildNumber` passé à `2026.10.0.44`.
+
 # v2026.10.0.43 — Faux « Arduino CLI introuvable » après une mise à jour interrompue
 
 1. ✅ **Constat** : `.vsix` installé pendant que l'extension tournait → ancien dossier supprimé, nouveau resté en `…vsctmp` (sans `node_modules`). `util.spawn` prenait pour `cwd` le dossier de l'extension, disparu : `spawn` échoue en `ENOENT`, traduit en « Arduino CLI introuvable ». Le parcours d'installation ([environmentSetup.ts](src/arduino/environmentSetup.ts)) passait, lui : `spawn` sans `cwd`.

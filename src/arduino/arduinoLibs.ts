@@ -76,7 +76,7 @@ export function fourniParLaBase(enTete: string): boolean {
 }
 
 /** Bibliotheque telle que la decrit `arduino-cli lib search --format json`. */
-export interface BibliothequeIndex {
+export interface IBibliothequeIndex {
     name: string;
     latest?: {
         version?: string;
@@ -89,7 +89,7 @@ export interface BibliothequeIndex {
 }
 
 /** Candidat retenu, avec son score (plus haut = plus probable). */
-export interface Candidat {
+export interface ICandidat {
     nom: string;
     version?: string;
     auteur?: string;
@@ -114,11 +114,11 @@ export function termeDeRecherche(enTete: string): string {
  * compile que pour une carte reelle, souvent Uno/Nano/Mega), la meilleure en
  * tete.
  */
-export function classerCandidats(enTete: string, index: BibliothequeIndex[]): Candidat[] {
+export function classerCandidats(enTete: string, index: IBibliothequeIndex[]): ICandidat[] {
     const h = enTete.toLowerCase();
     const nomConnu = BIBLIOTHEQUE_DE[h];
     const cle = normaliser(racine(enTete));
-    const out: Candidat[] = [];
+    const out: ICandidat[] = [];
     for (const lib of index) {
         const r = lib.latest ?? {};
         const archis = (r.architectures ?? ["*"]).map((a) => a.toLowerCase());
@@ -139,7 +139,7 @@ export function classerCandidats(enTete: string, index: BibliothequeIndex[]): Ca
  * Vrai si le premier candidat s'impose (nom exact ou correspondance connue, sans
  * ex aequo) : on l'installe sans faire choisir l'utilisateur.
  */
-export function candidatEvident(candidats: Candidat[]): Candidat | undefined {
+export function candidatEvident(candidats: ICandidat[]): ICandidat | undefined {
     const [a, b] = candidats;
     if (!a || a.score < 80) { return undefined; }
     return !b || b.score < a.score ? a : undefined;
@@ -164,14 +164,14 @@ async function cli(chemin: string, args: string[]): Promise<string> {
  * Cherche dans l'index Arduino les bibliotheques qui fournissent `enTete`.
  * Index vide ou jamais telecharge (poste neuf) : on le met a jour une fois.
  */
-export async function chercherBibliotheques(cheminCli: string, enTete: string): Promise<Candidat[]> {
-    const chercher = async (): Promise<BibliothequeIndex[]> => {
+export async function chercherBibliotheques(cheminCli: string, enTete: string): Promise<ICandidat[]> {
+    const chercher = async (): Promise<IBibliothequeIndex[]> => {
         const sortie = await cli(cheminCli, [
             "lib", "search", termeDeRecherche(enTete), "--format", "json", "--omit-releases-details",
         ]);
-        return (JSON.parse(sortie || "{}") as { libraries?: BibliothequeIndex[] }).libraries ?? [];
+        return (JSON.parse(sortie || "{}") as { libraries?: IBibliothequeIndex[] }).libraries ?? [];
     };
-    let index: BibliothequeIndex[] = [];
+    let index: IBibliothequeIndex[] = [];
     try {
         index = await chercher();
     } catch {
