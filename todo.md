@@ -4,6 +4,13 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 
 
+# v2026.11.0.45 — Préparation de la publication 2026.11.0
+
+1. ✅ **Version publique passée à `2026.11.0`**, `buildNumber` à `2026.11.0.45`. Mois changé depuis la 2026.10.0 (vérifié : 14 novembre 2026) : l'incrément repart à 0 ; le compteur interne avance d'un cran.
+2. ✅ **CHANGELOG daté** : `prochaine publication` remplacé par `Date de publication : 14 novembre 2026`.
+3. ℹ️ **Traductions** : seul le français existe (`bundle.l10n.fr.json`, `package.nls.fr.json`), déjà à jour au lot .42. Aucune autre langue à traiter.
+4. ⏳ **Publication non lancée** : `npm run publier` sur demande de Frank.
+
 # v2026.10.0.44 — CI GitHub en échec (tslint)
 
 1. ✅ **Constat** : CI rouge sur les 3 systèmes depuis v2026.10.0.42. Règle tslint `interface-name` : `BibliothequeIndex` et `Candidat` ([arduinoLibs.ts](src/arduino/arduinoLibs.ts)) sans préfixe `I`.

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2026.11.0
 
-- prochaine publication
+- Date de publication : 14 novembre 2026
 
 ### Nouveauté
 
