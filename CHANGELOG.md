@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Version 2026.11.1 (prochaine publication)
+
+### Correction
+
+- **Un téléversement n'est plus ignoré quand une analyse IntelliSense tourne.** Après une sauvegarde, un changement de carte ou un appel d'une autre extension (Kablix, par exemple), l'extension lance en fond une compilation pour IntelliSense. Un clic sur *Téléverser* ou *Vérifier* pendant ce temps ne faisait rien : seule la compilation de fond se voyait, d'où l'impression que la demande de programmation devenait une simple vérification. L'analyse est maintenant interrompue et la commande de l'utilisateur passe devant ; l'analyse reprend ensuite si nécessaire. Si une autre vérification ou un autre téléversement est déjà en cours, un message le dit au lieu de rester muet
+- **La sortie Arduino indique la cause de chaque analyse IntelliSense** (fichier enregistré, carte ou croquis modifié dans `arduino.yaml`, commande appelée par une autre extension) : une compilation inattendue s'explique d'un coup d'œil
+
 ## Version 2026.11.0
 
 - Date de publication : 14 novembre 2026

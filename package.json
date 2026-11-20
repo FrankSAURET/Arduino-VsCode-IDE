@@ -4,7 +4,7 @@
   "description": "CLI-based Arduino IDE with a user-friendly interface and full translation",
   "private": true,
   "version": "2026.11.0",
-  "buildNumber": "2026.11.0.45",
+  "buildNumber": "2026.11.0.46",
   "publisher": "electropol-fr",
   "preview": true,
   "engines": {

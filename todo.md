@@ -2,7 +2,18 @@
 
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
+3. ⬜ Téléversement ignoré pendant une analyse (v2026.11.0.46) : confirmer sur un poste avec Kablix, lire les lignes « Analyse IntelliSense automatique (cause : …) » de la sortie Arduino.
 
+
+# v2026.11.0.46 — Téléversement ignoré pendant une analyse IntelliSense
+
+1. ✅ **Constat** : `arduino.verify`/`arduino.upload` sortaient sans rien dire si `arduinoApp.building` était vrai. Une analyse de fond (`BuildMode.Analyze`, compilation `--clean --verbose`) tournait souvent à ce moment : sauvegarde d'un `.ino`, `arduino.yaml` modifié, ou `arduino.rebuildIntelliSenseConfig` appelée par Kablix au changement de carte (`intellisense.ts` de Kablix, `syncArduinoIdeBoard` réécrit aussi `arduino.yaml`). L'utilisateur ne voyait que la compilation de l'analyse.
+2. ✅ **Correctif [arduino.ts](src/arduino/arduino.ts)** : `build()` mémorise le mode en cours (`_buildingMode`) et sa promesse (`_buildingDone`). Demande utilisateur pendant une analyse → `SpawnAbort` de l'analyse (`_analyzeAbort`, branché sur `util.spawn`), attente de sa fin, puis lancement ; analyse redemandée ensuite. Analyse tuée : pas de `cocopa.conclude()` (configuration partielle évitée). Autre compilation utilisateur en cours → message d'information au lieu du silence.
+3. ✅ **[extension.ts](src/extension.ts)** : gardes `if (!building)` retirées des 5 commandes vérifier/téléverser. `rebuildIntelliSenseConfig` écrit une trace dans la sortie et n'affiche plus d'avertissement d'échec quand elle a été interrompue (`lastAnalysisInterrupted`).
+4. ✅ **Traces [intellisense.ts](src/arduino/intellisense.ts)** : `requestAnalysis(origin)` ; les causes en attente sont écrites au lancement (« Analyse IntelliSense automatique (cause : …) »).
+5. ✅ **Traductions FR** : 10 chaînes dans [bundle.l10n.fr.json](l10n/bundle.l10n.fr.json).
+6. ✅ **CHANGELOG** : section `2026.11.1 (prochaine publication)` ouverte (2026.11.0 publiée, vérifié sur le Marketplace).
+7. ℹ️ `npm run build:ext` et `npm run lint` passent. Pas de test automatique couvrant `build()`.
 
 # v2026.11.0.45 — Préparation de la publication 2026.11.0
 

@@ -328,5 +328,15 @@
   "Installing the {0} library bundle...": "Installation du lot de bibliothèques {0}…",
   "The {0} library bundle is already installed.": "Le lot de bibliothèques {0} est déjà installé.",
   "Installation of the {0} library bundle failed: {1}": "Échec de l'installation du lot de bibliothèques {0} : {1}",
-  "The Arduino base libraries (Servo, Stepper, LiquidCrystal…) are not installed. Without them, many sketches will not compile. Install the {0} library bundle now?": "Les bibliothèques de base Arduino (Servo, Stepper, LiquidCrystal…) ne sont pas installées. Sans elles, de nombreux croquis ne se compileront pas. Installer le lot {0} maintenant ?"
+  "The Arduino base libraries (Servo, Stepper, LiquidCrystal…) are not installed. Without them, many sketches will not compile. Install the {0} library bundle now?": "Les bibliothèques de base Arduino (Servo, Stepper, LiquidCrystal…) ne sont pas installées. Sans elles, de nombreux croquis ne se compileront pas. Installer le lot {0} maintenant ?",
+  "A build is already in progress ({0}): wait for it to finish.": "Une compilation est déjà en cours ({0}) : attendez qu'elle se termine.",
+  "IntelliSense analysis interrupted: {0} requested.": "Analyse IntelliSense interrompue pour laisser passer : {0}.",
+  "analysis interrupted earlier": "analyse interrompue plus tôt",
+  "board changed in arduino.yaml": "carte modifiée dans arduino.yaml",
+  "board configuration changed in arduino.yaml": "configuration de la carte modifiée dans arduino.yaml",
+  "sketch changed in arduino.yaml": "croquis modifié dans arduino.yaml",
+  "file saved: {0}": "fichier enregistré : {0}",
+  "Automatic IntelliSense analysis (cause: {0}).": "Analyse IntelliSense automatique (cause : {0}).",
+  "unknown": "inconnue",
+  "IntelliSense rebuild requested (command arduino.rebuildIntelliSenseConfig).": "Reconstruction IntelliSense demandée (commande arduino.rebuildIntelliSenseConfig)."
 }

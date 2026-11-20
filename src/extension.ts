@@ -35,6 +35,7 @@ import { getUserPortNames, resolvePortName, setUserPortName } from "./arduino/po
 import { PortStatusBar } from "./arduino/portStatusBar";
 import { applyArduinoTheme } from "./arduino/themeManager";
 import { selectSerialPort } from "./arduino/uploadPort";
+import { arduinoChannel } from "./common/outputChannel";
 import { listSerialPorts } from "./common/portList";
 import * as Logger from "./logger/logger";
 const usbDetectorModule = impor("./serialmonitor/usbDetector") as typeof import ("./serialmonitor/usbDetector");
@@ -349,15 +350,15 @@ export async function activate(context: vscode.ExtensionContext) {
         await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(folderPath), false);
     }));
 
+    // Pas de garde « building » ici : build() interrompt une analyse de fond pour
+    // passer devant, et signale une autre compilation en cours au lieu de se taire.
     registerArduinoCommand("arduino.verify", async () => {
-        if (!arduinoContextModule.default.arduinoApp.building) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Window,
-                title: vscode.l10n.t("Arduino: Verifying..."),
-            }, async () => {
-                await arduinoContextModule.default.arduinoApp.build(BuildMode.Verify);
-            });
-        }
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Window,
+            title: vscode.l10n.t("Arduino: Verifying..."),
+        }, async () => {
+            await arduinoContextModule.default.arduinoApp.build(BuildMode.Verify);
+        });
     }, () => {
         return {
             board: (arduinoContextModule.default.boardManager.currentBoard === null) ? null :
@@ -368,17 +369,13 @@ export async function activate(context: vscode.ExtensionContext) {
     // Les téléversements affichent leur propre notification annulable (ArduinoApp._build),
     // ouverte seulement une fois le port contrôlé.
     registerArduinoCommand("arduino.upload", async () => {
-        if (!arduinoContextModule.default.arduinoApp.building) {
-            await arduinoContextModule.default.arduinoApp.build(BuildMode.Upload);
-        }
+        await arduinoContextModule.default.arduinoApp.build(BuildMode.Upload);
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
     });
 
     registerArduinoCommand("arduino.cliUpload", async () => {
-        if (!arduinoContextModule.default.arduinoApp.building) {
-            await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUpload);
-        }
+        await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUpload);
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
     });
@@ -421,23 +418,22 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     registerArduinoCommand("arduino.uploadUsingProgrammer", async () => {
-        if (!arduinoContextModule.default.arduinoApp.building) {
-            await arduinoContextModule.default.arduinoApp.build(BuildMode.UploadProgrammer);
-        }
+        await arduinoContextModule.default.arduinoApp.build(BuildMode.UploadProgrammer);
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
     });
 
     registerArduinoCommand("arduino.cliUploadUsingProgrammer", async () => {
-        if (!arduinoContextModule.default.arduinoApp.building) {
-            await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUploadProgrammer);
-        }
+        await arduinoContextModule.default.arduinoApp.build(BuildMode.CliUploadProgrammer);
     }, () => {
         return { board: arduinoContextModule.default.boardManager.currentBoard.name };
     });
 
     registerArduinoCommand("arduino.rebuildIntelliSenseConfig", async () => {
         if (!arduinoContextModule.default.arduinoApp.building) {
+            // Commande appelée aussi par d'autres extensions (Kablix au changement de
+            // carte) : on l'écrit dans la sortie, une compilation surprise s'y explique.
+            arduinoChannel.info(vscode.l10n.t("IntelliSense rebuild requested (command arduino.rebuildIntelliSenseConfig)."));
             // Reconstruction demandee a la main : on force la compilation propre, sinon
             // le cache de construction prive cocopa de toute ligne de compilateur et la
             // configuration existante reste figee (bibliotheques ajoutees non prises en
@@ -450,7 +446,8 @@ export async function activate(context: vscode.ExtensionContext) {
             });
             // Le mode Analyze est silencieux par construction : sans ce retour, un echec
             // de prerequis (carte non selectionnee, sketch introuvable) ne se voit nulle part.
-            if (!ok) {
+            // Interrompue par une vérification ou un téléversement : pas un échec.
+            if (!ok && !arduinoContextModule.default.arduinoApp.lastAnalysisInterrupted) {
                 vscode.window.showWarningMessage(vscode.l10n.t(
                     "Unable to rebuild the IntelliSense configuration. Check that a board is selected and that the sketch is valid, then see the Arduino output for details."));
             }

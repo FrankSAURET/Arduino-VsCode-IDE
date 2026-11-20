@@ -456,6 +456,8 @@ export class AnalysisManager {
     private _consecutiveAnalysisCount: number = 0;
     private _maxConsecutiveAnalysis: number = 3;
     private _lastAnalysisTime: number = 0;
+    /** Origines des demandes en attente, écrites dans la sortie au lancement de l'analyse. */
+    private _origins: Set<string> = new Set<string>();
 
     /**
      * Constructor.
@@ -480,7 +482,7 @@ export class AnalysisManager {
      * within a wait period or until any build in progress has terminated.
      * Issue #76: Rate-limit consecutive analysis to prevent CPU overload.
      */
-    public async requestAnalysis() {
+    public async requestAnalysis(origin?: string) {
         const now = Date.now();
         // Reset consecutive count if enough time has passed
         if (now - this._lastAnalysisTime > this._waitPeriodMs * 10) {
@@ -492,6 +494,9 @@ export class AnalysisManager {
         }
         if (this.isConfigUpToDate()) {
             return;
+        }
+        if (origin) {
+            this._origins.add(origin);
         }
         await this.update(AnalysisEvent.AnalysisRequest);
     }
@@ -619,6 +624,10 @@ export class AnalysisManager {
     private async startAnalysis() {
         this._consecutiveAnalysisCount++;
         this._lastAnalysisTime = Date.now();
+        const origins = Array.from(this._origins).join(", ");
+        this._origins.clear();
+        arduinoChannel.info(vscode.l10n.t("Automatic IntelliSense analysis (cause: {0}).",
+            origins || vscode.l10n.t("unknown")));
         await this._doBuild()
         .then(() => {
             this.update(AnalysisEvent.AnalysisBuildDone);

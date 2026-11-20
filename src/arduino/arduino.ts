@@ -125,6 +125,21 @@ export class ArduinoApp {
      */
     private _building: boolean = false;
 
+    /** Mode de la construction en cours (undefined si aucune). */
+    private _buildingMode: BuildMode | undefined;
+
+    /** Promesse de la construction en cours : on l'attend après avoir interrompu une analyse. */
+    private _buildingDone: Promise<boolean> | undefined;
+
+    /**
+     * Arrêt de l'analyse IntelliSense en cours. Une vérification ou un téléversement
+     * demandé par l'utilisateur passe devant : l'analyse est tuée, pas la demande ignorée.
+     */
+    private _analyzeAbort: util.SpawnAbort | undefined;
+
+    /** Vrai si la dernière analyse a été interrompue au profit d'une compilation de l'utilisateur. */
+    private _lastAnalysisInterrupted: boolean = false;
+
     /**
      * Posé par _build() quand l'utilisateur a choisi un autre port après un téléversement
      * sans réponse : build() relance alors le téléversement sans relâcher _building.
@@ -175,15 +190,17 @@ export class ArduinoApp {
 
         if (this._settings.analyzeOnSettingChange) {
             // set up event handling for IntelliSense analysis
-            const requestAnalysis = async () => {
+            // L'origine est écrite dans la sortie Arduino au lancement de l'analyse :
+            // une compilation « surprise » doit pouvoir s'expliquer.
+            const requestAnalysis = async (origin: string) => {
                 if (isCompilerParserEnabled()) {
-                    await this._analysisManager.requestAnalysis();
+                    await this._analysisManager.requestAnalysis(origin);
                 }
             };
             const dc = DeviceContext.getInstance();
-            dc.onChangeBoard(requestAnalysis);
-            dc.onChangeConfiguration(requestAnalysis);
-            dc.onChangeSketch(requestAnalysis);
+            dc.onChangeBoard(() => requestAnalysis(vscode.l10n.t("board changed in arduino.yaml")));
+            dc.onChangeConfiguration(() => requestAnalysis(vscode.l10n.t("board configuration changed in arduino.yaml")));
+            dc.onChangeSketch(() => requestAnalysis(vscode.l10n.t("sketch changed in arduino.yaml")));
 
             // Ajouter un `#include` est le cas courant qu'aucun des evenements ci-dessus
             // ne couvre : installer une bibliotheque puis l'inclure ne changeait ni la
@@ -204,7 +221,7 @@ export class ArduinoApp {
                 if (path.dirname(path.resolve(document.fileName)) !== sketchDir) {
                     return;
                 }
-                requestAnalysis();
+                requestAnalysis(vscode.l10n.t("file saved: {0}", path.basename(document.fileName)));
             });
         }
     }
@@ -256,6 +273,10 @@ export class ArduinoApp {
         return this._building;
     }
 
+    public get lastAnalysisInterrupted() {
+        return this._lastAnalysisInterrupted;
+    }
+
     /**
      * Runs the arduino builder to build/compile and - if necessary - upload
      * the current sketch.
@@ -283,11 +304,37 @@ export class ArduinoApp {
      */
     public async build(buildMode: BuildMode, buildDir?: string, forceClean: boolean = false) {
 
-        if (!this._boardManager || !this._programmerManager || this._building) {
+        if (!this._boardManager || !this._programmerManager) {
             return false;
         }
 
+        // Construction déjà en cours. Avant : toute demande était abandonnée en silence,
+        // si bien qu'un téléversement cliqué pendant une analyse de fond (déclenchée par
+        // une sauvegarde, un changement de carte ou une autre extension) ne faisait rien,
+        // et l'utilisateur ne voyait que la compilation de l'analyse.
+        let analysisInterrupted = false;
+        while (this._building) {
+            if (buildMode === BuildMode.Analyze) {
+                return false;
+            }
+            if (this._buildingMode !== BuildMode.Analyze) {
+                vscode.window.showInformationMessage(vscode.l10n.t(
+                    "A build is already in progress ({0}): wait for it to finish.",
+                    translateBuildMode(this._buildingMode)));
+                return false;
+            }
+            arduinoChannel.info(vscode.l10n.t(
+                "IntelliSense analysis interrupted: {0} requested.", translateBuildMode(buildMode)));
+            analysisInterrupted = true;
+            if (this._analyzeAbort) {
+                this._analyzeAbort.abort("superseded");
+            }
+            await this._buildingDone.catch(() => false);
+        }
+
         this._building = true;
+        this._buildingMode = buildMode;
+        this._analyzeAbort = buildMode === BuildMode.Analyze ? new util.SpawnAbort() : undefined;
 
         const buildWithRetry = async () => {
             let ret: boolean;
@@ -310,18 +357,32 @@ export class ArduinoApp {
             return ret;
         };
 
-        return await buildWithRetry()
+        const done = buildWithRetry()
         .then((ret) => {
             this._building = false;
+            this._buildingMode = undefined;
             return ret;
         })
         .catch((reason) => {
             this._building = false;
+            this._buildingMode = undefined;
             logger.notifyUserError("ArduinoApp.build",
                                    reason,
                                    `Unhandled exception when cleaning up build "${buildMode}": ${JSON.stringify(reason)}`);
             return false;
         });
+        this._buildingDone = done;
+        const ownAbort = this._analyzeAbort;
+        const result = await done;
+        if (buildMode === BuildMode.Analyze) {
+            this._lastAnalysisInterrupted = !!(ownAbort && ownAbort.reason);
+        }
+        // L'analyse interrompue reste à faire : redemandée (sans effet si la
+        // compilation qui vient de passer a déjà mis la configuration à jour).
+        if (analysisInterrupted && isCompilerParserEnabled()) {
+            this._analysisManager.requestAnalysis(vscode.l10n.t("analysis interrupted earlier"));
+        }
+        return result;
     }
 
     // Include the *.h header files from selected library to the arduino sketch.
@@ -823,6 +884,8 @@ export class ArduinoApp {
         // Téléversement : l'annulation, comme le premier « not in sync » d'avrdude, tue
         // arduino-cli ET ses fils, qui tiendraient sinon le port série.
         const abort = isUploadMode ? new util.SpawnAbort() : undefined;
+        // Analyse : arrêt réservé à build(), quand l'utilisateur demande une vraie compilation.
+        const analyzeAbort = this._analyzeAbort;
 
         // Pause USB detection during upload
         if (isUploadMode) {
@@ -925,7 +988,7 @@ export class ArduinoApp {
             args,
             { cwd: ArduinoWorkspace.rootPath },
             { /*channel: arduinoChannel.channel,*/ stdout: stdoutcb, stderr: stderrcb },
-            abort,
+            abort || analyzeAbort,
         );
         // Téléversement dans une notification annulable ; la notification se referme
         // dès qu'arduino-cli s'arrête, avant la commande de post-construction.
@@ -952,6 +1015,11 @@ export class ArduinoApp {
             }
             return ret;
         }, async (reason) => {
+            if (analyzeAbort && analyzeAbort.reason) {
+                // Analyse tuée pour laisser passer l'utilisateur : sortie partielle, on ne
+                // conclut pas (cocopa écrirait une configuration incomplète).
+                return false;
+            }
             await cleanup("error");
             if (reason.aborted === UploadAbort.Cancelled) {
                 arduinoChannel.warning(vscode.l10n.t("Upload cancelled."));
