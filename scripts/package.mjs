@@ -51,9 +51,11 @@ console.log(`Construction du paquet : ${path.relative(racine, fichier)}`);
 
 // vsce n'est pas une dépendance locale : on passe par npx, qui prend l'installation globale si elle existe.
 // Sous Windows, npx est un .cmd : Node refuse de le lancer sans « shell: true » (EINVAL).
+// Avec le shell, une seule chaîne de commande : un tableau d'arguments déclenche l'avertissement
+// DEP0190 de Node 24 (arguments collés sans protection).
+const enLigne = (commande) => commande.map((a) => (/[\s"]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a)).join(' ');
 const resultat = spawnSync(
-	'npx',
-	['vsce', 'package', '--out', `"${fichier}"`, ...process.argv.slice(2)],
+	enLigne(['npx', 'vsce', 'package', '--out', fichier, ...process.argv.slice(2)]),
 	{ cwd: racine, stdio: 'inherit', shell: true },
 );
 

@@ -61,10 +61,15 @@ if (!essai && !process.env.OVSX_PAT) {
 	echec("variable d'environnement OVSX_PAT absente : rien n'a été publié.");
 }
 
-// npx est un .cmd sous Windows : Node refuse de le lancer sans « shell: true ».
+// npx est un .cmd sous Windows : Node refuse de le lancer sans « shell: true ». Avec le shell, Node 24
+// signale (DEP0190) un tableau d'arguments, qu'il colle sans les protéger : on lui passe donc une seule
+// chaîne, chaque argument à espace ou guillemet mis entre guillemets.
+const enLigne = (commande) => commande.map((a) => (/[\s"]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a)).join(' ');
+const executer = (commande) => spawnSync(enLigne(commande), { cwd: racine, stdio: 'inherit', shell: true });
+
 const lancer = (etape, commande) => {
-	console.log(`\n=== ${etape}\n> ${commande.join(' ')}`);
-	const r = spawnSync(commande[0], commande.slice(1), { cwd: racine, stdio: 'inherit', shell: true });
+	console.log(`\n=== ${etape}\n> ${enLigne(commande)}`);
+	const r = executer(commande);
 	if (r.status !== 0) {
 		echec(`« ${etape} » a échoué (code ${r.status ?? 'inconnu'}).`);
 	}
@@ -83,8 +88,7 @@ lancer('Visual Studio Marketplace', ['npx', 'vsce', 'publish', '--packagePath', 
 
 // Si cette étape échoue, la version est déjà en ligne sur le Marketplace : le message le rappelle.
 console.log('\n=== Open VSX');
-const r = spawnSync('npx', ['ovsx', 'publish', fichier, ...(preRelease ? ['--pre-release'] : [])],
-	{ cwd: racine, stdio: 'inherit', shell: true });
+const r = executer(['npx', 'ovsx', 'publish', fichier, ...(preRelease ? ['--pre-release'] : [])]);
 if (r.status !== 0) {
 	echec(`Open VSX a échoué (code ${r.status ?? 'inconnu'}) ALORS QUE le Marketplace a déjà publié ${manifeste.version}. Relancer seulement : npx ovsx publish ${fichier}`);
 }

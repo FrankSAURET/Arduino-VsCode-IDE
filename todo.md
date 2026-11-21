@@ -4,7 +4,14 @@
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 3. ⬜ Téléversement ignoré pendant une analyse (v2026.11.0.46) : confirmer sur un poste avec Kablix, lire les lignes « Analyse IntelliSense automatique (cause : …) » de la sortie Arduino.
 4. ⬜ ESP32 3.x IntelliSense (v2026.11.1.48) : sur un poste avec le cœur esp32 3.x, régénérer IntelliSense (Ctrl+Alt+I) et vérifier `includePath` (en-têtes ESP-IDF), `forcedInclude` et `cppStandard` de `c_cpp_properties.json`. À faire avec l'item 1.
+5. ⏳ Avertissement DEP0190 : même correctif à reporter dans `scripts/publier.mjs` (et `package.mjs` s'il existe) des trois autres extensions de Frank (script commun), chacune dans sa propre session.
 
+
+# v2026.11.1.49 — Publication 2026.11.1 faite, avertissement DEP0190
+
+1. ✅ **2026.11.1 publiée** le 21/11/2026 sur le Marketplace et sur Open VSX (`npm run publier`, lancé par Frank). Lots .46 à .48 en ligne.
+2. ✅ **DEP0190** (« Passing args to a child process with shell option true ») affiché par Node 24 pendant la publication : [publier.mjs](scripts/publier.mjs) et [package.mjs](scripts/package.mjs) passent maintenant une seule chaîne de commande à `spawnSync` (`enLigne` : argument à espace ou guillemet mis entre guillemets), plus de tableau d'arguments avec `shell: true`.
+3. ℹ️ Rien côté utilisateur : pas d'entrée au CHANGELOG, pas de section `prochaine publication` ouverte tant qu'aucun lot ne change l'extension.
 
 # v2026.11.1.48 — Reprise du #89 du fork communautaire (fichiers de réponse GCC)
 
@@ -21,7 +28,7 @@
 2. ✅ **CHANGELOG daté** : `prochaine publication` remplacé par `Date de publication : 21 novembre 2026`.
 3. ℹ️ **Traductions** : seul le français existe, déjà à jour au lot .46. Aucune autre langue à traiter.
 4. ℹ️ **Veille du fork communautaire** (vscode-arduino/vscode-arduino) : #84 déjà repris ; #91 (liste blanche de commandes du serveur web local) sans objet, la route n'existe plus ; #93 (dossiers personnalisés du CLI) couvert par notre lecture de `arduino-cli config` ; #89 non repris (item 4 de la liste).
-5. ⏳ **Publication non lancée** : `npm run publier` sur demande de Frank.
+5. ✅ **Publication** faite le 21/11/2026 (voir v2026.11.1.49).
 
 # v2026.11.0.46 — Téléversement ignoré pendant une analyse IntelliSense
 
