@@ -3,7 +3,16 @@
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 3. ⬜ Téléversement ignoré pendant une analyse (v2026.11.0.46) : confirmer sur un poste avec Kablix, lire les lignes « Analyse IntelliSense automatique (cause : …) » de la sortie Arduino.
+4. ⬜ Fork communautaire vscode-arduino : décider de reprendre #89 (3dc8998, 05/11/2026, développement des fichiers de réponse GCC `@fichier` pour IntelliSense, nouveau `compilerCommandParser.ts`).
 
+
+# v2026.11.1.47 — Préparation de la publication 2026.11.1
+
+1. ✅ **Version publique passée à `2026.11.1`**, `buildNumber` à `2026.11.1.47`. Même mois que la 2026.11.0 (vérifié : 21 novembre 2026) : incrément +1.
+2. ✅ **CHANGELOG daté** : `prochaine publication` remplacé par `Date de publication : 21 novembre 2026`.
+3. ℹ️ **Traductions** : seul le français existe, déjà à jour au lot .46. Aucune autre langue à traiter.
+4. ℹ️ **Veille du fork communautaire** (vscode-arduino/vscode-arduino) : #84 déjà repris ; #91 (liste blanche de commandes du serveur web local) sans objet, la route n'existe plus ; #93 (dossiers personnalisés du CLI) couvert par notre lecture de `arduino-cli config` ; #89 non repris (item 4 de la liste).
+5. ⏳ **Publication non lancée** : `npm run publier` sur demande de Frank.
 
 # v2026.11.0.46 — Téléversement ignoré pendant une analyse IntelliSense
 

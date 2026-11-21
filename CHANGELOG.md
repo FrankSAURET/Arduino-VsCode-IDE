@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Version 2026.11.1 (prochaine publication)
+## Version 2026.11.1
+
+- Date de publication : 21 novembre 2026
 
 ### Correction
 
