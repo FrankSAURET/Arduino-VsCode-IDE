@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - **Un téléversement n'est plus ignoré quand une analyse IntelliSense tourne.** Après une sauvegarde, un changement de carte ou un appel d'une autre extension (Kablix, par exemple), l'extension lance en fond une compilation pour IntelliSense. Un clic sur *Téléverser* ou *Vérifier* pendant ce temps ne faisait rien : seule la compilation de fond se voyait, d'où l'impression que la demande de programmation devenait une simple vérification. L'analyse est maintenant interrompue et la commande de l'utilisateur passe devant ; l'analyse reprend ensuite si nécessaire. Si une autre vérification ou un autre téléversement est déjà en cours, un message le dit au lieu de rester muet
 - **La sortie Arduino indique la cause de chaque analyse IntelliSense** (fichier enregistré, carte ou croquis modifié dans `arduino.yaml`, commande appelée par une autre extension) : une compilation inattendue s'explique d'un coup d'œil
+- **IntelliSense trouve les en-têtes des cartes ESP32 récentes (arduino-esp32 3.x).** Ce cœur range ses chemins d'en-têtes, ses définitions et sa norme C++ dans des fichiers d'options séparés (`@fichier`), que l'extension ne lisait pas : la compilation passait, mais l'éditeur soulignait de faux « identifiant non défini ». Ces fichiers sont maintenant lus, les en-têtes inclus d'office par le cœur sont repris, et la norme C++ retenue est la dernière indiquée au compilateur, comme le fait GCC. Correctif repris du fork communautaire vscode-arduino
 
 ## Version 2026.11.0
 

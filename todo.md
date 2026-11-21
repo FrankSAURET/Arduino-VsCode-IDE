@@ -3,8 +3,17 @@
 1. ⬜ Tester l'installation d'une plateforme tierce (ESP32) via URL additionnelle (correctif v2026.7.0)
 2. ⏳ macOS / Linux : valider la détection du CLI embarqué d'Arduino IDE 2 sur machine réelle (v2026.7.3)
 3. ⬜ Téléversement ignoré pendant une analyse (v2026.11.0.46) : confirmer sur un poste avec Kablix, lire les lignes « Analyse IntelliSense automatique (cause : …) » de la sortie Arduino.
-4. ⬜ Fork communautaire vscode-arduino : décider de reprendre #89 (3dc8998, 05/11/2026, développement des fichiers de réponse GCC `@fichier` pour IntelliSense, nouveau `compilerCommandParser.ts`).
+4. ⬜ ESP32 3.x IntelliSense (v2026.11.1.48) : sur un poste avec le cœur esp32 3.x, régénérer IntelliSense (Ctrl+Alt+I) et vérifier `includePath` (en-têtes ESP-IDF), `forcedInclude` et `cppStandard` de `c_cpp_properties.json`. À faire avec l'item 1.
 
+
+# v2026.11.1.48 — Reprise du #89 du fork communautaire (fichiers de réponse GCC)
+
+1. ✅ **Nouveau [compilerCommandParser.ts](src/arduino/compilerCommandParser.ts)**, repris tel quel du fork (3dc8998), en-tête de provenance ajouté. `ArduinoGccParser` hérite de `ccp.ParserGcc` : développe les `@fichier` (récursif, 16 niveaux, boucles évitées, fichier illisible conservé), résout `-iprefix`/`-iwithprefixbefore`/`-isystem`/`-iquote` en `-I`, extrait les `-include` (`forcedIncludes`) et la dernière `-std=` (`effectiveCppStandard`, alias `2a`→`20` etc.).
+2. ✅ **[intellisense.ts](src/arduino/intellisense.ts)** : `makeCompilerParserEngines` prend `ArduinoGccParser`. Chemin cpptools : `forcedInclude` = `-include` de la commande + Arduino.h, sans doublon ; `cppStandard` remplacé par la norme effective (cocopa garde la première `-std=` et ignore les alias). Chemin clangd inchangé : clang développe lui-même les `@fichier` de `compile_commands.json`.
+3. ℹ️ Parties du #89 non reprises : retrait de `-MMD` (déjà fait par `sanitizeCompilerOptions`), `USBCON` (déjà présent).
+4. ✅ **Tests [compilerCommandParser.test.ts](test/compilerCommandParser.test.ts)** : les 5 du fork + 1 local (ligne AVR Windows réelle, résultat identique à cocopa seul). 6/6 via `npx mocha --ui tdd out/test/compilerCommandParser.test.js` (pas besoin de l'hôte VS Code).
+5. ✅ **CHANGELOG** : entrée ajoutée à la section 2026.11.1, préparée mais pas encore en ligne (Marketplace vérifié : dernière 2026.11.0).
+6. ℹ️ `npm run build:ext` et `npm run lint` passent. Pas de cœur ESP32 sur ce poste : test réel en item 4.
 
 # v2026.11.1.47 — Préparation de la publication 2026.11.1
 

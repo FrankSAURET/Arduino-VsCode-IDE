@@ -11,6 +11,7 @@ import * as constants from "../common/constants";
 import { arduinoChannel } from "../common/outputChannel";
 import { ArduinoWorkspace } from "../common/workspace";
 import { DeviceContext } from "../deviceContext";
+import { ArduinoGccParser, IArduinoGccResult } from "./compilerCommandParser";
 import { CppEngine, getCppEngine, readCompilerFromDatabase, syncCompilationDatabase,
          writeClangdConfig } from "./cppSupport";
 import { VscodeSettings } from "./vscodeSettings";
@@ -294,19 +295,25 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string,
         // forced include - users expect Arduino symbols to be available
         // in main sketch without having to include the header explicitly
         const ardHeader = await runner.result.findFile("Arduino.h");
-        const forcedIncludes = ardHeader.length > 0
-            ? ardHeader
-            : undefined;
-        if (!forcedIncludes) {
+        if (!ardHeader.length) {
             arduinoChannel.warning(vscode.l10n.t("Unable to locate \"Arduino.h\" within IntelliSense include paths."));
         }
 
         // clangd se nourrit de la base de compilation, pas d'un c_cpp_properties.json :
-        // le chemin d'Arduino.h trouvé ci-dessus lui sert de « -include ».
+        // le chemin d'Arduino.h trouvé ci-dessus lui sert de « -include ». clang développe
+        // lui-même les `@fichier` de la base : rien d'autre à lui transmettre.
         if (engine === CppEngine.Clangd) {
-            concludeClangd(dc, buildDir, forcedIncludes && forcedIncludes[0]);
+            concludeClangd(dc, buildDir, ardHeader[0]);
             return;
         }
+
+        // cpptools : les `-include` de la commande (arduino-esp32 3.x en pose dans ses
+        // fichiers de réponse) s'ajoutent à Arduino.h, sans doublon.
+        const gccResult = runner.result as IArduinoGccResult;
+        const forcedIncludes = Array.from(new Set([
+            ...(gccResult.forcedIncludes || []),
+            ...ardHeader,
+        ]));
 
         // Add USB Connected macro to defines
         runner.result.defines.push("USBCON");
@@ -323,7 +330,12 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string,
                                                             ccp.CCppPropertiesISMode.Gcc_X64,
                                                             ccp.CCppPropertiesCStandard.C11,
                                                             ccp.CCppPropertiesCppStandard.Cpp11,
-                                                            forcedIncludes);
+                                                            forcedIncludes.length ? forcedIncludes : undefined);
+        // GCC applique les `-std=` dans l'ordre : le dernier l'emporte. cocopa garde le
+        // premier, d'où une norme C++ fausse quand le cœur en empile plusieurs.
+        if (gccResult.effectiveCppStandard) {
+            content.configurations[0].cppStandard = gccResult.effectiveCppStandard;
+        }
 
         try {
 
@@ -382,7 +394,8 @@ export function makeCompilerParserContext(dc: DeviceContext, buildMode?: string,
 function makeCompilerParserEngines(dc: DeviceContext) {
     const sketch = path.basename(dc.sketch);
     const trigger = ccp.getTriggerForArduinoGcc(sketch);
-    const gccParserEngine = new ccp.ParserGcc(trigger);
+    // Analyseur maison : développe les fichiers de réponse `@fichier` avant cocopa.
+    const gccParserEngine = new ArduinoGccParser(trigger, ArduinoWorkspace.rootPath || process.cwd());
     return [gccParserEngine];
 }
 
